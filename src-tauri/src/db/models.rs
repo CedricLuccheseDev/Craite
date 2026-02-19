@@ -7,6 +7,7 @@ pub struct Sample {
     pub path: String,
     pub category: String,
     pub subcategory: String,
+    pub confidence: f32,
     pub source: String,
     pub duration: f64,
     pub sample_rate: u32,

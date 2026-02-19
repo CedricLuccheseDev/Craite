@@ -5,11 +5,13 @@ use std::path::Path;
 use std::sync::mpsc;
 use std::time::Duration;
 
+#[allow(dead_code)]
 pub struct FileWatcher {
     _debouncer: Debouncer<RecommendedWatcher, FileIdMap>,
 }
 
 impl FileWatcher {
+    #[allow(dead_code)]
     /// Start watching a directory for file changes
     pub fn new<F>(path: &Path, callback: F) -> Result<Self, notify::Error>
     where

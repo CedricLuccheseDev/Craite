@@ -10,12 +10,20 @@ pub enum LinkStrategy {
 
 /// Determine the best linking strategy for the given paths
 pub fn determine_strategy(source: &Path, target: &Path) -> LinkStrategy {
-    // Hardlink only works on the same filesystem/partition
     if same_filesystem(source, target) {
         LinkStrategy::Hardlink
-    } else {
+    } else if has_symlink_permission() {
         LinkStrategy::Symlink
+    } else {
+        LinkStrategy::Copy
     }
+}
+
+fn has_symlink_permission() -> bool {
+    #[cfg(unix)]
+    { true }
+    #[cfg(not(unix))]
+    { false }
 }
 
 /// Create a link from source to target using the given strategy

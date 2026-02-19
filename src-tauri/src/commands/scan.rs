@@ -4,6 +4,7 @@ use tauri::State;
 
 use crate::audio::preview::AudioPreview;
 use crate::classifier::filename::classify_by_filename;
+use crate::classifier::rules::RULES;
 use crate::db::models::{Category, Sample, ScanResult, Source};
 use crate::scanner::filesystem::{detect_sample_directories, scan_directory};
 
@@ -32,6 +33,7 @@ pub fn scan_directories(sources: Vec<String>) -> Result<ScanResult, String> {
                 path: file_path.to_string_lossy().to_string(),
                 category: classification.category,
                 subcategory: classification.subcategory,
+                confidence: classification.confidence,
                 source: source_path.clone(),
                 duration: 0.0,
                 sample_rate: 0,
@@ -105,22 +107,15 @@ fn build_categories(samples: &[Sample]) -> Vec<Category> {
         }
     }
 
-    let colors: std::collections::HashMap<&str, &str> = [
-        ("kick", "#ff6b35"), ("snare", "#4a9eff"), ("hihat", "#fbbf24"),
-        ("clap", "#a78bfa"), ("pad", "#4ade80"), ("lead", "#f472b6"),
-        ("bass", "#ef4444"), ("fx", "#06b6d4"), ("vocal", "#fb923c"),
-        ("loop", "#818cf8"),
-    ].into_iter().collect();
-
     let mut categories: Vec<Category> = map
         .into_iter()
-        .map(|(name, (subcategories, count))| Category {
-            color: colors.get(name.as_str())
-                .unwrap_or(&"#888888")
-                .to_string(),
-            name,
-            count,
-            subcategories,
+        .map(|(name, (subcategories, count))| {
+            let color = RULES.iter()
+                .find(|r| r.category == name)
+                .map(|r| r.color.to_string())
+                .unwrap_or_else(|| "#888888".to_string());
+
+            Category { name, color, count, subcategories }
         })
         .collect();
 

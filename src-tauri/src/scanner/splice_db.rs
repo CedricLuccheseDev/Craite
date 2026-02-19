@@ -2,6 +2,7 @@ use rusqlite::Connection;
 use std::path::{Path, PathBuf};
 use crate::error::CraiteError;
 
+#[allow(dead_code)]
 /// Metadata from Splice's sounds.db
 pub struct SpliceSample {
     pub path: String,
@@ -11,6 +12,7 @@ pub struct SpliceSample {
     pub tags: Vec<String>,
 }
 
+#[allow(dead_code)]
 /// Find the Splice sounds.db file
 pub fn find_splice_db() -> Option<PathBuf> {
     let home = std::env::var("HOME").ok()?;
@@ -25,6 +27,7 @@ pub fn find_splice_db() -> Option<PathBuf> {
     }
 }
 
+#[allow(dead_code)]
 /// Read sample metadata from Splice database
 pub fn read_splice_metadata(db_path: &Path) -> Result<Vec<SpliceSample>, CraiteError> {
     let conn = Connection::open_with_flags(
