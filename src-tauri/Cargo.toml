@@ -1,0 +1,21 @@
+[package]
+name = "craite"
+version = "0.1.0"
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-log = "2"
+rusqlite = { version = "0.31", features = ["bundled"] }
+notify-debouncer-full = "0.3"
+rodio = { version = "0.21", features = ["symphonia-wav"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]

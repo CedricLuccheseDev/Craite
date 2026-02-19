@@ -1,0 +1,201 @@
+<script setup lang="ts">
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useOnboarding } from '@/composables/useOnboarding';
+import { useTauri } from '@/composables/useTauri';
+import { useScanStore } from '@/stores/scan';
+import type { SourceFolder } from '@/types/onboarding';
+import AmbientOrb from '@/components/onboarding/AmbientOrb.vue';
+import StepDots from '@/components/onboarding/StepDots.vue';
+import WelcomeStep from '@/components/onboarding/WelcomeStep.vue';
+import SourcesStep from '@/components/onboarding/SourcesStep.vue';
+import ScanStep from '@/components/onboarding/ScanStep.vue';
+import ResultStep from '@/components/onboarding/ResultStep.vue';
+
+const router = useRouter();
+const scanStore = useScanStore();
+const tauri = useTauri();
+
+const {
+  currentStep,
+  sources,
+  scanProgress,
+  scanTotal,
+  isScanning,
+  stepIndex,
+  orbColor,
+  canAdvance,
+  nextStep,
+} = useOnboarding();
+
+onMounted(async () => {
+  const detected = await tauri.detectSources();
+  sources.value = detected.map(s => ({
+    path: s.path,
+    label: s.label,
+    enabled: s.enabled,
+    type: s.type as SourceFolder['type'],
+    sampleCount: s.sampleCount,
+  }));
+});
+
+function toggleSource(path: string) {
+  const source = sources.value.find(s => s.path === path);
+  if (source) source.enabled = !source.enabled;
+}
+
+function addSource(source: SourceFolder) {
+  sources.value.push(source);
+}
+
+async function startScan() {
+  nextStep();
+  isScanning.value = true;
+  scanStore.startScan();
+
+  const result = await tauri.scanDirectories(
+    sources.value.filter(s => s.enabled),
+  );
+
+  scanTotal.value = result.totalFiles;
+  scanProgress.value = result.totalFiles;
+  isScanning.value = false;
+  scanStore.setScanResult(result);
+}
+
+function finishOnboarding() {
+  router.push('/library');
+}
+</script>
+
+<template>
+  <div class="onboarding">
+    <AmbientOrb :color="orbColor" />
+
+    <StepDots
+      :total="4"
+      :current="stepIndex"
+    />
+
+    <div class="step-container">
+      <WelcomeStep
+        v-if="currentStep === 'welcome'"
+        @next="nextStep"
+      />
+
+      <SourcesStep
+        v-else-if="currentStep === 'sources'"
+        :sources="sources"
+        @toggle="toggleSource"
+        @add-source="addSource"
+      />
+
+      <ScanStep
+        v-else-if="currentStep === 'scan'"
+        :progress="scanProgress"
+        :total="scanTotal"
+        :is-scanning="isScanning"
+      />
+
+      <ResultStep
+        v-else-if="currentStep === 'result'"
+        :categories="scanStore.categories"
+        :total-samples="scanStore.totalSamples"
+        @finish="finishOnboarding"
+      />
+    </div>
+
+    <div class="bottom-actions">
+      <button
+        v-if="currentStep === 'sources'"
+        class="action-btn primary"
+        :disabled="!canAdvance"
+        @click="startScan"
+      >
+        Start Scan
+      </button>
+      <button
+        v-if="currentStep === 'scan' && !isScanning"
+        class="action-btn primary"
+        @click="nextStep"
+      >
+        See Results
+      </button>
+      <button
+        v-if="currentStep !== 'welcome' && currentStep !== 'result'"
+        class="skip-btn"
+        @click="finishOnboarding"
+      >
+        Skip
+      </button>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.onboarding {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--color-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.step-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-xl);
+}
+
+.bottom-actions {
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  z-index: 1;
+}
+
+.action-btn {
+  padding: var(--space-md) var(--space-2xl);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out-expo);
+}
+
+.action-btn.primary {
+  background: var(--color-accent-orange);
+  color: white;
+}
+
+.action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.action-btn:not(:disabled):hover {
+  transform: scale(1.05);
+}
+
+.skip-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: var(--space-sm);
+}
+
+.skip-btn:hover {
+  color: var(--color-text);
+}
+</style>
