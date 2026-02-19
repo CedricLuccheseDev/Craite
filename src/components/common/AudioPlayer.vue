@@ -25,13 +25,14 @@ async function togglePlay() {
 
 <template>
   <div class="audio-player">
-    <button
-      class="play-btn"
-      :class="{ playing: isPlaying }"
+    <UButton
+      :icon="isPlaying ? 'i-lucide-pause' : 'i-lucide-play'"
+      size="sm"
+      square
+      :color="isPlaying ? 'primary' : 'neutral'"
+      :variant="isPlaying ? 'solid' : 'outline'"
       @click="togglePlay"
-    >
-      {{ isPlaying ? '&#9646;&#9646;' : '&#9654;' }}
-    </button>
+    />
     <span class="sample-name">{{ sampleName }}</span>
   </div>
 </template>
@@ -41,30 +42,6 @@ async function togglePlay() {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-}
-
-.play-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  transition: border-color var(--duration-fast);
-}
-
-.play-btn:hover {
-  border-color: var(--color-accent-orange);
-}
-
-.play-btn.playing {
-  border-color: var(--color-accent-orange);
-  color: var(--color-accent-orange);
 }
 
 .sample-name {

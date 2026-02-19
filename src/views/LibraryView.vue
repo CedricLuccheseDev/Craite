@@ -19,13 +19,15 @@ const libraryStore = useLibraryStore();
 
     <main class="content">
       <header class="content-header">
-        <input
-          :value="libraryStore.searchQuery"
-          type="text"
-          class="search-input"
+        <UInput
+          :model-value="libraryStore.searchQuery"
           placeholder="Search samples..."
-          @input="libraryStore.setSearchQuery(($event.target as HTMLInputElement).value)"
-        >
+          color="neutral"
+          variant="outline"
+          icon="i-lucide-search"
+          class="search-input"
+          @update:model-value="libraryStore.setSearchQuery"
+        />
         <span class="sample-count">
           {{ libraryStore.filteredSamples.length }} samples
         </span>
@@ -77,18 +79,6 @@ const libraryStore = useLibraryStore();
 
 .search-input {
   flex: 1;
-  padding: var(--space-sm) var(--space-md);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text);
-  font-size: 14px;
-  outline: none;
-  transition: border-color var(--duration-fast);
-}
-
-.search-input:focus {
-  border-color: var(--color-accent-orange);
 }
 
 .sample-count {

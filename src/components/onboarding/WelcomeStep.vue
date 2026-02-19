@@ -6,12 +6,15 @@ const emit = defineEmits<{ next: [] }>();
   <div class="welcome-step slide-up">
     <h1 class="logo">CrAIte</h1>
     <p class="tagline">Your AI-powered sample organizer</p>
-    <button
+    <UButton
+      color="primary"
+      variant="solid"
+      size="xl"
       class="cta-button"
       @click="emit('next')"
     >
       C'est parti
-    </button>
+    </UButton>
   </div>
 </template>
 
@@ -42,20 +45,5 @@ const emit = defineEmits<{ next: [] }>();
 
 .cta-button {
   margin-top: var(--space-xl);
-  padding: var(--space-md) var(--space-2xl);
-  background: var(--color-accent-orange);
-  color: white;
-  border: none;
-  border-radius: var(--radius-lg);
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform var(--duration-fast) var(--ease-out-expo),
-              box-shadow var(--duration-fast) var(--ease-out-expo);
-}
-
-.cta-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 30px rgba(255, 107, 53, 0.3);
 }
 </style>

@@ -11,10 +11,13 @@
     "lint": "eslint src/"
   },
   "dependencies": {
+    "@nuxt/ui": "^4.4.0",
     "@tauri-apps/api": "^2.10.1",
     "@tauri-apps/plugin-dialog": "^2.6.0",
     "@tauri-apps/plugin-log": "^2.8.0",
+    "@tauri-apps/plugin-process": "^2.3.1",
     "pinia": "^3.0.4",
+    "tailwindcss": "^4.2.0",
     "vue": "^3.5.28",
     "vue-router": "^5.0.2"
   },

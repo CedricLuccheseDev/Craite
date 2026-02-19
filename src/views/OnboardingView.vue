@@ -106,28 +106,34 @@ function finishOnboarding() {
     </div>
 
     <div class="bottom-actions">
-      <button
+      <UButton
         v-if="currentStep === 'sources'"
-        class="action-btn primary"
+        color="primary"
+        variant="solid"
+        size="lg"
         :disabled="!canAdvance"
         @click="startScan"
       >
         Start Scan
-      </button>
-      <button
+      </UButton>
+      <UButton
         v-if="currentStep === 'scan' && !isScanning"
-        class="action-btn primary"
+        color="primary"
+        variant="solid"
+        size="lg"
         @click="nextStep"
       >
         See Results
-      </button>
-      <button
+      </UButton>
+      <UButton
         v-if="currentStep !== 'welcome' && currentStep !== 'result'"
-        class="skip-btn"
+        color="neutral"
+        variant="ghost"
+        size="sm"
         @click="finishOnboarding"
       >
         Skip
-      </button>
+      </UButton>
     </div>
   </div>
 </template>
@@ -162,40 +168,4 @@ function finishOnboarding() {
   z-index: 1;
 }
 
-.action-btn {
-  padding: var(--space-md) var(--space-2xl);
-  border: none;
-  border-radius: var(--radius-lg);
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform var(--duration-fast) var(--ease-out-expo);
-}
-
-.action-btn.primary {
-  background: var(--color-accent-orange);
-  color: white;
-}
-
-.action-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.action-btn:not(:disabled):hover {
-  transform: scale(1.05);
-}
-
-.skip-btn {
-  background: none;
-  border: none;
-  color: var(--color-text-muted);
-  font-size: 14px;
-  cursor: pointer;
-  padding: var(--space-sm);
-}
-
-.skip-btn:hover {
-  color: var(--color-text);
-}
 </style>

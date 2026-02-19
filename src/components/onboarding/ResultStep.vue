@@ -49,12 +49,15 @@ function getCategoryColor(name: string): string {
       </div>
     </div>
 
-    <button
+    <UButton
+      color="primary"
+      variant="solid"
+      size="xl"
       class="finish-button"
       @click="emit('finish')"
     >
       Open Library
-    </button>
+    </UButton>
   </div>
 </template>
 
@@ -115,18 +118,5 @@ h2 {
 
 .finish-button {
   margin-top: var(--space-md);
-  padding: var(--space-md) var(--space-2xl);
-  background: var(--color-accent-orange);
-  color: white;
-  border: none;
-  border-radius: var(--radius-lg);
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform var(--duration-fast) var(--ease-out-expo);
-}
-
-.finish-button:hover {
-  transform: scale(1.05);
 }
 </style>

@@ -20,7 +20,12 @@ defineProps<Props>();
         :sample-path="sample.path"
         :sample-name="sample.name"
       />
-      <span class="sample-category">{{ sample.category }}</span>
+      <UBadge
+        :label="sample.category"
+        color="neutral"
+        variant="subtle"
+        size="sm"
+      />
     </div>
 
     <p
@@ -51,12 +56,6 @@ defineProps<Props>();
 
 .sample-row:hover {
   background: var(--color-surface-hover);
-}
-
-.sample-category {
-  font-size: 12px;
-  color: var(--color-text-muted);
-  text-transform: capitalize;
 }
 
 .empty {

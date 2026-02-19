@@ -21,20 +21,22 @@ function clearSelection() {
 
 <template>
   <div class="category-tree">
-    <button
+    <UButton
+      :color="selected === null ? 'primary' : 'neutral'"
+      :variant="selected === null ? 'soft' : 'ghost'"
       class="category-item"
-      :class="{ active: selected === null }"
       @click="clearSelection"
     >
       <span class="name">All</span>
       <span class="count">{{ categories.reduce((sum, c) => sum + c.count, 0) }}</span>
-    </button>
+    </UButton>
 
-    <button
+    <UButton
       v-for="cat in categories"
       :key="cat.name"
+      :color="selected === cat.name ? 'primary' : 'neutral'"
+      :variant="selected === cat.name ? 'soft' : 'ghost'"
       class="category-item"
-      :class="{ active: selected === cat.name }"
       @click="handleSelect(cat.name)"
     >
       <span
@@ -43,7 +45,7 @@ function clearSelection() {
       />
       <span class="name">{{ cat.name }}</span>
       <span class="count">{{ cat.count }}</span>
-    </button>
+    </UButton>
   </div>
 </template>
 
@@ -55,26 +57,8 @@ function clearSelection() {
 }
 
 .category-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-sm);
-  color: var(--color-text);
-  cursor: pointer;
-  font-size: 14px;
-  text-align: left;
-  transition: background var(--duration-fast);
-}
-
-.category-item:hover {
-  background: var(--color-surface-hover);
-}
-
-.category-item.active {
-  background: var(--color-surface);
+  width: 100%;
+  justify-content: flex-start;
 }
 
 .dot {
@@ -87,11 +71,13 @@ function clearSelection() {
 .name {
   flex: 1;
   text-transform: capitalize;
+  text-align: left;
 }
 
 .count {
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--color-text-muted);
+  margin-left: auto;
 }
 </style>

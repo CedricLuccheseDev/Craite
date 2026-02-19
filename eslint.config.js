@@ -24,6 +24,6 @@ export default [
     },
   },
   {
-    ignores: ['src-tauri/', 'dist/', 'node_modules/'],
+    ignores: ['src-tauri/', 'dist/', 'node_modules/', '.nuxt/', '.output/'],
   },
 ];

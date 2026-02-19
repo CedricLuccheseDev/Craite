@@ -40,26 +40,33 @@ async function addCustomFolder() {
         :style="{ animationDelay: `${index * 80}ms` }"
       >
         <label class="source-toggle">
-          <input
-            type="checkbox"
-            :checked="source.enabled"
-            @change="emit('toggle', source.path)"
-          >
+          <UCheckbox
+            :model-value="source.enabled"
+            color="primary"
+            @update:model-value="emit('toggle', source.path)"
+          />
           <div class="source-info">
             <span class="source-label">{{ source.label }}</span>
             <span class="source-path">{{ source.path }}</span>
           </div>
-          <span class="source-badge">{{ source.type }}</span>
+          <UBadge
+            :label="source.type"
+            color="neutral"
+            variant="subtle"
+            size="xs"
+          />
         </label>
       </div>
     </div>
 
-    <button
+    <UButton
+      color="primary"
+      variant="outline"
       class="add-folder-btn"
       @click="addCustomFolder"
     >
       + Add folder
-    </button>
+    </UButton>
   </div>
 </template>
 
@@ -128,27 +135,4 @@ h2 {
   white-space: nowrap;
 }
 
-.source-badge {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  background: var(--color-border);
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-}
-
-.add-folder-btn {
-  padding: var(--space-sm) var(--space-lg);
-  background: transparent;
-  color: var(--color-accent-orange);
-  border: 1px dashed var(--color-accent-orange);
-  border-radius: var(--radius-md);
-  font-size: 14px;
-  cursor: pointer;
-  transition: background var(--duration-fast);
-}
-
-.add-folder-btn:hover {
-  background: rgba(255, 107, 53, 0.1);
-}
 </style>

@@ -11,50 +11,25 @@ const props = withDefaults(defineProps<Props>(), {
   indeterminate: false,
 });
 
-const percentage = computed(() => {
-  if (props.indeterminate || props.max === 0) return 0;
+const modelValue = computed(() => {
+  if (props.indeterminate || props.max === 0) return null;
   return Math.min((props.value / props.max) * 100, 100);
 });
 </script>
 
 <template>
-  <div class="progress-bar">
-    <div
-      class="progress-fill"
-      :class="{ indeterminate }"
-      :style="{ width: indeterminate ? '100%' : `${percentage}%` }"
-    />
-  </div>
+  <UProgress
+    :model-value="modelValue"
+    :max="100"
+    color="success"
+    animation="carousel"
+    class="progress-constrained"
+  />
 </template>
 
 <style scoped>
-.progress-bar {
+.progress-constrained {
   width: 100%;
   max-width: 400px;
-  height: 6px;
-  background: var(--color-border);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: var(--color-accent-green);
-  border-radius: var(--radius-full);
-  transition: width var(--duration-normal) var(--ease-out-expo);
-}
-
-.progress-fill.indeterminate {
-  animation: indeterminate 1.5s ease-in-out infinite;
-  width: 30% !important;
-}
-
-@keyframes indeterminate {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(400%);
-  }
 }
 </style>

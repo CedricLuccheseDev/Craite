@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import ProgressBar from '@/components/common/ProgressBar.vue';
-
 interface Props {
   progress: number;
   total: number;
@@ -52,10 +50,12 @@ onMounted(() => {
       <span class="label">samples found</span>
     </div>
 
-    <ProgressBar
-      :value="progress"
-      :max="total"
-      :indeterminate="isScanning && total === 0"
+    <UProgress
+      :model-value="(isScanning && total === 0) ? null : Math.min((progress / total) * 100, 100)"
+      :max="100"
+      color="success"
+      animation="carousel"
+      class="scan-progress"
     />
 
     <p
@@ -116,5 +116,10 @@ h2 {
 
 .status.done {
   color: var(--color-accent-green);
+}
+
+.scan-progress {
+  width: 100%;
+  max-width: 400px;
 }
 </style>
