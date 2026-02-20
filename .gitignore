@@ -5,8 +5,13 @@ node_modules/
 dist/
 
 # Rust
-src-tauri/target/
-src-tauri/gen/
+**/src-tauri/target/
+**/src-tauri/gen/
+
+# Nuxt
+.nuxt/
+.output/
+.nitro/
 
 # IDE
 .vscode/

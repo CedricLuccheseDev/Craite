@@ -1,10 +1,13 @@
 # CrAIte - Project Conventions
 
 ## Architecture
-- **Tauri v2** desktop app: Rust backend + Vue 3/TS frontend
-- Package manager: **pnpm**
-- Frontend: Vite + Vue 3 + TypeScript + Pinia
-- Backend: Rust with modular structure in `src-tauri/src/`
+- **pnpm monorepo** with 2 apps:
+  - `@app/desktop` — Tauri v2 desktop app (Rust backend + Vue 3/TS frontend)
+  - `@app/landing` — Nuxt 3 landing page with @nuxt/ui
+- Package manager: **pnpm** (workspaces)
+- Desktop frontend: Vite + Vue 3 + TypeScript + Pinia
+- Desktop backend: Rust with modular structure in `apps/desktop/src-tauri/src/`
+- Landing: Nuxt 3 + @nuxt/ui
 
 ## File Structure
 - Max **200 lines per file** - split into modules
@@ -17,26 +20,31 @@
 - CSS: kebab-case for classes, CSS custom properties for theming
 
 ## Commands
-- `pnpm dev` — Start Vite dev server
-- `pnpm tauri dev` — Start full Tauri dev mode
-- `pnpm build` — Build frontend
-- `pnpm tauri build` — Build distributable
-- `pnpm lint` — Run ESLint
+- `pnpm dev:desktop` — Start Vite dev server (desktop frontend)
+- `pnpm dev:landing` — Start Nuxt dev server (landing page)
+- `pnpm tauri:dev` — Start full Tauri dev mode
+- `pnpm tauri:build` — Build distributable
+- `pnpm build:desktop` — Build desktop frontend
+- `pnpm build:landing` — Build landing for production
+- `pnpm lint` — Run ESLint on all apps
+- `pnpm docker:landing:build` — Build Docker image for landing
+- `pnpm docker:landing:run` — Run landing Docker container
 
 ## Key Paths
-- Frontend: `src/`
-- Backend: `src-tauri/src/`
+- Desktop frontend: `apps/desktop/src/`
+- Desktop backend: `apps/desktop/src-tauri/src/`
+- Landing page: `apps/landing/`
 - Types shared between Rust/TS: keep in sync manually
-  - Rust: `src-tauri/src/db/models.rs`
-  - TS: `src/types/sample.ts`
+  - Rust: `apps/desktop/src-tauri/src/db/models.rs`
+  - TS: `apps/desktop/src/types/sample.ts`
 
 ## Tauri Commands
-- All Tauri commands live in `src-tauri/src/commands/`
+- All Tauri commands live in `apps/desktop/src-tauri/src/commands/`
 - Frontend invokes via `@tauri-apps/api/core` `invoke()`
-- Wrapper composable: `src/composables/useTauri.ts`
+- Wrapper composable: `apps/desktop/src/composables/useTauri.ts`
 
 ## Styling
 - Dark theme only (background: #0a0a0a)
-- CSS custom properties in `src/assets/styles/variables.css`
-- Animations in `src/assets/styles/animations.css`
+- CSS custom properties in `apps/desktop/src/assets/styles/variables.css`
+- Animations in `apps/desktop/src/assets/styles/animations.css`
 - Accent color: orange (#ff6b35)

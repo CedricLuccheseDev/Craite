@@ -38,49 +38,73 @@ Install [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cp
 git clone git@github.com:CedricLuccheseDev/Craite.git
 cd Craite
 
-# Install frontend dependencies
+# Install all workspace dependencies
 pnpm install
 
 # Verify Rust compiles
-cd src-tauri && cargo check && cd ..
+cd apps/desktop/src-tauri && cargo check && cd ../../..
 ```
 
 ## Development
 
 ```bash
 # Start the full Tauri dev environment (frontend + backend)
-pnpm tauri dev
+pnpm tauri:dev
+
+# Start only the landing page dev server
+pnpm dev:landing
 ```
 
-This starts Vite on `localhost:1420` and opens the Tauri window with hot reload.
+The desktop app starts Vite on `localhost:1420` and opens the Tauri window with hot reload.
+The landing page starts on `localhost:3000`.
 
 ## Build
 
 ```bash
-# Production build
-pnpm tauri build
+# Production build (desktop)
+pnpm tauri:build
+
+# Production build (landing)
+pnpm build:landing
 ```
 
-The distributable will be in `src-tauri/target/release/bundle/`.
+The desktop distributable will be in `apps/desktop/src-tauri/target/release/bundle/`.
+
+## Docker (Landing)
+
+```bash
+# Build Docker image
+pnpm docker:landing:build
+
+# Run container
+pnpm docker:landing:run
+```
+
+The landing page will be accessible at `http://localhost:3000`.
 
 ## Project Structure
 
 ```
-src/                    # Vue 3 / TypeScript frontend
-  components/           # UI components (onboarding, library, common)
-  composables/          # Vue composables (useTauri, useOnboarding)
-  stores/               # Pinia stores (scan, library)
-  views/                # Route views (Onboarding, Library)
-  types/                # TypeScript interfaces
+apps/
+  desktop/                # Tauri v2 desktop app
+    src/                  # Vue 3 / TypeScript frontend
+      components/         # UI components (onboarding, library, common)
+      composables/        # Vue composables (useTauri, useOnboarding)
+      stores/             # Pinia stores (scan, library)
+      views/              # Route views (Onboarding, Library)
+      types/              # TypeScript interfaces
+    src-tauri/src/        # Rust backend
+      commands/           # Tauri IPC commands
+      scanner/            # Filesystem scanning + Splice DB reader
+      classifier/         # Filename-based classification
+      linker/             # Hardlink / symlink / copy strategies
+      watcher/            # File system watcher (notify)
+      audio/              # Audio preview (rodio)
+      db/                 # SQLite database (rusqlite)
 
-src-tauri/src/          # Rust backend
-  commands/             # Tauri IPC commands
-  scanner/              # Filesystem scanning + Splice DB reader
-  classifier/           # Filename-based classification
-  linker/               # Hardlink / symlink / copy strategies
-  watcher/              # File system watcher (notify)
-  audio/                # Audio preview (rodio)
-  db/                   # SQLite database (rusqlite)
+  landing/                # Nuxt 3 landing page
+    pages/                # Nuxt pages
+    app.vue               # Root app component
 ```
 
 ## Tech Stack
@@ -93,3 +117,4 @@ src-tauri/src/          # Rust backend
 | Database | SQLite (rusqlite)                 |
 | Audio    | rodio                             |
 | Watcher  | notify                            |
+| Landing  | Nuxt 3 + @nuxt/ui                |
