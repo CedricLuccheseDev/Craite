@@ -24,6 +24,22 @@ export const useScanStore = defineStore('scan', () => {
     }
   }
 
+  function setDetectedSources(detected: Source[]) {
+    sources.value = detected;
+  }
+
+  function addCustomSource(path: string) {
+    if (sources.value.some(s => s.path === path)) return;
+    const label = path.split(/[/\\]/).pop() ?? 'Custom';
+    sources.value.push({
+      path,
+      label,
+      enabled: true,
+      type: 'custom',
+      sampleCount: 0,
+    });
+  }
+
   function setScanResult(result: ScanResult) {
     scanResult.value = result;
     isScanning.value = false;
@@ -52,6 +68,8 @@ export const useScanStore = defineStore('scan', () => {
     categories,
     addSource,
     toggleSource,
+    setDetectedSources,
+    addCustomSource,
     setScanResult,
     startScan,
     setScanError,

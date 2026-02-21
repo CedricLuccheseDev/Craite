@@ -31,3 +31,5 @@ export interface Source {
   type: 'splice' | 'custom' | 'detected';
   sampleCount: number;
 }
+
+export type LinkStructure = 'flat' | 'nested';

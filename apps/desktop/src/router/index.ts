@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { isOnboardingCompleted } from '@/composables/useOnboarding';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -14,6 +15,12 @@ const router = createRouter({
       component: () => import('@/views/LibraryView.vue'),
     },
   ],
+});
+
+router.beforeEach((to) => {
+  if (to.name === 'onboarding' && isOnboardingCompleted()) {
+    return { name: 'library' };
+  }
 });
 
 export default router;

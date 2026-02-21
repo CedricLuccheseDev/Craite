@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useOnboarding } from '@/composables/useOnboarding';
+import { open } from '@tauri-apps/plugin-dialog';
+import { useOnboarding, completeOnboarding } from '@/composables/useOnboarding';
 import { useTauri } from '@/composables/useTauri';
 import { useScanStore } from '@/stores/scan';
-import type { SourceFolder } from '@/types/onboarding';
 import AmbientOrb from '@/components/onboarding/AmbientOrb.vue';
 import StepDots from '@/components/onboarding/StepDots.vue';
-import WelcomeStep from '@/components/onboarding/WelcomeStep.vue';
-import SourcesStep from '@/components/onboarding/SourcesStep.vue';
 import ScanStep from '@/components/onboarding/ScanStep.vue';
 import ResultStep from '@/components/onboarding/ResultStep.vue';
+import ReadyStep from '@/components/onboarding/ReadyStep.vue';
 
 const router = useRouter();
 const scanStore = useScanStore();
@@ -18,52 +17,63 @@ const tauri = useTauri();
 
 const {
   currentStep,
-  sources,
   scanProgress,
   scanTotal,
   isScanning,
   stepIndex,
   orbColor,
-  canAdvance,
-  nextStep,
+  goToStep,
 } = useOnboarding();
 
-onMounted(async () => {
-  const detected = await tauri.detectSources();
-  sources.value = detected.map(s => ({
-    path: s.path,
-    label: s.label,
-    enabled: s.enabled,
-    type: s.type as SourceFolder['type'],
-    sampleCount: s.sampleCount,
-  }));
+onMounted(() => {
+  runScan();
 });
 
-function toggleSource(path: string) {
-  const source = sources.value.find(s => s.path === path);
-  if (source) source.enabled = !source.enabled;
-}
-
-function addSource(source: SourceFolder) {
-  sources.value.push(source);
-}
-
-async function startScan() {
-  nextStep();
+async function runScan() {
   isScanning.value = true;
   scanStore.startScan();
 
-  const result = await tauri.scanDirectories(
-    sources.value.filter(s => s.enabled),
-  );
+  try {
+    if (scanStore.sources.length === 0) {
+      const detected = await tauri.detectSources();
+      scanStore.setDetectedSources(detected);
+    }
 
-  scanTotal.value = result.totalFiles;
-  scanProgress.value = result.totalFiles;
-  isScanning.value = false;
-  scanStore.setScanResult(result);
+    const result = await tauri.scanDirectories(scanStore.enabledSources);
+
+    scanTotal.value = result.totalFiles;
+    scanProgress.value = result.totalFiles;
+    scanStore.setScanResult(result);
+  } catch (error) {
+    console.error('Scan failed:', error);
+    scanStore.setScanError(String(error));
+  } finally {
+    isScanning.value = false;
+  }
+
+  goToStep('result');
 }
 
-function finishOnboarding() {
+function onSkip() {
+  completeOnboarding();
+  router.push('/library');
+}
+
+async function onAddFolder() {
+  const selected = await open({ directory: true, multiple: false });
+  if (!selected) return;
+
+  scanStore.addCustomSource(selected as string);
+  goToStep('scan');
+  await runScan();
+}
+
+function onContinue() {
+  goToStep('ready');
+}
+
+function onFinish() {
+  completeOnboarding();
   router.push('/library');
 }
 </script>
@@ -72,68 +82,33 @@ function finishOnboarding() {
   <div class="onboarding">
     <AmbientOrb :color="orbColor" />
 
-    <StepDots
-      :total="4"
-      :current="stepIndex"
-    />
+    <div class="top-bar">
+      <StepDots :total="3" :current="stepIndex" />
+    </div>
 
     <div class="step-container">
-      <WelcomeStep
-        v-if="currentStep === 'welcome'"
-        @next="nextStep"
-      />
-
-      <SourcesStep
-        v-else-if="currentStep === 'sources'"
-        :sources="sources"
-        @toggle="toggleSource"
-        @add-source="addSource"
-      />
-
       <ScanStep
-        v-else-if="currentStep === 'scan'"
+        v-if="currentStep === 'scan'"
         :progress="scanProgress"
         :total="scanTotal"
         :is-scanning="isScanning"
+        @skip="onSkip"
       />
 
       <ResultStep
         v-else-if="currentStep === 'result'"
         :categories="scanStore.categories"
         :total-samples="scanStore.totalSamples"
-        @finish="finishOnboarding"
+        @add-folder="onAddFolder"
+        @continue="onContinue"
       />
-    </div>
 
-    <div class="bottom-actions">
-      <UButton
-        v-if="currentStep === 'sources'"
-        color="primary"
-        variant="solid"
-        size="lg"
-        :disabled="!canAdvance"
-        @click="startScan"
-      >
-        Start Scan
-      </UButton>
-      <UButton
-        v-if="currentStep === 'scan' && !isScanning"
-        color="primary"
-        variant="solid"
-        size="lg"
-        @click="nextStep"
-      >
-        See Results
-      </UButton>
-      <UButton
-        v-if="currentStep !== 'welcome' && currentStep !== 'result'"
-        color="neutral"
-        variant="ghost"
-        size="sm"
-        @click="finishOnboarding"
-      >
-        Skip
-      </UButton>
+      <ReadyStep
+        v-else-if="currentStep === 'ready'"
+        :total-samples="scanStore.totalSamples"
+        :category-count="scanStore.categories.length"
+        @finish="onFinish"
+      />
     </div>
   </div>
 </template>
@@ -150,22 +125,17 @@ function finishOnboarding() {
   overflow: hidden;
 }
 
+.top-bar {
+  padding: var(--space-2xl) 0 0;
+  z-index: 1;
+}
+
 .step-container {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: var(--space-xl);
+  padding: 0 var(--space-3xl);
 }
-
-.bottom-actions {
-  padding: var(--space-xl);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-md);
-  z-index: 1;
-}
-
 </style>

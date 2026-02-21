@@ -19,37 +19,37 @@ onMounted(async () => {
   <UApp>
     <RouterView />
     <UpdateNotification
-    :phase="phase"
-    :update-info="updateInfo"
-    :download-percent="downloadPercent"
-    :error-message="errorMessage"
-    @install="installUpdate"
-    @dismiss="dismiss"
-    @restart="relaunch"
-  />
+      :phase="phase"
+      :update-info="updateInfo"
+      :download-percent="downloadPercent"
+      :error-message="errorMessage"
+      @install="installUpdate"
+      @dismiss="dismiss"
+      @restart="relaunch"
+    />
   </UApp>
 </template>
 
 <style>
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@layer base {
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: var(--font-sans);
+    background: var(--color-bg);
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #0a0a0a;
-  color: #e0e0e0;
-}
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+  }
 
-#app {
-  width: 100%;
-  height: 100%;
+  #app {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

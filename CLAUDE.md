@@ -43,6 +43,11 @@
 - Frontend invokes via `@tauri-apps/api/core` `invoke()`
 - Wrapper composable: `apps/desktop/src/composables/useTauri.ts`
 
+## Project Locations
+- **CrAIte repo (WSL)**: `/home/quyver/Perso/CrAIte/`
+- **CrAIte repo (Windows)**: `G:\Mon Drive\1 - Projects\CrAIte\`
+- **Documentation & Design**: `G:\Mon Drive\1 - Projects\CrAIte\` — contains the landing page mockup and other design/spec files
+
 ## Styling
 - Dark theme only (background: #0a0a0a)
 - CSS custom properties in `apps/desktop/src/assets/styles/variables.css`

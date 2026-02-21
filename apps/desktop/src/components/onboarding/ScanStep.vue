@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
+
 interface Props {
   progress: number;
   total: number;
@@ -7,8 +8,11 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-
+const emit = defineEmits<{ skip: [] }>();
 const displayCount = ref(0);
+const elapsedSeconds = ref(0);
+
+let timerInterval: ReturnType<typeof setInterval> | null = null;
 
 function animateCount(target: number) {
   const duration = 2200;
@@ -18,108 +22,129 @@ function animateCount(target: number) {
   function step(now: number) {
     const elapsed = now - startTime;
     const t = Math.min(elapsed / duration, 1);
-    // Quadratic easing
     const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     displayCount.value = Math.round(start + (target - start) * eased);
-
-    if (t < 1) {
-      requestAnimationFrame(step);
-    }
+    if (t < 1) requestAnimationFrame(step);
   }
 
   requestAnimationFrame(step);
 }
 
-watch(() => props.progress, (newVal) => {
-  animateCount(newVal);
+function startTimer() {
+  elapsedSeconds.value = 0;
+  timerInterval = setInterval(() => {
+    elapsedSeconds.value++;
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
+
+watch(() => props.progress, animateCount);
+watch(() => props.isScanning, (scanning) => {
+  if (scanning) {
+    displayCount.value = 0;
+    startTimer();
+  } else {
+    stopTimer();
+  }
 });
 
 onMounted(() => {
-  if (props.progress > 0) {
-    animateCount(props.progress);
-  }
+  if (props.progress > 0) animateCount(props.progress);
+  if (props.isScanning) startTimer();
 });
+
+onUnmounted(stopTimer);
 </script>
 
 <template>
-  <div class="scan-step slide-up">
-    <h2>Scanning your samples</h2>
+  <div class="scan slide-up">
+    <h1 class="logo">CrAIte</h1>
 
-    <div class="counter">
-      <span class="count">{{ displayCount.toLocaleString() }}</span>
-      <span class="label">samples found</span>
+    <div class="scan-status">
+      <UProgress
+        :model-value="(isScanning && total === 0) ? null : Math.min((progress / total) * 100, 100)"
+        color="primary"
+        class="bar"
+      />
+      <p class="status-text">
+        {{ isScanning ? 'Scanning in progress...' : 'Scan complete' }}
+      </p>
+      <p
+        v-if="!isScanning && displayCount > 0"
+        class="count-text"
+      >
+        {{ displayCount.toLocaleString() }} samples found
+      </p>
+      <p
+        v-if="isScanning && elapsedSeconds > 5"
+        class="slow-hint"
+      >
+        Large libraries may take a moment...
+      </p>
     </div>
 
-    <UProgress
-      :model-value="(isScanning && total === 0) ? null : Math.min((progress / total) * 100, 100)"
-      :max="100"
-      color="success"
-      animation="carousel"
-      class="scan-progress"
-    />
-
-    <p
-      v-if="isScanning"
-      class="status"
+    <UButton
+      color="neutral"
+      variant="ghost"
+      size="sm"
+      @click="emit('skip')"
     >
-      Analyzing files...
-    </p>
-    <p
-      v-else
-      class="status done"
-    >
-      Scan complete
-    </p>
+      Skip
+    </UButton>
   </div>
 </template>
 
 <style scoped>
-.scan-step {
+.scan {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-lg);
+  gap: var(--space-2xl);
   z-index: 1;
+  width: 100%;
+  max-width: 440px;
 }
 
-h2 {
-  font-size: 28px;
-  font-weight: 700;
+.logo {
+  font-size: 64px;
+  font-weight: 900;
+  letter-spacing: -4px;
+  color: var(--color-accent-orange);
+  line-height: 0.9;
 }
 
-.counter {
+.scan-status {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-xs);
-}
-
-.count {
-  font-size: 72px;
-  font-weight: 800;
-  font-family: var(--font-mono);
-  background: linear-gradient(135deg, var(--color-accent-green), #6ee7a0);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.label {
-  font-size: 16px;
-  color: var(--color-text-muted);
-}
-
-.status {
-  color: var(--color-text-muted);
-  font-size: 14px;
-}
-
-.status.done {
-  color: var(--color-accent-green);
-}
-
-.scan-progress {
+  gap: 14px;
   width: 100%;
-  max-width: 400px;
+}
+
+.bar {
+  width: 100%;
+}
+
+.status-text {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.count-text {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  opacity: 0.8;
+}
+
+.slow-hint {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  opacity: 0.7;
 }
 </style>

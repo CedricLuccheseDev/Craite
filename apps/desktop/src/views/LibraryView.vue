@@ -1,89 +1,95 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
 import { useLibraryStore } from '@/stores/library';
-import CategoryTree from '@/components/library/CategoryTree.vue';
-import SampleList from '@/components/library/SampleList.vue';
+import { resetOnboarding } from '@/composables/useOnboarding';
+import LibraryStats from '@/components/library/LibraryStats.vue';
+import SourceManager from '@/components/library/SourceManager.vue';
+import LibraryBrowser from '@/components/library/LibraryBrowser.vue';
+import LibraryConfig from '@/components/library/LibraryConfig.vue';
 
+const router = useRouter();
 const libraryStore = useLibraryStore();
+
+const isDev = import.meta.env.DEV;
+
+function restartOnboarding() {
+  resetOnboarding();
+  router.push('/');
+}
 </script>
 
 <template>
-  <div class="library">
-    <aside class="sidebar">
-      <h2 class="sidebar-title">Categories</h2>
-      <CategoryTree
-        :categories="libraryStore.categories"
-        :selected="libraryStore.selectedCategory"
-        @select="libraryStore.selectCategory"
-      />
-    </aside>
-
-    <main class="content">
-      <header class="content-header">
-        <UInput
-          :model-value="libraryStore.searchQuery"
-          placeholder="Search samples..."
-          color="neutral"
-          variant="outline"
-          icon="i-lucide-search"
-          class="search-input"
-          @update:model-value="libraryStore.setSearchQuery"
-        />
-        <span class="sample-count">
-          {{ libraryStore.filteredSamples.length }} samples
-        </span>
+  <div class="library-page">
+    <div class="library-container">
+      <header class="page-header">
+        <h1 class="page-title">Library</h1>
+        <p class="page-subtitle">
+          {{ libraryStore.sampleCount.toLocaleString() }} samples organized by CrAIte
+        </p>
       </header>
 
-      <SampleList :samples="libraryStore.filteredSamples" />
-    </main>
+      <LibraryStats />
+      <SourceManager />
+      <LibraryBrowser />
+      <LibraryConfig />
+    </div>
+
+    <UButton
+      v-if="isDev"
+      icon="i-lucide-rotate-ccw"
+      color="neutral"
+      variant="ghost"
+      size="xs"
+      class="dev-reset"
+      title="Restart onboarding (dev only)"
+      @click="restartOnboarding"
+    />
   </div>
 </template>
 
 <style scoped>
-.library {
+.library-page {
   width: 100%;
   height: 100%;
-  display: flex;
+  overflow-y: auto;
   background: var(--color-bg);
 }
 
-.sidebar {
-  width: 240px;
-  border-right: 1px solid var(--color-border);
-  padding: var(--space-lg);
-  overflow-y: auto;
-}
-
-.sidebar-title {
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-md);
-}
-
-.content {
-  flex: 1;
+.library-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-2xl) var(--space-4xl);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  gap: var(--space-2xl);
 }
 
-.content-header {
+.page-header {
   display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-md) var(--space-lg);
-  border-bottom: 1px solid var(--color-border);
+  flex-direction: column;
+  gap: var(--space-xs);
 }
 
-.search-input {
-  flex: 1;
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
-.sample-count {
-  font-size: 13px;
+.page-subtitle {
+  font-size: 14px;
   color: var(--color-text-muted);
-  white-space: nowrap;
+}
+
+.dev-reset {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  opacity: 0.3;
+  transition: opacity 0.15s;
+}
+
+.dev-reset:hover {
+  opacity: 1;
 }
 </style>

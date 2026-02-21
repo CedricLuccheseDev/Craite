@@ -1,4 +1,4 @@
-export type OnboardingStep = 'welcome' | 'sources' | 'scan' | 'result';
+export type OnboardingStep = 'scan' | 'result' | 'ready';
 
 export interface SourceFolder {
   path: string;
@@ -6,12 +6,4 @@ export interface SourceFolder {
   enabled: boolean;
   type: 'splice' | 'custom' | 'detected';
   sampleCount: number;
-}
-
-export interface OnboardingState {
-  currentStep: OnboardingStep;
-  sources: SourceFolder[];
-  scanProgress: number;
-  scanTotal: number;
-  isScanning: boolean;
 }

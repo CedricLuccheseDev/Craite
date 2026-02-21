@@ -1,6 +1,6 @@
 # CrAIte
 
-AI-powered sample organizer for FL Studio producers. Scans your sample folders, classifies sounds by type (kick, snare, pad...), and creates a mirror folder structure via hardlinks/symlinks for use in FL Studio's browser.
+AI-powered sample organizer for producers. Scans your sample folders, classifies sounds by type (kick, snare, pad...), and creates a mirror folder structure via hardlinks/symlinks for use in browser.
 
 ## Prerequisites
 

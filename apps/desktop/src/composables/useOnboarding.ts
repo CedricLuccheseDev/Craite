@@ -1,46 +1,23 @@
 import { ref, computed } from 'vue';
-import type { OnboardingStep, SourceFolder } from '@/types/onboarding';
+import type { OnboardingStep } from '@/types/onboarding';
 
-const STEPS: OnboardingStep[] = ['welcome', 'sources', 'scan', 'result'];
+const STEPS: OnboardingStep[] = ['scan', 'result', 'ready'];
+const STORAGE_KEY = 'craite_onboarding_completed';
 
 const ORB_COLORS: Record<OnboardingStep, string> = {
-  welcome: '#ff6b35',
-  sources: '#4a9eff',
-  scan: '#4ade80',
-  result: '#ff6b35',
+  scan: '#ff6b35',
+  result: '#4a9eff',
+  ready: '#22c55e',
 };
 
 export function useOnboarding() {
-  const currentStep = ref<OnboardingStep>('welcome');
-  const sources = ref<SourceFolder[]>([]);
+  const currentStep = ref<OnboardingStep>('scan');
+  const isScanning = ref(false);
   const scanProgress = ref(0);
   const scanTotal = ref(0);
-  const isScanning = ref(false);
 
   const stepIndex = computed(() => STEPS.indexOf(currentStep.value));
-  const isFirstStep = computed(() => stepIndex.value === 0);
-  const isLastStep = computed(() => stepIndex.value === STEPS.length - 1);
   const orbColor = computed(() => ORB_COLORS[currentStep.value]);
-
-  const canAdvance = computed(() => {
-    if (currentStep.value === 'sources') {
-      return sources.value.some(s => s.enabled);
-    }
-    if (currentStep.value === 'scan') {
-      return !isScanning.value;
-    }
-    return true;
-  });
-
-  function nextStep() {
-    if (!canAdvance.value || isLastStep.value) return;
-    currentStep.value = STEPS[stepIndex.value + 1];
-  }
-
-  function previousStep() {
-    if (isFirstStep.value) return;
-    currentStep.value = STEPS[stepIndex.value - 1];
-  }
 
   function goToStep(step: OnboardingStep) {
     currentStep.value = step;
@@ -48,17 +25,23 @@ export function useOnboarding() {
 
   return {
     currentStep,
-    sources,
+    isScanning,
     scanProgress,
     scanTotal,
-    isScanning,
     stepIndex,
-    isFirstStep,
-    isLastStep,
     orbColor,
-    canAdvance,
-    nextStep,
-    previousStep,
     goToStep,
   };
+}
+
+export function isOnboardingCompleted(): boolean {
+  return localStorage.getItem(STORAGE_KEY) === 'true';
+}
+
+export function completeOnboarding(): void {
+  localStorage.setItem(STORAGE_KEY, 'true');
+}
+
+export function resetOnboarding(): void {
+  localStorage.removeItem(STORAGE_KEY);
 }

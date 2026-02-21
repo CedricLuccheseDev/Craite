@@ -30,7 +30,7 @@ async function togglePlay() {
       size="sm"
       square
       :color="isPlaying ? 'primary' : 'neutral'"
-      :variant="isPlaying ? 'solid' : 'outline'"
+      :variant="isPlaying ? 'solid' : 'ghost'"
       @click="togglePlay"
     />
     <span class="sample-name">{{ sampleName }}</span>
