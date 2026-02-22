@@ -1,20 +1,23 @@
 [package]
 name = "craite"
-version = "0.1.0"
+version = "0.4.0"
 edition = "2021"
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["tray-icon"] }
 tauri-plugin-dialog = "2"
 tauri-plugin-log = "2"
 tauri-plugin-updater = "2"
 tauri-plugin-process = "2"
+tauri-plugin-autostart = "2"
+tauri-plugin-single-instance = "2"
+log = "0.4"
 rusqlite = { version = "0.31", features = ["bundled"] }
 notify-debouncer-full = "0.3"
-rodio = { version = "0.21", features = ["symphonia-wav"] }
+rodio = { version = "0.21", features = ["symphonia-wav", "symphonia-mp3", "symphonia-flac", "symphonia-vorbis"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["full"] }

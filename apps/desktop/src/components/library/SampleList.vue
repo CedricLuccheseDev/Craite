@@ -1,20 +1,62 @@
 <script setup lang="ts">
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { Sample } from '@/types/sample';
 import AudioPlayer from '@/components/common/AudioPlayer.vue';
+
+const PAGE_SIZE = 80;
 
 interface Props {
   samples: Sample[];
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
+const { t } = useI18n();
+
+const displayCount = ref(PAGE_SIZE);
+const scrollContainer = ref<HTMLElement | null>(null);
+
+const visibleSamples = computed(() =>
+  props.samples.slice(0, displayCount.value),
+);
+
+const hasMore = computed(() =>
+  displayCount.value < props.samples.length,
+);
+
+// Reset pagination when samples change (filter, search, category)
+watch(() => props.samples.length, () => {
+  displayCount.value = PAGE_SIZE;
+});
+
+function onScroll() {
+  const el = scrollContainer.value;
+  if (!el || !hasMore.value) return;
+
+  const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 200;
+  if (nearBottom) {
+    displayCount.value += PAGE_SIZE;
+  }
+}
+
+onMounted(() => {
+  scrollContainer.value?.addEventListener('scroll', onScroll, { passive: true });
+});
+
+onUnmounted(() => {
+  scrollContainer.value?.removeEventListener('scroll', onScroll);
+});
 </script>
 
 <template>
-  <div class="sample-list">
+  <div
+    ref="scrollContainer"
+    class="flex flex-col gap-px overflow-y-auto h-full"
+  >
     <div
-      v-for="sample in samples"
+      v-for="sample in visibleSamples"
       :key="sample.id"
-      class="sample-row"
+      class="flex items-center justify-between py-2 px-4 bg-surface transition-colors duration-150 hover:bg-surface-hover"
     >
       <AudioPlayer
         :sample-path="sample.path"
@@ -30,37 +72,9 @@ defineProps<Props>();
 
     <p
       v-if="samples.length === 0"
-      class="empty"
+      class="p-12 text-center text-muted"
     >
-      No samples found
+      {{ t('browse.noSamples') }}
     </p>
   </div>
 </template>
-
-<style scoped>
-.sample-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  overflow-y: auto;
-}
-
-.sample-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-sm) var(--space-md);
-  background: var(--color-surface);
-  transition: background var(--duration-fast);
-}
-
-.sample-row:hover {
-  background: var(--color-surface-hover);
-}
-
-.empty {
-  padding: var(--space-2xl);
-  text-align: center;
-  color: var(--color-text-muted);
-}
-</style>

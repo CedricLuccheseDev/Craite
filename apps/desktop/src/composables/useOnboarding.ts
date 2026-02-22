@@ -1,12 +1,12 @@
 import { ref, computed } from 'vue';
 import type { OnboardingStep } from '@/types/onboarding';
 
-const STEPS: OnboardingStep[] = ['scan', 'result', 'ready'];
+const STEPS: OnboardingStep[] = ['scan', 'daw', 'ready'];
 const STORAGE_KEY = 'craite_onboarding_completed';
 
-const ORB_COLORS: Record<OnboardingStep, string> = {
+const STEP_COLORS: Record<OnboardingStep, string> = {
   scan: '#ff6b35',
-  result: '#4a9eff',
+  daw: '#a78bfa',
   ready: '#22c55e',
 };
 
@@ -17,7 +17,7 @@ export function useOnboarding() {
   const scanTotal = ref(0);
 
   const stepIndex = computed(() => STEPS.indexOf(currentStep.value));
-  const orbColor = computed(() => ORB_COLORS[currentStep.value]);
+  const stepColor = computed(() => STEP_COLORS[currentStep.value]);
 
   function goToStep(step: OnboardingStep) {
     currentStep.value = step;
@@ -29,7 +29,7 @@ export function useOnboarding() {
     scanProgress,
     scanTotal,
     stepIndex,
-    orbColor,
+    stepColor,
     goToStep,
   };
 }

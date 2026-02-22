@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { open } from '@tauri-apps/plugin-dialog';
 import { useOnboarding, completeOnboarding } from '@/composables/useOnboarding';
 import { useTauri } from '@/composables/useTauri';
 import { useScanStore } from '@/stores/scan';
-import AmbientOrb from '@/components/onboarding/AmbientOrb.vue';
+import { useLibraryConfigStore } from '@/stores/libraryConfig';
+import type { DawInfo } from '@/types/sample';
+import GridBackground from '@/components/onboarding/GridBackground.vue';
 import StepDots from '@/components/onboarding/StepDots.vue';
 import ScanStep from '@/components/onboarding/ScanStep.vue';
-import ResultStep from '@/components/onboarding/ResultStep.vue';
+import DawStep from '@/components/onboarding/DawStep.vue';
 import ReadyStep from '@/components/onboarding/ReadyStep.vue';
 
 const router = useRouter();
 const scanStore = useScanStore();
+const configStore = useLibraryConfigStore();
 const tauri = useTauri();
+const scanStarted = ref(false);
 
 const {
   currentStep,
@@ -21,17 +25,23 @@ const {
   scanTotal,
   isScanning,
   stepIndex,
-  orbColor,
   goToStep,
 } = useOnboarding();
 
-onMounted(() => {
-  runScan();
+// 4 visual dots: welcome(0) → scan/result(1) → daw(2) → ready(3)
+const visualStepIndex = computed(() => {
+  if (currentStep.value === 'scan' && !scanStarted.value) return 0;
+  return stepIndex.value + 1;
 });
 
 async function runScan() {
+  scanStarted.value = true;
   isScanning.value = true;
   scanStore.startScan();
+
+  // Wait for Vue to render the scanning UI and the browser to paint it
+  await nextTick();
+  await new Promise(resolve => setTimeout(resolve, 300));
 
   try {
     if (scanStore.sources.length === 0) {
@@ -40,18 +50,16 @@ async function runScan() {
     }
 
     const result = await tauri.scanDirectories(scanStore.enabledSources);
-
     scanTotal.value = result.totalFiles;
     scanProgress.value = result.totalFiles;
     scanStore.setScanResult(result);
+    scanStore.updateSourceCounts(result.samples);
   } catch (error) {
     console.error('Scan failed:', error);
     scanStore.setScanError(String(error));
   } finally {
     isScanning.value = false;
   }
-
-  goToStep('result');
 }
 
 function onSkip() {
@@ -64,11 +72,31 @@ async function onAddFolder() {
   if (!selected) return;
 
   scanStore.addCustomSource(selected as string);
-  goToStep('scan');
   await runScan();
 }
 
 function onContinue() {
+  goToStep('daw');
+}
+
+async function onDawSelect(daw: DawInfo | null, path: string) {
+  // Navigate immediately to avoid UI freeze from IPC calls
+  goToStep('ready');
+
+  try {
+    await tauri.createDawLibraryFolder(path);
+    configStore.setOutputDir(path);
+    if (daw) {
+      await tauri.saveSetting('daw_choice', daw.id);
+    }
+    const count = await tauri.createLinks(path);
+    configStore.setGenerationResult(count);
+  } catch (error) {
+    console.error('Failed to generate library:', error);
+  }
+}
+
+function onDawSkip() {
   goToStep('ready');
 }
 
@@ -79,28 +107,30 @@ function onFinish() {
 </script>
 
 <template>
-  <div class="onboarding">
-    <AmbientOrb :color="orbColor" />
+  <div class="flex flex-col w-full h-full bg-zinc-950 relative overflow-hidden">
+    <GridBackground />
 
-    <div class="top-bar">
-      <StepDots :total="3" :current="stepIndex" />
+    <div class="shrink-0 pt-8 z-1 flex justify-center">
+      <StepDots :total="4" :current="visualStepIndex" />
     </div>
 
-    <div class="step-container">
+    <div class="flex-1 min-h-0 w-full z-1 flex flex-col">
       <ScanStep
         v-if="currentStep === 'scan'"
-        :progress="scanProgress"
-        :total="scanTotal"
         :is-scanning="isScanning"
-        @skip="onSkip"
-      />
-
-      <ResultStep
-        v-else-if="currentStep === 'result'"
         :categories="scanStore.categories"
         :total-samples="scanStore.totalSamples"
-        @add-folder="onAddFolder"
+        :scan-started="scanStarted"
+        @start="runScan"
+        @skip="onSkip"
         @continue="onContinue"
+        @add-folder="onAddFolder"
+      />
+
+      <DawStep
+        v-else-if="currentStep === 'daw'"
+        @select="onDawSelect"
+        @skip="onDawSkip"
       />
 
       <ReadyStep
@@ -112,30 +142,3 @@ function onFinish() {
     </div>
   </div>
 </template>
-
-<style scoped>
-.onboarding {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: var(--color-bg);
-  position: relative;
-  overflow: hidden;
-}
-
-.top-bar {
-  padding: var(--space-2xl) 0 0;
-  z-index: 1;
-}
-
-.step-container {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 0 var(--space-3xl);
-}
-</style>

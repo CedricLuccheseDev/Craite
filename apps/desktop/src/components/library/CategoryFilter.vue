@@ -19,7 +19,7 @@ const emit = defineEmits<{
       :color="selected === null ? 'primary' : 'neutral'"
       :variant="selected === null ? 'soft' : 'ghost'"
       size="xs"
-      class="filter-pill"
+      class="shrink-0 rounded-full capitalize"
       @click="emit('select', null)"
     >
       All
@@ -31,45 +31,29 @@ const emit = defineEmits<{
       :color="selected === cat.name ? 'primary' : 'neutral'"
       :variant="selected === cat.name ? 'soft' : 'ghost'"
       size="xs"
-      class="filter-pill"
+      class="shrink-0 rounded-full capitalize"
       @click="emit('select', cat.name)"
     >
-      <span class="dot" :style="{ background: cat.color }" />
+      <span
+        class="inline-block size-1.5 rounded-full"
+        :style="{ background: cat.color }"
+      />
       {{ cat.name }}
-      <span class="pill-count">{{ cat.count }}</span>
+      <span class="text-[11px] tabular-nums text-muted">{{ cat.count }}</span>
     </UButton>
   </div>
 </template>
 
 <style scoped>
+@reference "../../assets/styles/variables.css";
+
 .category-filter {
-  display: flex;
-  gap: var(--space-xs);
-  overflow-x: auto;
+  @apply flex gap-1 overflow-x-auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
 .category-filter::-webkit-scrollbar {
   display: none;
-}
-
-.filter-pill {
-  flex-shrink: 0;
-  border-radius: var(--radius-full);
-  text-transform: capitalize;
-}
-
-.dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-.pill-count {
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  color: var(--color-text-muted);
 }
 </style>

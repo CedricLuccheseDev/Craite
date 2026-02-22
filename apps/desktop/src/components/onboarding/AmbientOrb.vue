@@ -20,18 +20,14 @@ const gradientStyle = computed(() => ({
 </template>
 
 <style scoped>
+@reference "../../assets/styles/variables.css";
+
 .ambient-orb {
-  position: fixed;
-  top: 50%;
-  left: 50%;
+  @apply fixed top-1/2 left-1/2 size-150 rounded-full
+    pointer-events-none z-0;
   transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  pointer-events: none;
   animation: pulse-glow 4s ease-in-out infinite;
-  transition: background 1s var(--ease-out-expo);
-  z-index: 0;
+  transition: background 1s cubic-bezier(.16, 1, .3, 1);
 }
 
 @keyframes pulse-glow {

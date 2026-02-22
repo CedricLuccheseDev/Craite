@@ -8,7 +8,7 @@ defineProps<Props>();
 </script>
 
 <template>
-  <div class="step-dots">
+  <div class="flex gap-3 justify-center">
     <span
       v-for="i in total"
       :key="i"
@@ -19,27 +19,18 @@ defineProps<Props>();
 </template>
 
 <style scoped>
-.step-dots {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
+@reference "../../assets/styles/variables.css";
 
 .dot {
-  width: 12px;
-  height: 12px;
-  border-radius: var(--radius-full);
-  background: var(--color-border);
-  transition: all var(--duration-normal) var(--ease-out-expo);
+  @apply size-3 rounded-full bg-zinc-800 transition-all duration-300;
+  transition-timing-function: cubic-bezier(.16, 1, .3, 1);
 }
 
 .dot.active {
-  width: 28px;
-  background: var(--color-accent-orange);
+  @apply w-7 bg-orange-500;
 }
 
 .dot.completed {
-  background: var(--color-accent-orange);
-  opacity: 0.5;
+  @apply bg-orange-500 opacity-50;
 }
 </style>

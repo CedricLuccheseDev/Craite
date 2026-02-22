@@ -4,6 +4,7 @@ export interface Sample {
   path: string;
   category: string;
   subcategory: string;
+  confidence: number;
   source: string;
   duration: number;
   sampleRate: number;
@@ -33,3 +34,10 @@ export interface Source {
 }
 
 export type LinkStructure = 'flat' | 'nested';
+
+export interface DawInfo {
+  id: string;
+  name: string;
+  detected: boolean;
+  libraryPath: string;
+}

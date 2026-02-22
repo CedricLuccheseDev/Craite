@@ -1,26 +1,18 @@
 use std::path::{Path, PathBuf};
-use crate::db::models::ScanResult;
+use crate::db::connection::open_connection;
+use crate::error::{run_blocking, ResultExt};
 use crate::linker::strategy::{create_link, determine_strategy};
 
-#[tauri::command]
-pub fn classify_samples(scan_id: u32) -> Result<ScanResult, String> {
-    // Re-classification will enhance existing results with Splice DB data
-    let _ = scan_id;
-    Err("Re-classification not yet implemented".to_string())
-}
+/// Reusable link generation logic, callable from commands and background tasks.
+pub fn regenerate_links(output_dir: &str) -> Result<usize, String> {
+    let output_path = Path::new(output_dir);
+    std::fs::create_dir_all(output_path).str_err()?;
 
-#[tauri::command]
-pub fn create_links(output_dir: String) -> Result<usize, String> {
-    let output_path = Path::new(&output_dir);
-    std::fs::create_dir_all(output_path).map_err(|e| e.to_string())?;
-
-    // Read the current scan results from the database
-    let conn = crate::db::connection::open_connection()
-        .map_err(|e| e.to_string())?;
+    let conn = open_connection().str_err()?;
 
     let mut stmt = conn
         .prepare("SELECT path, category, name FROM samples WHERE category != ''")
-        .map_err(|e| e.to_string())?;
+        .str_err()?;
 
     let samples: Vec<(String, String, String)> = stmt
         .query_map([], |row| {
@@ -30,7 +22,7 @@ pub fn create_links(output_dir: String) -> Result<usize, String> {
                 row.get::<_, String>(2)?,
             ))
         })
-        .map_err(|e| e.to_string())?
+        .str_err()?
         .filter_map(|r| r.ok())
         .collect();
 
@@ -51,4 +43,9 @@ pub fn create_links(output_dir: String) -> Result<usize, String> {
     }
 
     Ok(linked)
+}
+
+#[tauri::command]
+pub async fn create_links(output_dir: String) -> Result<usize, String> {
+    run_blocking(move || regenerate_links(&output_dir)).await
 }

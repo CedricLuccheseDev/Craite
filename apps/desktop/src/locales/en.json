@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "browse": "Browse",
+    "sources": "Sources",
+    "export": "Export",
+    "settings": "Settings"
+  },
+  "browse": {
+    "title": "Browse",
+    "results": "{count} results",
+    "searchPlaceholder": "Search samples...",
+    "allCategories": "All",
+    "noSamples": "No samples found"
+  },
+  "stats": {
+    "samples": "Samples",
+    "categories": "Categories",
+    "sources": "Sources",
+    "linked": "Linked"
+  },
+  "sources": {
+    "title": "Source Folders",
+    "description": "Directories CrAIte scans for audio samples",
+    "addFolder": "Add folder",
+    "rescan": "Rescan",
+    "scanning": "Scanning sources...",
+    "noSources": "No source folders configured"
+  },
+  "export": {
+    "title": "Library Output",
+    "description": "Configure how CrAIte organizes your samples",
+    "generate": "Generate Library",
+    "outputDir": "Output directory",
+    "noDirectory": "No directory selected",
+    "change": "Change",
+    "choose": "Choose",
+    "includeCategories": "Include categories",
+    "lastGenerated": "Last generated: {date} — {count} files linked"
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Configure startup and background behavior",
+    "language": "Language",
+    "languageDescription": "Choose the interface language",
+    "autostart": "Launch at startup",
+    "autostartDescription": "Start CrAIte when you log in",
+    "backgroundScan": "Background scanning",
+    "backgroundScanDescription": "Periodically scan sources for new samples",
+    "scanning": "Scanning...",
+    "scanInterval": "Scan interval",
+    "scanIntervalDescription": "How often to check for new samples",
+    "interval15": "15 minutes",
+    "interval30": "30 minutes",
+    "interval60": "1 hour",
+    "interval120": "2 hours",
+    "footer": "CrAIte minimizes to the system tray when closed and continues scanning in the background."
+  },
+  "languages": {
+    "en": "English",
+    "fr": "Français"
+  },
+  "onboarding": {
+    "welcome": {
+      "subtitle": "Your intelligent sample library",
+      "description": "CrAIte scans your folders, organizes your samples by category, and makes them instantly accessible from your DAW.",
+      "next": "Get Started"
+    },
+    "scan": {
+      "scanning": "Scanning in progress...",
+      "complete": "Scan complete",
+      "samplesFound": "{count} samples found",
+      "slowHint": "Large libraries may take a moment...",
+      "skip": "Skip"
+    },
+    "result": {
+      "noSamples": "No samples found",
+      "noSamplesHint": "Add a folder containing your audio samples to get started",
+      "addFolder": "Add a folder",
+      "skipForNow": "Skip for now",
+      "libraryReady": "Library ready",
+      "samplesOrganized": "{count} samples organized",
+      "continue": "Continue",
+      "addMoreFolders": "Add more folders"
+    },
+    "daw": {
+      "title": "Choose your DAW",
+      "subtitle": "CrAIte will create a library folder accessible from your DAW",
+      "detecting": "Detecting installed DAWs...",
+      "detected": "Detected",
+      "customFolder": "Custom folder",
+      "chooseFolder": "Choose folder...",
+      "continue": "Continue",
+      "skipForNow": "Skip for now"
+    },
+    "ready": {
+      "title": "You're all set",
+      "subtitle": "{samples} samples organized across {categories} categories",
+      "searchTitle": "Search & Browse",
+      "searchDesc": "Find any sample instantly by name or category",
+      "previewTitle": "Preview",
+      "previewDesc": "Listen to samples before using them",
+      "addSourcesTitle": "Add More Sources",
+      "addSourcesDesc": "You can always add new folders from the library",
+      "openLibrary": "Open Library"
+    }
+  }
+}

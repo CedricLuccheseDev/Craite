@@ -3,12 +3,18 @@ import { onMounted } from 'vue';
 import { RouterView } from 'vue-router';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { useUpdater } from '@/composables/useUpdater';
+import { useAppInit } from '@/composables/useAppInit';
+import { useBackgroundScan } from '@/composables/useBackgroundScan';
 import UpdateNotification from '@/components/UpdateNotification.vue';
 
 const { phase, updateInfo, downloadPercent, errorMessage, setupListeners, checkForUpdate, installUpdate, dismiss } = useUpdater();
+const { initialize } = useAppInit();
+const { setupListeners: setupBackgroundListeners } = useBackgroundScan();
 
 onMounted(async () => {
+  await initialize();
   await setupListeners();
+  await setupBackgroundListeners();
   if (!import.meta.env.DEV) {
     await checkForUpdate();
   }
@@ -33,23 +39,18 @@ onMounted(async () => {
 <style>
 @layer base {
   html, body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: var(--font-sans);
-    background: var(--color-bg);
-    color: var(--color-text);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    @apply w-full h-full overflow-hidden antialiased;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #0a0a0a;
+    color: #ffffff;
   }
 
   h1, h2, h3, h4 {
-    font-family: var(--font-display);
+    font-family: 'Space Grotesk', sans-serif;
   }
 
   #app {
-    width: 100%;
-    height: 100%;
+    @apply w-full h-full;
   }
 }
 </style>

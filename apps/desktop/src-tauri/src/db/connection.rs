@@ -23,6 +23,7 @@ fn initialize_tables(conn: &Connection) -> Result<()> {
             path TEXT NOT NULL UNIQUE,
             category TEXT NOT NULL DEFAULT '',
             subcategory TEXT NOT NULL DEFAULT '',
+            confidence REAL NOT NULL DEFAULT 0.0,
             source TEXT NOT NULL,
             duration REAL NOT NULL DEFAULT 0.0,
             sample_rate INTEGER NOT NULL DEFAULT 0,
@@ -38,12 +39,23 @@ fn initialize_tables(conn: &Connection) -> Result<()> {
             sample_count INTEGER NOT NULL DEFAULT 0
         );
 
+        CREATE TABLE IF NOT EXISTS settings (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        );
+
         CREATE INDEX IF NOT EXISTS idx_samples_category
             ON samples(category);
 
         CREATE INDEX IF NOT EXISTS idx_samples_source
             ON samples(source);",
     )?;
+
+    // Migration: add confidence column for existing databases
+    let _ = conn.execute_batch(
+        "ALTER TABLE samples ADD COLUMN confidence REAL NOT NULL DEFAULT 0.0;",
+    );
+
     Ok(())
 }
 

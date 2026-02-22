@@ -23,13 +23,6 @@ const modelValue = computed(() => {
     :max="100"
     color="success"
     animation="carousel"
-    class="progress-constrained"
+    class="w-full max-w-100"
   />
 </template>
-
-<style scoped>
-.progress-constrained {
-  width: 100%;
-  max-width: 400px;
-}
-</style>

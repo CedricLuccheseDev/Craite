@@ -29,7 +29,7 @@ const title = computed(() => {
   <Transition name="slide-up">
     <UCard
       v-if="isVisible"
-      class="update-card"
+      class="fixed bottom-6 right-6 w-80 z-9999"
     >
       <div class="flex items-start justify-between gap-3 mb-3">
         <span class="text-sm font-semibold text-primary">{{ title }}</span>
@@ -89,14 +89,6 @@ const title = computed(() => {
 </template>
 
 <style scoped>
-.update-card {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 320px;
-  z-index: 9999;
-}
-
 .slide-up-enter-active,
 .slide-up-leave-active {
   transition: opacity 0.2s ease, transform 0.2s ease;

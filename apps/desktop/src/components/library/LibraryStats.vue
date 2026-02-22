@@ -1,73 +1,36 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useLibraryStore } from '@/stores/library';
 import { useScanStore } from '@/stores/scan';
 import { useLibraryConfigStore } from '@/stores/libraryConfig';
 
+const { t } = useI18n();
 const libraryStore = useLibraryStore();
 const scanStore = useScanStore();
 const configStore = useLibraryConfigStore();
 
 const stats = computed(() => [
-  { label: 'Total Samples', value: libraryStore.sampleCount.toLocaleString(), icon: 'i-lucide-music' },
-  { label: 'Categories', value: libraryStore.categories.length.toString(), icon: 'i-lucide-folder-tree' },
-  { label: 'Sources', value: scanStore.sources.length.toString(), icon: 'i-lucide-hard-drive' },
-  { label: 'Linked Files', value: configStore.linkedCount.toLocaleString(), icon: 'i-lucide-link' },
+  { label: t('stats.samples'), value: libraryStore.sampleCount.toLocaleString(), icon: 'i-lucide-music' },
+  { label: t('stats.categories'), value: libraryStore.categories.length.toString(), icon: 'i-lucide-folder-tree' },
+  { label: t('stats.sources'), value: scanStore.sources.length.toString(), icon: 'i-lucide-hard-drive' },
+  { label: t('stats.linked'), value: configStore.linkedCount.toLocaleString(), icon: 'i-lucide-link' },
 ]);
 </script>
 
 <template>
-  <section class="stats-section">
+  <div class="flex gap-6">
     <div
       v-for="stat in stats"
       :key="stat.label"
-      class="stat-card"
+      class="flex items-center gap-1"
     >
-      <div class="stat-icon">
-        <UIcon :name="stat.icon" />
-      </div>
-      <span class="stat-value">{{ stat.value }}</span>
-      <span class="stat-label">{{ stat.label }}</span>
+      <UIcon
+        :name="stat.icon"
+        class="text-sm text-muted"
+      />
+      <span class="text-[15px] font-bold tabular-nums">{{ stat.value }}</span>
+      <span class="text-xs text-muted">{{ stat.label }}</span>
     </div>
-  </section>
+  </div>
 </template>
-
-<style scoped>
-.stats-section {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-md);
-}
-
-.stat-card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-xs);
-  padding: var(--space-lg);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-}
-
-.stat-icon {
-  font-size: 18px;
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-xs);
-}
-
-.stat-value {
-  font-size: 32px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-text-muted);
-}
-</style>

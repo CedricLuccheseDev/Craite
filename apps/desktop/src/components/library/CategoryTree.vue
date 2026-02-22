@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import type { Category } from '@/types/sample';
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
 
 defineProps<Props>();
 
+const { t } = useI18n();
 const emit = defineEmits<{ select: [name: string | null] }>();
 
 function handleSelect(name: string) {
@@ -20,15 +22,15 @@ function clearSelection() {
 </script>
 
 <template>
-  <div class="category-tree">
+  <div class="flex flex-col gap-0.5">
     <UButton
       :color="selected === null ? 'primary' : 'neutral'"
       :variant="selected === null ? 'soft' : 'ghost'"
-      class="category-item"
+      class="w-full justify-start"
       @click="clearSelection"
     >
-      <span class="name">All</span>
-      <span class="count">{{ categories.reduce((sum, c) => sum + c.count, 0) }}</span>
+      <span class="flex-1 capitalize text-left">{{ t('browse.allCategories') }}</span>
+      <span class="font-mono text-xs text-muted ml-auto">{{ categories.reduce((sum, c) => sum + c.count, 0) }}</span>
     </UButton>
 
     <UButton
@@ -36,48 +38,15 @@ function clearSelection() {
       :key="cat.name"
       :color="selected === cat.name ? 'primary' : 'neutral'"
       :variant="selected === cat.name ? 'soft' : 'ghost'"
-      class="category-item"
+      class="w-full justify-start"
       @click="handleSelect(cat.name)"
     >
       <span
-        class="dot"
+        class="size-2 rounded-full shrink-0"
         :style="{ background: cat.color }"
       />
-      <span class="name">{{ cat.name }}</span>
-      <span class="count">{{ cat.count }}</span>
+      <span class="flex-1 capitalize text-left">{{ cat.name }}</span>
+      <span class="font-mono text-xs text-muted ml-auto">{{ cat.count }}</span>
     </UButton>
   </div>
 </template>
-
-<style scoped>
-.category-tree {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.category-item {
-  width: 100%;
-  justify-content: flex-start;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
-}
-
-.name {
-  flex: 1;
-  text-transform: capitalize;
-  text-align: left;
-}
-
-.count {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--color-text-muted);
-  margin-left: auto;
-}
-</style>

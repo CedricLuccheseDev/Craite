@@ -1,150 +1,198 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { ref, watch, toRef } from 'vue';
+import { useI18n } from 'vue-i18n';
+import type { Category } from '@/types/sample';
+import { getCategoryColor } from '@/utils/categoryColors';
+import { useScanTimer } from '@/composables/useScanTimer';
+
+const { t } = useI18n();
 
 interface Props {
-  progress: number;
-  total: number;
   isScanning: boolean;
+  categories: Category[];
+  totalSamples: number;
+  scanStarted: boolean;
 }
 
 const props = defineProps<Props>();
-const emit = defineEmits<{ skip: [] }>();
-const displayCount = ref(0);
-const elapsedSeconds = ref(0);
+const emit = defineEmits<{
+  start: [];
+  skip: [];
+  continue: [];
+  addFolder: [];
+}>();
 
-let timerInterval: ReturnType<typeof setInterval> | null = null;
+const { elapsedSeconds } = useScanTimer(toRef(props, 'isScanning'));
 
-function animateCount(target: number) {
-  const duration = 2200;
-  const start = displayCount.value;
-  const startTime = performance.now();
-
-  function step(now: number) {
-    const elapsed = now - startTime;
-    const t = Math.min(elapsed / duration, 1);
-    const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-    displayCount.value = Math.round(start + (target - start) * eased);
-    if (t < 1) requestAnimationFrame(step);
-  }
-
-  requestAnimationFrame(step);
-}
-
-function startTimer() {
-  elapsedSeconds.value = 0;
-  timerInterval = setInterval(() => {
-    elapsedSeconds.value++;
-  }, 1000);
-}
-
-function stopTimer() {
-  if (timerInterval) {
-    clearInterval(timerInterval);
-    timerInterval = null;
-  }
-}
-
-watch(() => props.progress, animateCount);
-watch(() => props.isScanning, (scanning) => {
-  if (scanning) {
-    displayCount.value = 0;
-    startTimer();
-  } else {
-    stopTimer();
+const scanDone = ref(false);
+watch(() => props.isScanning, (scanning, wasScanning) => {
+  if (wasScanning && !scanning && props.scanStarted) {
+    scanDone.value = true;
   }
 });
-
-onMounted(() => {
-  if (props.progress > 0) animateCount(props.progress);
-  if (props.isScanning) startTimer();
-});
-
-onUnmounted(stopTimer);
 </script>
 
 <template>
-  <div class="scan slide-up">
-    <h1 class="logo">CrAIte</h1>
+  <div class="flex flex-col h-full w-full slide-up">
+    <!-- Content: centered -->
+    <div class="flex-1 min-h-0 flex flex-col items-center justify-center gap-8 px-16">
+      <h1 class="text-[64px] font-black tracking-[-4px] text-orange-500 leading-none">
+        CrAIte
+      </h1>
 
-    <div class="scan-status">
-      <UProgress
-        :model-value="(isScanning && total === 0) ? null : Math.min((progress / total) * 100, 100)"
-        color="primary"
-        class="bar"
-      />
-      <p class="status-text">
-        {{ isScanning ? 'Scanning in progress...' : 'Scan complete' }}
-      </p>
-      <p
-        v-if="!isScanning && displayCount > 0"
-        class="count-text"
-      >
-        {{ displayCount.toLocaleString() }} samples found
-      </p>
-      <p
-        v-if="isScanning && elapsedSeconds > 5"
-        class="slow-hint"
-      >
-        Large libraries may take a moment...
-      </p>
+      <!-- Welcome -->
+      <template v-if="!scanStarted">
+        <p class="text-lg text-muted text-center">
+          {{ t('onboarding.welcome.subtitle') }}
+        </p>
+        <p class="text-sm text-muted text-center max-w-80 leading-relaxed">
+          {{ t('onboarding.welcome.description') }}
+        </p>
+      </template>
+
+      <!-- Scanning -->
+      <template v-else-if="isScanning">
+        <div class="flex flex-col items-center gap-5">
+          <div class="spinner" />
+          <p class="text-sm text-muted">
+            {{ t('onboarding.scan.scanning') }}
+          </p>
+          <p
+            v-if="elapsedSeconds > 5"
+            class="text-xs text-muted opacity-70"
+          >
+            {{ t('onboarding.scan.slowHint') }}
+          </p>
+        </div>
+      </template>
+
+      <!-- No samples -->
+      <template v-else-if="scanDone && totalSamples === 0">
+        <div class="flex flex-col items-center gap-2.5 text-center">
+          <h2 class="text-[40px] font-extrabold tracking-[-1.5px]">
+            {{ t('onboarding.result.noSamples') }}
+          </h2>
+          <p class="text-base text-muted">
+            {{ t('onboarding.result.noSamplesHint') }}
+          </p>
+        </div>
+      </template>
+
+      <!-- Results found -->
+      <template v-else-if="scanDone">
+        <div class="flex flex-col items-center gap-2.5 text-center">
+          <h2 class="text-[40px] font-extrabold tracking-[-1.5px]">
+            {{ t('onboarding.result.libraryReady') }}
+          </h2>
+          <p class="text-base text-muted">
+            {{ t('onboarding.result.samplesOrganized', { count: totalSamples.toLocaleString() }) }}
+          </p>
+        </div>
+
+        <ul class="list-none w-full max-w-105 max-h-48 overflow-y-auto">
+          <li
+            v-for="(cat, index) in categories"
+            :key="cat.name"
+            class="flex items-center gap-4 py-3.5 border-b border-zinc-800
+              stagger-item first:border-t"
+            :style="{ animationDelay: `${index * 50}ms` }"
+          >
+            <span
+              class="size-2 rounded-full shrink-0"
+              :style="{ background: getCategoryColor(cat.name) }"
+            />
+            <span class="flex-1 text-[15px] font-medium capitalize">
+              {{ cat.name }}
+            </span>
+            <span class="font-mono text-sm text-muted">
+              {{ cat.count.toLocaleString() }}
+            </span>
+          </li>
+        </ul>
+      </template>
     </div>
 
-    <UButton
-      color="neutral"
-      variant="ghost"
-      size="sm"
-      @click="emit('skip')"
-    >
-      Skip
-    </UButton>
+    <!-- Actions: pinned to bottom -->
+    <div class="shrink-0 flex flex-col items-center gap-2 pb-10 pt-4">
+      <!-- Welcome -->
+      <template v-if="!scanStarted">
+        <UButton
+          color="primary"
+          variant="solid"
+          size="xl"
+          @click="emit('start')"
+        >
+          {{ t('onboarding.welcome.next') }}
+        </UButton>
+      </template>
+
+      <!-- Scanning -->
+      <template v-else-if="isScanning">
+        <UButton
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          @click="emit('skip')"
+        >
+          {{ t('onboarding.scan.skip') }}
+        </UButton>
+      </template>
+
+      <!-- No samples -->
+      <template v-else-if="scanDone && totalSamples === 0">
+        <UButton
+          color="primary"
+          variant="solid"
+          size="xl"
+          icon="i-lucide-folder-plus"
+          @click="emit('addFolder')"
+        >
+          {{ t('onboarding.result.addFolder') }}
+        </UButton>
+        <UButton
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          @click="emit('continue')"
+        >
+          {{ t('onboarding.result.skipForNow') }}
+        </UButton>
+      </template>
+
+      <!-- Results found -->
+      <template v-else-if="scanDone">
+        <UButton
+          color="primary"
+          variant="solid"
+          size="lg"
+          @click="emit('continue')"
+        >
+          {{ t('onboarding.result.continue') }}
+        </UButton>
+        <UButton
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          icon="i-lucide-folder-plus"
+          @click="emit('addFolder')"
+        >
+          {{ t('onboarding.result.addMoreFolders') }}
+        </UButton>
+      </template>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.scan {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2xl);
-  z-index: 1;
-  width: 100%;
-  max-width: 440px;
+@reference "../../assets/styles/variables.css";
+
+.spinner {
+  @apply size-12 rounded-full border-3 border-zinc-700;
+  border-top-color: var(--color-orange-500);
+  animation: spin 0.8s linear infinite;
 }
 
-.logo {
-  font-size: 64px;
-  font-weight: 900;
-  letter-spacing: -4px;
-  color: var(--color-accent-orange);
-  line-height: 0.9;
-}
-
-.scan-status {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-}
-
-.bar {
-  width: 100%;
-}
-
-.status-text {
-  font-size: 14px;
-  color: var(--color-text-muted);
-}
-
-.count-text {
-  font-size: 13px;
-  color: var(--color-text-muted);
-  opacity: 0.8;
-}
-
-.slow-hint {
-  font-size: 12px;
-  color: var(--color-text-muted);
-  opacity: 0.7;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>

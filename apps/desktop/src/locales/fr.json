@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "browse": "Parcourir",
+    "sources": "Sources",
+    "export": "Export",
+    "settings": "Paramètres"
+  },
+  "browse": {
+    "title": "Parcourir",
+    "results": "{count} résultats",
+    "searchPlaceholder": "Rechercher des samples...",
+    "allCategories": "Tout",
+    "noSamples": "Aucun sample trouvé"
+  },
+  "stats": {
+    "samples": "Samples",
+    "categories": "Catégories",
+    "sources": "Sources",
+    "linked": "Liés"
+  },
+  "sources": {
+    "title": "Dossiers sources",
+    "description": "Répertoires analysés par CrAIte pour trouver vos samples audio",
+    "addFolder": "Ajouter un dossier",
+    "rescan": "Re-scanner",
+    "scanning": "Analyse des sources...",
+    "noSources": "Aucun dossier source configuré"
+  },
+  "export": {
+    "title": "Sortie de bibliothèque",
+    "description": "Configurez comment CrAIte organise vos samples",
+    "generate": "Générer la bibliothèque",
+    "outputDir": "Répertoire de sortie",
+    "noDirectory": "Aucun répertoire sélectionné",
+    "change": "Modifier",
+    "choose": "Choisir",
+    "includeCategories": "Catégories incluses",
+    "lastGenerated": "Dernière génération : {date} — {count} fichiers liés"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "description": "Configurer le démarrage et le comportement en arrière-plan",
+    "language": "Langue",
+    "languageDescription": "Choisissez la langue de l'interface",
+    "autostart": "Lancer au démarrage",
+    "autostartDescription": "Démarrer CrAIte à la connexion",
+    "backgroundScan": "Analyse en arrière-plan",
+    "backgroundScanDescription": "Scanner périodiquement les sources pour de nouveaux samples",
+    "scanning": "Analyse...",
+    "scanInterval": "Intervalle d'analyse",
+    "scanIntervalDescription": "Fréquence de vérification des nouveaux samples",
+    "interval15": "15 minutes",
+    "interval30": "30 minutes",
+    "interval60": "1 heure",
+    "interval120": "2 heures",
+    "footer": "CrAIte se minimise dans la barre système à la fermeture et continue l'analyse en arrière-plan."
+  },
+  "languages": {
+    "en": "English",
+    "fr": "Français"
+  },
+  "onboarding": {
+    "welcome": {
+      "subtitle": "Votre bibliothèque de samples intelligente",
+      "description": "CrAIte analyse vos dossiers, organise vos samples par catégorie et les rend instantanément accessibles depuis votre DAW.",
+      "next": "Commencer"
+    },
+    "scan": {
+      "scanning": "Analyse en cours...",
+      "complete": "Analyse terminée",
+      "samplesFound": "{count} samples trouvés",
+      "slowHint": "Les grandes bibliothèques peuvent prendre un moment...",
+      "skip": "Passer"
+    },
+    "result": {
+      "noSamples": "Aucun sample trouvé",
+      "noSamplesHint": "Ajoutez un dossier contenant vos samples audio pour commencer",
+      "addFolder": "Ajouter un dossier",
+      "skipForNow": "Passer pour le moment",
+      "libraryReady": "Bibliothèque prête",
+      "samplesOrganized": "{count} samples organisés",
+      "continue": "Continuer",
+      "addMoreFolders": "Ajouter d'autres dossiers"
+    },
+    "daw": {
+      "title": "Choisissez votre DAW",
+      "subtitle": "CrAIte va créer un dossier de bibliothèque accessible depuis votre DAW",
+      "detecting": "Détection des DAWs installés...",
+      "detected": "Détecté",
+      "customFolder": "Dossier personnalisé",
+      "chooseFolder": "Choisir un dossier...",
+      "continue": "Continuer",
+      "skipForNow": "Passer pour le moment"
+    },
+    "ready": {
+      "title": "Vous êtes prêt",
+      "subtitle": "{samples} samples organisés dans {categories} catégories",
+      "searchTitle": "Rechercher & Parcourir",
+      "searchDesc": "Trouvez n'importe quel sample instantanément par nom ou catégorie",
+      "previewTitle": "Aperçu",
+      "previewDesc": "Écoutez les samples avant de les utiliser",
+      "addSourcesTitle": "Ajouter des sources",
+      "addSourcesDesc": "Vous pouvez toujours ajouter de nouveaux dossiers depuis la bibliothèque",
+      "openLibrary": "Ouvrir la bibliothèque"
+    }
+  }
+}

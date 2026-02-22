@@ -1,4 +1,4 @@
-export type OnboardingStep = 'scan' | 'result' | 'ready';
+export type OnboardingStep = 'scan' | 'daw' | 'ready';
 
 export interface SourceFolder {
   path: string;

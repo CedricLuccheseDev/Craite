@@ -29,6 +29,9 @@ importers:
       '@tauri-apps/api':
         specifier: ^2.10.1
         version: 2.10.1
+      '@tauri-apps/plugin-autostart':
+        specifier: ^2.5.1
+        version: 2.5.1
       '@tauri-apps/plugin-dialog':
         specifier: ^2.6.0
         version: 2.6.0
@@ -47,6 +50,9 @@ importers:
       vue:
         specifier: ^3.5.28
         version: 3.5.28(typescript@5.9.3)
+      vue-i18n:
+        specifier: 12.0.0-alpha.3
+        version: 12.0.0-alpha.3(vue@3.5.28(typescript@5.9.3))
       vue-router:
         specifier: ^5.0.2
         version: 5.0.3(@vue/compiler-sfc@3.5.28)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.28(typescript@5.9.3)))(vue@3.5.28(typescript@5.9.3))
@@ -669,6 +675,24 @@ packages:
 
   '@internationalized/number@3.6.5':
     resolution: {integrity: sha512-6hY4Kl4HPBvtfS62asS/R22JzNNy8vi/Ssev7x6EobfCp+9QIB2hKvI2EtbdJ0VSQacxVNtqhE/NmF/NZ0gm6g==}
+
+  '@intlify/core-base@12.0.0-alpha.3':
+    resolution: {integrity: sha512-LEvBHBUbiOOtIBkp4IIQENVC5Fg2YHsvdXN1+WRIxQ8hzHbHSBiqZ2l68B/yg8sE1a4S7dqhkaAedunShWPH+Q==}
+    engines: {node: '>= 16'}
+
+  '@intlify/message-compiler@12.0.0-alpha.3':
+    resolution: {integrity: sha512-mDDTN3gfYOHhBnpnlby19UHyvMaOnzdlpsIrxUfs44R/vCATfn8pMOkE8PXD2t410xkocEj3FpDcC9XC/0v4Dg==}
+    engines: {node: '>= 16'}
+
+  '@intlify/shared@12.0.0-alpha.3':
+    resolution: {integrity: sha512-ryaNYBvxQjyJUmVuBBg+HHUsmGnfxcEUPR0NCeG4/K9N2qtyFE35C80S15IN6iYFE2MGWLN7HfOSyg0MXZIc9w==}
+    engines: {node: '>= 16'}
+
+  '@intlify/vue-i18n-core@12.0.0-alpha.3':
+    resolution: {integrity: sha512-YwAfTQILHN+VoK0P/Yv47GbKnEf1lhfbliyVyW3knAL1EmT8m0m3rwffXJnwyQhYw8Jpx85CpL49WkSgyi6d/g==}
+    engines: {node: '>= 16'}
+    peerDependencies:
+      vue: ^3.0.0
 
   '@ioredis/commands@1.5.0':
     resolution: {integrity: sha512-eUgLqrMf8nJkZxT24JvVRrQya1vZkQh8BBeYNwGDqa5I0VUi8ACx7uFvAaLxintokpTenkK6DASvo/bvNbBGow==}
@@ -1750,6 +1774,9 @@ packages:
     resolution: {integrity: sha512-ZwT0T+7bw4+DPCSWzmviwq5XbXlM0cNoleDKOYPFYqcZqeKY31KlpoMW/MOON/tOFBPgi31a2v3w9gliqwL2+Q==}
     engines: {node: '>= 10'}
     hasBin: true
+
+  '@tauri-apps/plugin-autostart@2.5.1':
+    resolution: {integrity: sha512-zS/xx7yzveCcotkA+8TqkI2lysmG2wvQXv2HGAVExITmnFfHAdj1arGsbbfs3o6EktRHf6l34pJxc3YGG2mg7w==}
 
   '@tauri-apps/plugin-dialog@2.6.0':
     resolution: {integrity: sha512-q4Uq3eY87TdcYzXACiYSPhmpBA76shgmQswGkSVio4C82Sz2W4iehe9TnKYwbq7weHiL88Yw19XZm7v28+Micg==}
@@ -4822,6 +4849,13 @@ packages:
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0 || ^10.0.0
 
+  vue-i18n@12.0.0-alpha.3:
+    resolution: {integrity: sha512-+KQgD9LJoHfGCdJh3gaLdVS/Sps1n860+6wsjyeNLWJeEofjdVH7KPjz4rAeBlTAUaIDlIjHoXQY0Lk+8B6S9w==}
+    engines: {node: '>= 16'}
+    deprecated: This version is NOT deprecated. Previous deprecation was a mistake.
+    peerDependencies:
+      vue: ^3.0.0
+
   vue-router@4.6.4:
     resolution: {integrity: sha512-Hz9q5sa33Yhduglwz6g9skT8OBPii+4bFn88w6J+J4MfEo4KRRpmiNG/hHHkdbRFlLBOqxN8y8gf2Fb0MTUgVg==}
     peerDependencies:
@@ -5466,6 +5500,25 @@ snapshots:
   '@internationalized/number@3.6.5':
     dependencies:
       '@swc/helpers': 0.5.18
+
+  '@intlify/core-base@12.0.0-alpha.3':
+    dependencies:
+      '@intlify/message-compiler': 12.0.0-alpha.3
+      '@intlify/shared': 12.0.0-alpha.3
+
+  '@intlify/message-compiler@12.0.0-alpha.3':
+    dependencies:
+      '@intlify/shared': 12.0.0-alpha.3
+      source-map-js: 1.2.1
+
+  '@intlify/shared@12.0.0-alpha.3': {}
+
+  '@intlify/vue-i18n-core@12.0.0-alpha.3(vue@3.5.28(typescript@5.9.3))':
+    dependencies:
+      '@intlify/core-base': 12.0.0-alpha.3
+      '@intlify/shared': 12.0.0-alpha.3
+      '@vue/devtools-api': 6.6.4
+      vue: 3.5.28(typescript@5.9.3)
 
   '@ioredis/commands@1.5.0': {}
 
@@ -6763,6 +6816,10 @@ snapshots:
       '@tauri-apps/cli-win32-arm64-msvc': 2.10.0
       '@tauri-apps/cli-win32-ia32-msvc': 2.10.0
       '@tauri-apps/cli-win32-x64-msvc': 2.10.0
+
+  '@tauri-apps/plugin-autostart@2.5.1':
+    dependencies:
+      '@tauri-apps/api': 2.10.1
 
   '@tauri-apps/plugin-dialog@2.6.0':
     dependencies:
@@ -10228,6 +10285,14 @@ snapshots:
       semver: 7.7.4
     transitivePeerDependencies:
       - supports-color
+
+  vue-i18n@12.0.0-alpha.3(vue@3.5.28(typescript@5.9.3)):
+    dependencies:
+      '@intlify/core-base': 12.0.0-alpha.3
+      '@intlify/shared': 12.0.0-alpha.3
+      '@intlify/vue-i18n-core': 12.0.0-alpha.3(vue@3.5.28(typescript@5.9.3))
+      '@vue/devtools-api': 6.6.4
+      vue: 3.5.28(typescript@5.9.3)
 
   vue-router@4.6.4(vue@3.5.28(typescript@5.9.3)):
     dependencies:

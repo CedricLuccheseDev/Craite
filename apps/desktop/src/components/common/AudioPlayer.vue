@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useTauri } from '@/composables/useTauri';
+import { ref, onUnmounted } from 'vue';
+import { convertFileSrc } from '@tauri-apps/api/core';
 
 interface Props {
   samplePath: string;
@@ -8,46 +8,71 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const { previewSample, stopPreview } = useTauri();
 
 const isPlaying = ref(false);
+const hasError = ref(false);
 
-async function togglePlay() {
+let audio: HTMLAudioElement | null = null;
+
+function cleanup() {
+  if (audio) {
+    audio.pause();
+    audio.removeAttribute('src');
+    audio.load();
+    audio = null;
+  }
+  isPlaying.value = false;
+}
+
+function togglePlay() {
+  hasError.value = false;
+
   if (isPlaying.value) {
-    await stopPreview();
-    isPlaying.value = false;
-  } else {
-    await previewSample(props.samplePath);
-    isPlaying.value = true;
+    cleanup();
+    return;
+  }
+
+  cleanup();
+
+  try {
+    const assetUrl = convertFileSrc(props.samplePath);
+    audio = new Audio(assetUrl);
+
+    audio.onended = () => {
+      isPlaying.value = false;
+    };
+
+    audio.onerror = () => {
+      hasError.value = true;
+      isPlaying.value = false;
+    };
+
+    audio.play()
+      .then(() => {
+        isPlaying.value = true;
+      })
+      .catch(() => {
+        hasError.value = true;
+        isPlaying.value = false;
+      });
+  } catch {
+    hasError.value = true;
   }
 }
+
+onUnmounted(cleanup);
 </script>
 
 <template>
-  <div class="audio-player">
+  <div class="flex items-center gap-2">
     <UButton
-      :icon="isPlaying ? 'i-lucide-pause' : 'i-lucide-play'"
+      :icon="hasError ? 'i-lucide-alert-circle' : isPlaying ? 'i-lucide-pause' : 'i-lucide-play'"
       size="sm"
       square
-      :color="isPlaying ? 'primary' : 'neutral'"
+      :color="hasError ? 'error' : isPlaying ? 'primary' : 'neutral'"
       :variant="isPlaying ? 'solid' : 'ghost'"
       @click="togglePlay"
     />
-    <span class="sample-name">{{ sampleName }}</span>
+    <span class="text-[13px] truncate">{{ sampleName }}</span>
   </div>
 </template>
-
-<style scoped>
-.audio-player {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.sample-name {
-  font-size: 13px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-</style>
