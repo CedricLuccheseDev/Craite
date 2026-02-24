@@ -34,7 +34,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-vue": "^10.8.0",
     "happy-dom": "^15.11.7",
-    "jsdom": "^25.0.1",
+    "jsdom": "^28.1.0",
     "lint-staged": "^15.2.11",
     "prettier": "^3.4.2",
     "simple-git-hooks": "^2.12.0",
