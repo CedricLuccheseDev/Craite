@@ -39,5 +39,5 @@
 
 <script setup lang="ts">
 const { triggerDownload } = useGithubRelease();
-const badges = ['Gratuit', 'Open source', 'Windows', '100% local'];
+const badges = ['Gratuit', 'Multi-plateforme', '100% local'];
 </script>

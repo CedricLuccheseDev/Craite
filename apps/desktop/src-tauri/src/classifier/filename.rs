@@ -61,3 +61,107 @@ fn extract_subcategory(filename: &str, category: &str) -> String {
         _ => String::new(),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    #[test]
+    fn test_classify_kick() {
+        let path = PathBuf::from("/samples/drums/kick_heavy.wav");
+        let result = classify_by_filename(&path);
+        assert_eq!(result.category, "kick");
+        assert_eq!(result.confidence, 0.8);
+    }
+
+    #[test]
+    fn test_classify_snare() {
+        let path = PathBuf::from("/samples/drums/snare_acoustic.wav");
+        let result = classify_by_filename(&path);
+        assert_eq!(result.category, "snare");
+        assert_eq!(result.confidence, 0.8);
+    }
+
+    #[test]
+    fn test_classify_hihat_open() {
+        let path = PathBuf::from("/samples/hats/hihat_open_01.wav");
+        let result = classify_by_filename(&path);
+        assert_eq!(result.category, "hihat");
+        assert_eq!(result.subcategory, "open");
+        assert_eq!(result.confidence, 0.8);
+    }
+
+    #[test]
+    fn test_classify_hihat_closed() {
+        let path = PathBuf::from("/samples/hats/hihat_closed_02.wav");
+        let result = classify_by_filename(&path);
+        assert_eq!(result.category, "hihat");
+        assert_eq!(result.subcategory, "closed");
+        assert_eq!(result.confidence, 0.8);
+    }
+
+    #[test]
+    fn test_classify_bass_808() {
+        let path = PathBuf::from("/samples/bass/bass_808_long.wav");
+        let result = classify_by_filename(&path);
+        assert_eq!(result.category, "bass");
+        assert_eq!(result.subcategory, "808");
+        assert_eq!(result.confidence, 0.8);
+    }
+
+    #[test]
+    fn test_classify_bass_sub() {
+        let path = PathBuf::from("/samples/bass/sub_bass.wav");
+        let result = classify_by_filename(&path);
+        assert_eq!(result.category, "bass");
+        assert_eq!(result.subcategory, "sub");
+        assert_eq!(result.confidence, 0.8);
+    }
+
+    #[test]
+    fn test_classify_unknown() {
+        let path = PathBuf::from("/samples/random/file123.xyz");
+        let result = classify_by_filename(&path);
+        assert_eq!(result.category, "unknown");
+        assert_eq!(result.confidence, 0.0);
+    }
+
+    #[test]
+    fn test_classify_with_parent_directory() {
+        let path = PathBuf::from("/samples/kicks/heavy_01.wav");
+        let result = classify_by_filename(&path);
+        assert_eq!(result.category, "kick");
+        assert_eq!(result.confidence, 0.8);
+    }
+
+    #[test]
+    fn test_extract_subcategory_hihat_open() {
+        let result = extract_subcategory("hihat_open_01", "hihat");
+        assert_eq!(result, "open");
+    }
+
+    #[test]
+    fn test_extract_subcategory_hihat_closed() {
+        let result = extract_subcategory("hihat_closed_02", "hihat");
+        assert_eq!(result, "closed");
+    }
+
+    #[test]
+    fn test_extract_subcategory_bass_808() {
+        let result = extract_subcategory("bass_808_long", "bass");
+        assert_eq!(result, "808");
+    }
+
+    #[test]
+    fn test_extract_subcategory_bass_sub() {
+        let result = extract_subcategory("sub_bass_deep", "bass");
+        assert_eq!(result, "sub");
+    }
+
+    #[test]
+    fn test_extract_subcategory_no_match() {
+        let result = extract_subcategory("generic_bass", "bass");
+        assert_eq!(result, "");
+    }
+}

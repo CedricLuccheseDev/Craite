@@ -34,6 +34,9 @@ export function useWatcher() {
   }
 
   async function setupListener() {
+    // Clean up existing listener before creating a new one
+    unlisten?.();
+
     const { rescan } = useLibraryActions();
 
     unlisten = await listen<SamplesChangedPayload>('samples-changed', () => {

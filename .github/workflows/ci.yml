@@ -31,14 +31,30 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Check formatting
+        run: pnpm format:check
+
       - name: Typecheck desktop
         run: pnpm --filter @app/desktop exec vue-tsc --noEmit
+
+      - name: Typecheck landing
+        run: pnpm --filter @app/landing exec nuxi typecheck
+
+      - name: Run tests
+        run: pnpm test --run
+
+      - name: Generate coverage
+        run: pnpm test:coverage --run
 
       - name: Build desktop frontend
         run: pnpm build:desktop
 
       - name: Build landing
         run: pnpm build:landing
+
+      - name: Security audit (npm)
+        run: pnpm audit --audit-level=moderate
+        continue-on-error: true
 
   backend:
     name: Backend (Rust)
@@ -58,12 +74,15 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          components: clippy
+          components: clippy, rustfmt
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './apps/desktop/src-tauri -> target'
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit
 
       - name: Check
         run: cargo check
@@ -71,5 +90,12 @@ jobs:
       - name: Clippy
         run: cargo clippy -- -D warnings
 
+      - name: Check Rust formatting
+        run: cargo fmt --check
+
       - name: Test
         run: cargo test
+
+      - name: Security audit (Rust)
+        run: cargo audit
+        continue-on-error: true

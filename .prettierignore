@@ -1,0 +1,8 @@
+dist/
+.nuxt/
+.output/
+node_modules/
+pnpm-lock.yaml
+coverage/
+src-tauri/target/
+*.md

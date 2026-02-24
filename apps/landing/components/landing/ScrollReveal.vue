@@ -14,7 +14,10 @@ onMounted(() => {
         observer.disconnect();
       }
     },
-    { threshold: 0.08 },
+    {
+      threshold: 0.15,
+      rootMargin: '-50px'
+    },
   );
   if (el.value) observer.observe(el.value);
 });
@@ -23,10 +26,13 @@ onMounted(() => {
 <template>
   <div
     ref="el"
-    :style="delay ? `transition-delay: ${delay}ms` : ''"
+    :style="{
+      transitionDelay: delay ? `${delay}ms` : '0ms',
+      transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)'
+    }"
     :class="[
-      'transition-all duration-700 ease-out',
-      isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8',
+      'transition-all duration-700',
+      isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16',
     ]"
   >
     <slot />

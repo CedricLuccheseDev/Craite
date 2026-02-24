@@ -34,7 +34,8 @@ impl AudioPreview {
 
         sink.append(source);
 
-        *self.sink.lock().unwrap() = Some(sink);
+        *self.sink.lock()
+            .map_err(|e| CraiteError::Audio(format!("Mutex lock failed: {}", e)))? = Some(sink);
         self._stream = Some(stream);
 
         Ok(())

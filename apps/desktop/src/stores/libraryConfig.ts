@@ -50,6 +50,11 @@ export const useLibraryConfigStore = defineStore('libraryConfig', () => {
     persistSetting('last_generated_at', lastGeneratedAt.value);
   }
 
+  function loadGenerationResult(count: number, timestamp: string) {
+    linkedCount.value = count;
+    lastGeneratedAt.value = timestamp;
+  }
+
   function startGenerating() {
     isGenerating.value = true;
   }
@@ -73,6 +78,7 @@ export const useLibraryConfigStore = defineStore('libraryConfig', () => {
     toggleCategory,
     setLinkStructure,
     setGenerationResult,
+    loadGenerationResult,
     startGenerating,
   };
 });

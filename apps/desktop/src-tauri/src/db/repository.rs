@@ -141,3 +141,252 @@ pub fn load_all_settings(conn: &Connection) -> Result<Vec<(String, String)>> {
     })?;
     rows.collect()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn setup_test_db() -> Connection {
+        let conn = Connection::open_in_memory().unwrap();
+        conn.execute_batch(
+            "CREATE TABLE samples (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                path TEXT NOT NULL UNIQUE,
+                category TEXT NOT NULL DEFAULT '',
+                subcategory TEXT NOT NULL DEFAULT '',
+                confidence REAL NOT NULL DEFAULT 0.0,
+                source TEXT NOT NULL,
+                duration REAL NOT NULL DEFAULT 0.0,
+                sample_rate INTEGER NOT NULL DEFAULT 0,
+                linked_path TEXT
+            );
+
+            CREATE TABLE sources (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                path TEXT NOT NULL UNIQUE,
+                label TEXT NOT NULL,
+                enabled INTEGER NOT NULL DEFAULT 1,
+                source_type TEXT NOT NULL DEFAULT 'custom',
+                sample_count INTEGER NOT NULL DEFAULT 0
+            );
+
+            CREATE TABLE settings (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            );",
+        )
+        .unwrap();
+        conn
+    }
+
+    // --- Sample tests ---
+
+    #[test]
+    fn test_insert_and_load_samples() {
+        let conn = setup_test_db();
+        let samples = vec![
+            Sample {
+                id: None,
+                name: "kick_01".to_string(),
+                path: "/samples/kick_01.wav".to_string(),
+                category: "kick".to_string(),
+                subcategory: "".to_string(),
+                confidence: 0.8,
+                source: "/samples".to_string(),
+                duration: Some(1.5),
+                sample_rate: Some(44100),
+                linked_path: None,
+            },
+            Sample {
+                id: None,
+                name: "snare_02".to_string(),
+                path: "/samples/snare_02.wav".to_string(),
+                category: "snare".to_string(),
+                subcategory: "".to_string(),
+                confidence: 0.9,
+                source: "/samples".to_string(),
+                duration: Some(0.8),
+                sample_rate: Some(48000),
+                linked_path: None,
+            },
+        ];
+
+        insert_samples(&conn, &samples).unwrap();
+        let loaded = load_all_samples(&conn).unwrap();
+
+        assert_eq!(loaded.len(), 2);
+        assert_eq!(loaded[0].name, "kick_01");
+        assert_eq!(loaded[0].category, "kick");
+        assert_eq!(loaded[1].name, "snare_02");
+        assert_eq!(loaded[1].category, "snare");
+    }
+
+    #[test]
+    fn test_clear_samples_by_source() {
+        let conn = setup_test_db();
+        let samples = vec![
+            Sample {
+                id: None,
+                name: "sample1".to_string(),
+                path: "/path1/sample1.wav".to_string(),
+                category: "kick".to_string(),
+                subcategory: "".to_string(),
+                confidence: 0.8,
+                source: "/path1".to_string(),
+                duration: None,
+                sample_rate: None,
+                linked_path: None,
+            },
+            Sample {
+                id: None,
+                name: "sample2".to_string(),
+                path: "/path2/sample2.wav".to_string(),
+                category: "snare".to_string(),
+                subcategory: "".to_string(),
+                confidence: 0.8,
+                source: "/path2".to_string(),
+                duration: None,
+                sample_rate: None,
+                linked_path: None,
+            },
+        ];
+
+        insert_samples(&conn, &samples).unwrap();
+        let deleted = clear_samples_by_source(&conn, "/path1").unwrap();
+
+        assert_eq!(deleted, 1);
+        let loaded = load_all_samples(&conn).unwrap();
+        assert_eq!(loaded.len(), 1);
+        assert_eq!(loaded[0].source, "/path2");
+    }
+
+    // --- Source tests ---
+
+    #[test]
+    fn test_insert_and_load_sources() {
+        let conn = setup_test_db();
+        let source = Source {
+            path: "/samples/drums".to_string(),
+            label: "Drums".to_string(),
+            enabled: true,
+            source_type: "daw".to_string(),
+            sample_count: 150,
+        };
+
+        insert_source(&conn, &source).unwrap();
+        let sources = load_all_sources(&conn).unwrap();
+
+        assert_eq!(sources.len(), 1);
+        assert_eq!(sources[0].path, "/samples/drums");
+        assert_eq!(sources[0].label, "Drums");
+        assert_eq!(sources[0].enabled, true);
+        assert_eq!(sources[0].sample_count, 150);
+    }
+
+    #[test]
+    fn test_update_source_enabled() {
+        let conn = setup_test_db();
+        let source = Source {
+            path: "/samples/drums".to_string(),
+            label: "Drums".to_string(),
+            enabled: true,
+            source_type: "custom".to_string(),
+            sample_count: 100,
+        };
+
+        insert_source(&conn, &source).unwrap();
+        update_source_enabled(&conn, "/samples/drums", false).unwrap();
+
+        let sources = load_all_sources(&conn).unwrap();
+        assert_eq!(sources[0].enabled, false);
+    }
+
+    #[test]
+    fn test_delete_source() {
+        let conn = setup_test_db();
+        let source = Source {
+            path: "/samples/drums".to_string(),
+            label: "Drums".to_string(),
+            enabled: true,
+            source_type: "custom".to_string(),
+            sample_count: 100,
+        };
+
+        insert_source(&conn, &source).unwrap();
+        let deleted = delete_source(&conn, "/samples/drums").unwrap();
+
+        assert_eq!(deleted, 1);
+        let sources = load_all_sources(&conn).unwrap();
+        assert_eq!(sources.len(), 0);
+    }
+
+    // --- Settings tests ---
+
+    #[test]
+    fn test_set_and_get_setting() {
+        let conn = setup_test_db();
+
+        set_setting(&conn, "theme", "dark").unwrap();
+        let value = get_setting(&conn, "theme").unwrap();
+
+        assert_eq!(value, Some("dark".to_string()));
+    }
+
+    #[test]
+    fn test_get_nonexistent_setting() {
+        let conn = setup_test_db();
+        let value = get_setting(&conn, "nonexistent").unwrap();
+        assert_eq!(value, None);
+    }
+
+    #[test]
+    fn test_load_all_settings() {
+        let conn = setup_test_db();
+
+        set_setting(&conn, "theme", "dark").unwrap();
+        set_setting(&conn, "language", "en").unwrap();
+
+        let settings = load_all_settings(&conn).unwrap();
+        assert_eq!(settings.len(), 2);
+    }
+
+    #[test]
+    fn test_clear_all_data() {
+        let conn = setup_test_db();
+
+        // Insert test data
+        let sample = Sample {
+            id: None,
+            name: "test".to_string(),
+            path: "/test.wav".to_string(),
+            category: "kick".to_string(),
+            subcategory: "".to_string(),
+            confidence: 0.8,
+            source: "/test".to_string(),
+            duration: None,
+            sample_rate: None,
+            linked_path: None,
+        };
+        insert_samples(&conn, &[sample]).unwrap();
+
+        let source = Source {
+            path: "/test".to_string(),
+            label: "Test".to_string(),
+            enabled: true,
+            source_type: "custom".to_string(),
+            sample_count: 1,
+        };
+        insert_source(&conn, &source).unwrap();
+
+        set_setting(&conn, "key", "value").unwrap();
+
+        // Clear all
+        clear_all_data(&conn).unwrap();
+
+        // Verify all tables are empty
+        assert_eq!(load_all_samples(&conn).unwrap().len(), 0);
+        assert_eq!(load_all_sources(&conn).unwrap().len(), 0);
+        assert_eq!(load_all_settings(&conn).unwrap().len(), 0);
+    }
+}

@@ -66,10 +66,10 @@ export function useAppInit() {
       }
 
       const linkedCount = map.get('linked_count');
-      if (linkedCount) configStore.linkedCount = parseInt(linkedCount, 10);
-
       const lastGenerated = map.get('last_generated_at');
-      if (lastGenerated) configStore.lastGeneratedAt = lastGenerated;
+      if (linkedCount && lastGenerated) {
+        configStore.loadGenerationResult(parseInt(linkedCount, 10), lastGenerated);
+      }
 
       const locale = map.get('locale') as SupportedLocale | undefined;
       if (locale === 'en' || locale === 'fr') {

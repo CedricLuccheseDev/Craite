@@ -1,5 +1,5 @@
 <template>
-  <section class="px-6 py-24 max-w-4xl mx-auto">
+  <section class="px-6 py-24 max-w-4xl mx-auto trust-section relative">
     <h2 class="text-3xl font-bold text-center mb-4">
       Conçu pour que tu n'aies rien à craindre.
     </h2>
@@ -11,12 +11,12 @@
       <div
         v-for="point in points"
         :key="point.title"
-        class="text-center"
+        class="text-center trust-card"
       >
-        <div class="w-12 h-12 mx-auto mb-4 rounded-lg bg-[#ff6b35]/10 flex items-center justify-center">
+        <div class="w-12 h-12 mx-auto mb-4 rounded-lg bg-[#ff6b35]/10 flex items-center justify-center trust-icon-wrapper">
           <UIcon
             :name="point.icon"
-            class="text-[#ff6b35] text-2xl"
+            class="text-[#ff6b35] text-2xl trust-icon"
           />
         </div>
         <h3 class="font-semibold mb-2">
@@ -36,19 +36,19 @@ const points = [
     icon: 'i-lucide-music-2',
     title: 'Directement dans ton DAW',
     description:
-      "CrAIte crée une vraie arborescence sur ton disque, visible dans le browser FL. Pas de plugin, pas d'app à ouvrir en parallèle.",
+      "CrAIte crée une vraie arborescence sur ton disque, visible dans le file browser de ton DAW. Pas de plugin, pas d'app à ouvrir en parallèle.",
   },
   {
     icon: 'i-lucide-shield-check',
     title: 'Tes fichiers ne bougent pas',
     description:
-      'Hardlinks, pas de copies. Zéro espace disque supplémentaire. Tes projets FL continuent de pointer vers les mêmes samples.',
+      'CrAIte crée des liens intelligents (hardlinks) vers tes samples originaux — comme des raccourcis, mais mieux. Zéro espace disque supplémentaire, tes fichiers restent exactement où ils sont.',
   },
   {
-    icon: 'i-lucide-github',
-    title: 'Gratuit et open source',
+    icon: 'i-lucide-shield-check',
+    title: 'Gratuit, sans abonnement',
     description:
-      "Licence MIT. Pas de version payante cachée, pas d'abonnement, pas de compte. 100% local, aucune donnée ne sort de ton PC.",
+      "Pas de version payante cachée, pas d'abonnement, pas de compte requis. 100% local, aucune donnée ne sort de ton PC.",
   },
 ];
 </script>

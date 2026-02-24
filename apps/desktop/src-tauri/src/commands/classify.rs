@@ -37,8 +37,9 @@ pub fn regenerate_links(output_dir: &str) -> Result<usize, String> {
         }
 
         let strategy = determine_strategy(&source, &target);
-        if create_link(&source, &target, strategy).is_ok() {
-            linked += 1;
+        match create_link(&source, &target, strategy) {
+            Ok(_) => linked += 1,
+            Err(e) => log::warn!("Failed to link {} to {}: {}", source.display(), target.display(), e),
         }
     }
 

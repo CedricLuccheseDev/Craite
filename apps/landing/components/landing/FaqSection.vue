@@ -25,7 +25,7 @@
 const faq = [
   {
     label: "C'est vraiment gratuit ?",
-    content: "Oui. Open source, licence MIT. Pas de version payante cachée, pas d'abonnement, pas de compte requis.",
+    content: "Oui, complètement gratuit. Pas de version payante cachée, pas d'abonnement, pas de compte requis.",
   },
   {
     label: 'Mes samples sont-ils déplacés ?',
@@ -33,11 +33,11 @@ const faq = [
   },
   {
     label: 'Ça va casser mes projets ?',
-    content: "Non. CrAIte ne modifie jamais les fichiers originaux. Les projets FL continuent de pointer vers les mêmes samples aux mêmes emplacements.",
+    content: "Non. CrAIte ne modifie jamais les fichiers originaux. Tes projets continuent de pointer vers les mêmes samples aux mêmes emplacements.",
   },
   {
-    label: 'CrAIte fonctionne sur Mac ?',
-    content: "Pas encore. Windows d'abord. Le support Mac est envisagé plus tard.",
+    label: 'Sur quels systèmes d\'exploitation CrAIte fonctionne ?',
+    content: "CrAIte est disponible sur Windows, macOS et Linux. L'app fonctionne de la même façon sur tous les systèmes.",
   },
 ];
 </script>

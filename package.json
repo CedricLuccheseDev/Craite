@@ -11,13 +11,49 @@
     "tauri:dev": "pnpm --filter @app/desktop tauri dev",
     "tauri:build": "pnpm --filter @app/desktop tauri build",
     "lint": "eslint apps/",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:desktop": "pnpm --filter @app/desktop test",
+    "test:landing": "pnpm --filter @app/landing test",
+    "format": "prettier --write \"apps/**/*.{ts,tsx,vue,js,json,css,md}\"",
+    "format:check": "prettier --check \"apps/**/*.{ts,tsx,vue,js,json,css,md}\"",
+    "audit": "pnpm audit && cd apps/desktop/src-tauri && cargo audit",
+    "audit:fix": "pnpm audit --fix",
+    "prepare": "simple-git-hooks",
     "docker:landing:build": "docker build -t craite-landing .",
     "docker:landing:run": "docker run -p 3000:3000 craite-landing"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vitest/coverage-v8": "^2.1.8",
+    "@vitest/ui": "^2.1.8",
+    "@vue/test-utils": "^2.4.6",
     "eslint": "^10.0.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-vue": "^10.8.0",
-    "typescript-eslint": "^8.56.0"
+    "happy-dom": "^15.11.7",
+    "jsdom": "^25.0.1",
+    "lint-staged": "^15.2.11",
+    "prettier": "^3.4.2",
+    "simple-git-hooks": "^2.12.0",
+    "typescript-eslint": "^8.56.0",
+    "vitest": "^2.1.8"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "apps/**/*.{ts,tsx,vue,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "apps/**/*.{json,css,md}": [
+      "prettier --write"
+    ],
+    "apps/desktop/src-tauri/src/**/*.rs": [
+      "cargo fmt --manifest-path apps/desktop/src-tauri/Cargo.toml --"
+    ]
   }
 }
