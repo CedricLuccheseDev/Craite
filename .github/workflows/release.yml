@@ -1,4 +1,4 @@
-name: Release Please
+name: Release & Deploy
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   release-please:
-    name: Release Please
+    name: Create Release
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
@@ -23,12 +23,13 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-  build-desktop:
-    name: Build Desktop
+  build-tauri:
+    name: Build Tauri App
     needs: release-please
-    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    # Build on EVERY main push, not just releases
     uses: ./.github/workflows/build-desktop.yml
     with:
-      tag_name: ${{ needs.release-please.outputs.tag_name }}
-      version: ${{ needs.release-please.outputs.version }}
+      # Use release tag if available, otherwise use dev tag
+      tag_name: ${{ needs.release-please.outputs.tag_name || format('dev-{0}', github.sha) }}
+      version: ${{ needs.release-please.outputs.version || '0.0.0-dev' }}
     secrets: inherit

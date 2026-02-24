@@ -1,15 +1,17 @@
-name: CI
+name: Tests
 
 on:
+  push:
+    branches: [dev]
   pull_request:
-    branches: [main]
+    branches: [dev, main]
 
 permissions:
   contents: read
 
 jobs:
   frontend:
-    name: Frontend
+    name: Frontend Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -46,18 +48,12 @@ jobs:
       - name: Generate coverage
         run: pnpm test:coverage --run
 
-      - name: Build desktop frontend
-        run: pnpm build:desktop
-
-      - name: Build landing
-        run: pnpm build:landing
-
       - name: Security audit (npm)
         run: pnpm audit --audit-level=moderate
         continue-on-error: true
 
   backend:
-    name: Backend (Rust)
+    name: Backend Tests (Rust)
     runs-on: ubuntu-22.04
     defaults:
       run:
