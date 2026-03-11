@@ -50,7 +50,7 @@ async function restartOnboarding() {
 </script>
 
 <template>
-  <aside class="flex flex-col gap-8 py-8 px-4 w-[200px] shrink-0">
+  <aside class="flex flex-col gap-8 py-8 px-4 w-[200px] shrink-0 bg-black/10">
     <div class="px-2">
       <span class="font-display text-xl font-bold tracking-tight">CrAIte</span>
     </div>

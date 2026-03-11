@@ -103,9 +103,6 @@ pub fn update_source_enabled(conn: &Connection, path: &str, enabled: bool) -> Re
     )
 }
 
-pub fn delete_source(conn: &Connection, path: &str) -> Result<usize> {
-    conn.execute("DELETE FROM sources WHERE path = ?1", params![path])
-}
 
 pub fn clear_all_data(conn: &Connection) -> Result<()> {
     conn.execute_batch(
