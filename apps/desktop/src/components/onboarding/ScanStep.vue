@@ -25,20 +25,21 @@ const emit = defineEmits<{
 const { elapsedSeconds } = useScanTimer(toRef(props, 'isScanning'));
 
 const scanDone = ref(false);
-watch(() => props.isScanning, (scanning, wasScanning) => {
-  if (wasScanning && !scanning && props.scanStarted) {
-    scanDone.value = true;
+watch(
+  () => props.isScanning,
+  (scanning, wasScanning) => {
+    if (wasScanning && !scanning && props.scanStarted) {
+      scanDone.value = true;
+    }
   }
-});
+);
 </script>
 
 <template>
   <div class="flex flex-col h-full w-full slide-up">
     <!-- Content: centered -->
     <div class="flex-1 min-h-0 flex flex-col items-center justify-center gap-8 px-16">
-      <h1 class="text-[64px] font-black tracking-[-4px] text-orange-500 leading-none">
-        CrAIte
-      </h1>
+      <h1 class="text-[64px] font-black tracking-[-4px] text-orange-500 leading-none">CrAIte</h1>
 
       <!-- Welcome -->
       <template v-if="!scanStarted">
@@ -57,10 +58,7 @@ watch(() => props.isScanning, (scanning, wasScanning) => {
           <p class="text-sm text-muted">
             {{ t('onboarding.scan.scanning') }}
           </p>
-          <p
-            v-if="elapsedSeconds > 5"
-            class="text-xs text-muted opacity-70"
-          >
+          <p v-if="elapsedSeconds > 5" class="text-xs text-muted opacity-70">
             {{ t('onboarding.scan.slowHint') }}
           </p>
         </div>
@@ -93,14 +91,10 @@ watch(() => props.isScanning, (scanning, wasScanning) => {
           <li
             v-for="(cat, index) in categories"
             :key="cat.name"
-            class="flex items-center gap-4 py-3.5 border-b border-zinc-800
-              stagger-item first:border-t"
+            class="flex items-center gap-4 py-3.5 border-b border-zinc-800 stagger-item first:border-t"
             :style="{ animationDelay: `${index * 50}ms` }"
           >
-            <span
-              class="size-2 rounded-full shrink-0"
-              :style="{ background: getCategoryColor(cat.name) }"
-            />
+            <span class="size-2 rounded-full shrink-0" :style="{ background: getCategoryColor(cat.name) }" />
             <span class="flex-1 text-[15px] font-medium capitalize">
               {{ cat.name }}
             </span>
@@ -116,24 +110,14 @@ watch(() => props.isScanning, (scanning, wasScanning) => {
     <div class="shrink-0 flex flex-col items-center gap-2 pb-10 pt-4">
       <!-- Welcome -->
       <template v-if="!scanStarted">
-        <UButton
-          color="primary"
-          variant="solid"
-          size="xl"
-          @click="emit('start')"
-        >
+        <UButton color="primary" variant="solid" size="xl" class="px-8 py-3.5" @click="emit('start')">
           {{ t('onboarding.welcome.next') }}
         </UButton>
       </template>
 
       <!-- Scanning -->
       <template v-else-if="isScanning">
-        <UButton
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          @click="emit('skip')"
-        >
+        <UButton color="neutral" variant="ghost" size="sm" @click="emit('skip')">
           {{ t('onboarding.scan.skip') }}
         </UButton>
       </template>
@@ -145,37 +129,22 @@ watch(() => props.isScanning, (scanning, wasScanning) => {
           variant="solid"
           size="xl"
           icon="i-lucide-folder-plus"
+          class="px-8 py-3.5"
           @click="emit('addFolder')"
         >
           {{ t('onboarding.result.addFolder') }}
         </UButton>
-        <UButton
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          @click="emit('continue')"
-        >
+        <UButton color="neutral" variant="ghost" size="sm" @click="emit('continue')">
           {{ t('onboarding.result.skipForNow') }}
         </UButton>
       </template>
 
       <!-- Results found -->
       <template v-else-if="scanDone">
-        <UButton
-          color="primary"
-          variant="solid"
-          size="lg"
-          @click="emit('continue')"
-        >
+        <UButton color="primary" variant="solid" size="lg" class="px-8 py-3.5" @click="emit('continue')">
           {{ t('onboarding.result.continue') }}
         </UButton>
-        <UButton
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          icon="i-lucide-folder-plus"
-          @click="emit('addFolder')"
-        >
+        <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-folder-plus" @click="emit('addFolder')">
           {{ t('onboarding.result.addMoreFolders') }}
         </UButton>
       </template>
@@ -193,6 +162,8 @@ watch(() => props.isScanning, (scanning, wasScanning) => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

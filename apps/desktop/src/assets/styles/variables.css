@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "@nuxt/ui";
+@import 'tailwindcss';
+@import '@nuxt/ui';
 
 @theme {
   --color-orange-50: #fff7ed;
@@ -15,22 +15,22 @@
   --font-display: 'Space Grotesk', sans-serif;
 }
 
-/* Flat button overrides — clean up Nuxt UI defaults */
+/* Button overrides — rounded-pill, airy padding, clean */
 button,
-[role="button"] {
+[role='button'] {
   box-shadow: none !important;
-  border-radius: 6px !important;
+  border-radius: 9999px !important;
   font-weight: 500 !important;
   letter-spacing: -0.01em;
 }
 
 button:hover,
-[role="button"]:hover {
+[role='button']:hover {
   box-shadow: none !important;
 }
 
 button:focus-visible,
-[role="button"]:focus-visible {
+[role='button']:focus-visible {
   box-shadow: none !important;
   outline: 1.5px solid var(--color-orange-500);
   outline-offset: 2px;

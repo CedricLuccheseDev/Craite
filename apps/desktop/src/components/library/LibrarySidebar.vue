@@ -63,10 +63,7 @@ async function restartOnboarding() {
         :class="{ 'bg-surface text-white': activeSection === item.id }"
         @click="emit('update:activeSection', item.id)"
       >
-        <UIcon
-          :name="item.icon"
-          class="text-base shrink-0"
-        />
+        <UIcon :name="item.icon" class="text-base shrink-0" />
         <span>{{ item.label }}</span>
       </button>
     </nav>
@@ -91,7 +88,7 @@ async function restartOnboarding() {
 @reference "../../assets/styles/variables.css";
 
 .nav-item {
-  @apply flex items-center gap-2 w-full py-2 px-4 rounded-[10px]
+  @apply flex items-center gap-2 w-full py-2.5 px-5 rounded-full
     text-sm font-medium text-muted bg-transparent border-none
     cursor-pointer transition-colors duration-150
     hover:bg-surface-hover hover:text-white;

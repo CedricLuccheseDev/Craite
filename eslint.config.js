@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import pluginVue from 'eslint-plugin-vue';
 import eslintConfigPrettier from 'eslint-config-prettier';
@@ -8,10 +9,40 @@ export default [
   ...tseslint.configs.recommended,
   ...pluginVue.configs['flat/recommended'],
   {
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+    },
+  },
+  {
     files: ['**/*.vue'],
     languageOptions: {
       parserOptions: {
         parser: tseslint.parser,
+      },
+    },
+  },
+  {
+    files: ['apps/landing/**/*.vue', 'apps/landing/**/*.ts'],
+    languageOptions: {
+      globals: {
+        useHead: 'readonly',
+        useRoute: 'readonly',
+        useRouter: 'readonly',
+        useRuntimeConfig: 'readonly',
+        useAsyncData: 'readonly',
+        useFetch: 'readonly',
+        ref: 'readonly',
+        computed: 'readonly',
+        reactive: 'readonly',
+        onMounted: 'readonly',
+        onUnmounted: 'readonly',
+        watch: 'readonly',
+        definePageMeta: 'readonly',
+        navigateTo: 'readonly',
+        useGithubRelease: 'readonly',
       },
     },
   },

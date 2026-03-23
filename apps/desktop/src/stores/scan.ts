@@ -73,6 +73,12 @@ export const useScanStore = defineStore('scan', () => {
     }
   }
 
+  function removeEmptySources() {
+    const nonEmpty = sources.value.filter(s => s.sampleCount > 0);
+    sources.value = nonEmpty;
+    nonEmpty.forEach(s => persistSource(s));
+  }
+
   function setScanError(message: string) {
     error.value = message;
     isScanning.value = false;
@@ -99,6 +105,7 @@ export const useScanStore = defineStore('scan', () => {
     addCustomSource,
     setScanResult,
     updateSourceCounts,
+    removeEmptySources,
     startScan,
     setScanError,
   };

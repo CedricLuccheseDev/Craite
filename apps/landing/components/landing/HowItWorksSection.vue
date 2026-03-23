@@ -1,44 +1,28 @@
 <template>
-  <section class="px-6 py-24 bg-zinc-900/30 how-it-works-bg relative">
-    <div class="max-w-4xl mx-auto">
-      <h2 class="text-3xl font-bold text-center mb-4">
+  <section id="comment-ca-marche" class="section-light px-6 py-24">
+    <div class="max-w-5xl mx-auto">
+      <p class="text-center text-sm uppercase tracking-widest text-zinc-400 mb-4 font-medium">Comment ça marche</p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-center mb-6 text-zinc-900">
         3 étapes. Tes samples sont enfin organisés.
       </h2>
-      <p class="text-center text-zinc-400 mb-16">
-        Pas de configuration. Pas de compte. Pas de cloud.
-      </p>
+      <p class="text-center text-zinc-500 mb-20 max-w-xl mx-auto">Pas de configuration. Pas de compte. Pas de cloud.</p>
 
-      <div class="flex flex-col gap-12">
-        <div
-          v-for="step in steps"
-          :key="step.number"
-          class="flex gap-8 items-start"
-        >
-          <!-- Icon container with pulse background -->
-          <div class="relative shrink-0 w-20 h-20">
-            <!-- Pulse background -->
-            <div class="absolute inset-0 rounded-full bg-[#ff6b35]/10 icon-pulse" />
-            <!-- Icon with float animation -->
-            <div class="relative w-full h-full rounded-full border border-[#ff6b35]/20 flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm">
-              <UIcon
-                :name="step.icon"
-                class="text-[#ff6b35] text-3xl icon-float"
-              />
-            </div>
-            <!-- Step number badge -->
-            <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#ff6b35] flex items-center justify-center">
-              <span class="text-white text-xs font-bold">{{ step.number }}</span>
-            </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-10">
+        <div v-for="step in steps" :key="step.number" class="text-center">
+          <div class="w-14 h-14 mx-auto mb-6 rounded-2xl bg-[#ff6b35]/10 flex items-center justify-center">
+            <UIcon :name="step.icon" class="text-[#ff6b35] text-2xl" />
           </div>
-
-          <div class="pt-2">
-            <h3 class="text-xl font-semibold mb-2">
-              {{ step.title }}
-            </h3>
-            <p class="text-zinc-400 leading-relaxed">
-              {{ step.description }}
-            </p>
+          <div
+            class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#ff6b35] text-white text-xs font-bold mb-4"
+          >
+            {{ step.number }}
           </div>
+          <h3 class="text-lg font-semibold mb-3 text-zinc-900">
+            {{ step.title }}
+          </h3>
+          <p class="text-zinc-500 leading-relaxed text-sm">
+            {{ step.description }}
+          </p>
         </div>
       </div>
     </div>
@@ -57,13 +41,14 @@ const steps = [
     number: 2,
     icon: 'i-lucide-scan',
     title: 'Lance le scan',
-    description: 'CrAIte identifie tes samples par nom de fichier et par les métadonnées disponibles. Des centaines de samples classés en quelques secondes.',
+    description:
+      'CrAIte identifie tes samples par nom de fichier et par les métadonnées. Des centaines classés en quelques secondes.',
   },
   {
     number: 3,
     icon: 'i-lucide-music-2',
     title: 'Ouvre ton DAW',
-    description: 'Ajoute "CrAIte Library" à tes search paths. Tes kicks, snares, pads, vocals — tout est là, organisé.',
+    description: 'Ajoute "CrAIte Library" à tes search paths. Kicks, snares, pads, vocals — tout est là, organisé.',
   },
 ];
 </script>

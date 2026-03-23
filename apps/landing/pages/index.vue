@@ -4,7 +4,8 @@ useHead({
   meta: [
     {
       name: 'description',
-      content: 'CrAIte organise tes samples par type de son et les rend accessibles directement dans ton DAW — sans rien déplacer, sans rien casser.',
+      content:
+        'CrAIte organise tes samples par type de son et les rend accessibles directement dans ton DAW — sans rien déplacer, sans rien casser.',
     },
   ],
 });
@@ -16,15 +17,13 @@ useHead({
 
     <LandingHeroSection />
 
-    <LandingScrollReveal id="comment-ca-marche">
-      <LandingHowItWorksSection />
-    </LandingScrollReveal>
+    <LandingHowItWorksSection />
 
     <LandingScrollReveal>
       <LandingTrustSection />
     </LandingScrollReveal>
 
-    <LandingScrollReveal id="faq">
+    <LandingScrollReveal>
       <LandingFaqSection />
     </LandingScrollReveal>
 

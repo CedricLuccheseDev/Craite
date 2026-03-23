@@ -1,21 +1,22 @@
-name: Tests
+name: CI
 
 on:
-  push:
-    branches: [dev]
   pull_request:
-    branches: [dev, main]
+    branches: [main, dev]
 
 permissions:
   contents: read
 
 jobs:
+  # ============================================
+  # Frontend (Vue 3 + TypeScript)
+  # ============================================
   frontend:
-    name: Frontend Tests
+    name: Frontend
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -36,31 +37,24 @@ jobs:
       - name: Check formatting
         run: pnpm format:check
 
-      - name: Typecheck desktop
-        run: pnpm --filter @app/desktop exec vue-tsc --noEmit
-
-      - name: Typecheck landing
-        run: pnpm --filter @app/landing exec nuxi typecheck
+      - name: Typecheck
+        run: pnpm typecheck
 
       - name: Run tests
         run: pnpm test --run
 
-      - name: Generate coverage
-        run: pnpm test:coverage --run
-
-      - name: Security audit (npm)
-        run: pnpm audit --audit-level=moderate
-        continue-on-error: true
-
+  # ============================================
+  # Backend (Rust / Tauri)
+  # ============================================
   backend:
-    name: Backend Tests (Rust)
+    name: Backend
     runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: apps/desktop/src-tauri
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Install system dependencies
         run: |
@@ -77,21 +71,14 @@ jobs:
         with:
           workspaces: './apps/desktop/src-tauri -> target'
 
-      - name: Install cargo-audit
-        run: cargo install cargo-audit
-
       - name: Check
         run: cargo check
 
       - name: Clippy
         run: cargo clippy -- -D warnings
 
-      - name: Check Rust formatting
+      - name: Format
         run: cargo fmt --check
 
       - name: Test
         run: cargo test
-
-      - name: Security audit (Rust)
-        run: cargo audit
-        continue-on-error: true

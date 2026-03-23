@@ -19,9 +19,7 @@ const selectedId = ref<string | null>(null);
 const customPath = ref('');
 const isLoading = ref(true);
 
-const selectedDaw = computed(() =>
-  daws.value.find(d => d.id === selectedId.value) ?? null,
-);
+const selectedDaw = computed(() => daws.value.find(d => d.id === selectedId.value) ?? null);
 
 onMounted(async () => {
   daws.value = await tauri.detectInstalledDaws();
@@ -65,44 +63,21 @@ function onConfirm() {
       </div>
 
       <div v-else class="w-full max-w-160 grid grid-cols-3 gap-2.5">
-        <label
-          v-for="daw in daws"
-          :key="daw.id"
-          class="daw-card"
-          :class="{ selected: selectedId === daw.id }"
-        >
-          <input
-            v-model="selectedId"
-            type="radio"
-            name="daw"
-            :value="daw.id"
-            class="sr-only"
-          />
+        <label v-for="daw in daws" :key="daw.id" class="daw-card" :class="{ selected: selectedId === daw.id }">
+          <input v-model="selectedId" type="radio" name="daw" :value="daw.id" class="sr-only" />
           <span class="shrink-0 size-9" v-html="getDawIconSvg(daw.id)" />
           <span class="flex flex-col gap-0.5 min-w-0">
             <span class="text-[13px] font-medium truncate">
               {{ daw.name }}
             </span>
-            <span
-              v-if="daw.detected"
-              class="text-[11px] text-orange-500 font-medium"
-            >
+            <span v-if="daw.detected" class="text-[11px] text-orange-500 font-medium">
               {{ t('onboarding.daw.detected') }}
             </span>
           </span>
         </label>
 
-        <label
-          class="daw-card"
-          :class="{ selected: selectedId === 'custom' }"
-        >
-          <input
-            v-model="selectedId"
-            type="radio"
-            name="daw"
-            value="custom"
-            class="sr-only"
-          />
+        <label class="daw-card" :class="{ selected: selectedId === 'custom' }">
+          <input v-model="selectedId" type="radio" name="daw" value="custom" class="sr-only" />
           <span class="shrink-0 size-9" v-html="getCustomFolderSvg()" />
           <span class="flex flex-col gap-0.5 min-w-0">
             <span class="text-[13px] font-medium truncate">
@@ -114,20 +89,13 @@ function onConfirm() {
 
       <p
         v-if="selectedId && selectedId !== 'custom' && selectedDaw"
-        class="w-full max-w-160 py-3 px-4 bg-surface rounded-md font-mono
-          text-xs text-muted break-all"
+        class="w-full max-w-160 py-3 px-4 bg-surface rounded-md font-mono text-xs text-muted break-all"
       >
         {{ selectedDaw.libraryPath }}
       </p>
 
       <div v-if="selectedId === 'custom'" class="w-full max-w-160">
-        <UButton
-          color="neutral"
-          variant="outline"
-          size="sm"
-          icon="i-lucide-folder-open"
-          @click="pickCustomFolder"
-        >
+        <UButton color="neutral" variant="outline" size="sm" icon="i-lucide-folder-open" @click="pickCustomFolder">
           {{ customPath || t('onboarding.daw.chooseFolder') }}
         </UButton>
       </div>
@@ -139,17 +107,13 @@ function onConfirm() {
         color="primary"
         variant="solid"
         size="lg"
+        class="px-8 py-3.5"
         :disabled="!selectedId || (selectedId === 'custom' && !customPath)"
         @click="onConfirm"
       >
         {{ t('onboarding.daw.continue') }}
       </UButton>
-      <UButton
-        color="neutral"
-        variant="ghost"
-        size="sm"
-        @click="emit('skip')"
-      >
+      <UButton color="neutral" variant="ghost" size="sm" @click="emit('skip')">
         {{ t('onboarding.daw.skipForNow') }}
       </UButton>
     </div>

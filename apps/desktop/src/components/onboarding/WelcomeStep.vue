@@ -8,9 +8,7 @@ const emit = defineEmits<{ next: [] }>();
 <template>
   <div class="flex flex-col items-center gap-12 z-1 w-full max-w-110 slide-up">
     <div class="flex flex-col items-center gap-4 text-center">
-      <h1 class="text-[64px] font-black tracking-[-4px] text-orange-500 leading-none">
-        CrAIte
-      </h1>
+      <h1 class="text-[64px] font-black tracking-[-4px] text-orange-500 leading-none">CrAIte</h1>
       <p class="text-lg text-muted">
         {{ t('onboarding.welcome.subtitle') }}
       </p>
@@ -20,12 +18,7 @@ const emit = defineEmits<{ next: [] }>();
       {{ t('onboarding.welcome.description') }}
     </p>
 
-    <UButton
-      color="primary"
-      variant="solid"
-      size="xl"
-      @click="emit('next')"
-    >
+    <UButton color="primary" variant="solid" size="xl" class="px-8 py-3.5" @click="emit('next')">
       {{ t('onboarding.welcome.next') }}
     </UButton>
   </div>

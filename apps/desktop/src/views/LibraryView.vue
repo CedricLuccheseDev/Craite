@@ -14,10 +14,10 @@ useWatcher();
 </script>
 
 <template>
-  <div class="flex w-full h-full  overflow-hidden">
+  <div class="flex w-full h-full overflow-hidden">
     <LibrarySidebar v-model:active-section="activeSection" />
 
-    <main class="flex-1 min-w-0  overflow-hidden">
+    <main class="flex-1 min-w-0 overflow-hidden">
       <LibraryBrowser v-if="activeSection === 'browse'" />
       <SourceManager v-if="activeSection === 'sources'" />
       <LibraryConfig v-if="activeSection === 'export'" />
