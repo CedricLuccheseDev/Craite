@@ -1,7 +1,7 @@
 use tauri::{
-    AppHandle,
     menu::{MenuBuilder, MenuItemBuilder, PredefinedMenuItem},
     tray::{TrayIcon, TrayIconBuilder},
+    AppHandle,
 };
 
 pub fn create_tray(app: &AppHandle) -> Result<TrayIcon, tauri::Error> {

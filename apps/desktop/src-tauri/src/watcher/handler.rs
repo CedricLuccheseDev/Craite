@@ -40,10 +40,9 @@ impl FileWatcher {
         for dir in paths {
             let path = Path::new(dir);
             if path.is_dir() {
-                let _ = debouncer.watcher().watch(
-                    path,
-                    notify::RecursiveMode::NonRecursive,
-                );
+                let _ = debouncer
+                    .watcher()
+                    .watch(path, notify::RecursiveMode::NonRecursive);
             }
         }
 
@@ -64,6 +63,8 @@ impl FileWatcher {
             }
         });
 
-        Ok(FileWatcher { _debouncer: debouncer })
+        Ok(FileWatcher {
+            _debouncer: debouncer,
+        })
     }
 }

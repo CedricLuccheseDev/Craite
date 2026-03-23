@@ -27,17 +27,12 @@ pub fn set_scan_interval(
 ) -> Result<(), String> {
     state.set_interval(minutes);
     let conn = open_connection().str_err()?;
-    repository::set_setting(&conn, "scan_interval_minutes", &minutes.to_string())
-        .str_err()
+    repository::set_setting(&conn, "scan_interval_minutes", &minutes.to_string()).str_err()
 }
 
 #[tauri::command]
 pub fn get_background_scan_status(
     state: State<'_, BackgroundScanState>,
 ) -> Result<(bool, u64, bool), String> {
-    Ok((
-        state.is_enabled(),
-        state.interval(),
-        state.is_scanning(),
-    ))
+    Ok((state.is_enabled(), state.interval(), state.is_scanning()))
 }
