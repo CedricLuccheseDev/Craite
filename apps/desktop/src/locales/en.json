@@ -10,7 +10,17 @@
     "results": "{count} results",
     "searchPlaceholder": "Search samples...",
     "allCategories": "All",
-    "noSamples": "No samples found"
+    "unclassified": "Unclassified",
+    "noSamples": "No samples found",
+    "group": {
+      "drums": "Drums",
+      "bass": "Bass",
+      "synths": "Synths",
+      "vocal": "Vocal",
+      "fx": "FX",
+      "loops": "Loops",
+      "other": "Other"
+    }
   },
   "stats": {
     "samples": "Samples",
@@ -34,7 +44,13 @@
     "noDirectory": "No directory selected",
     "change": "Change",
     "choose": "Choose",
+    "chooseHint": "Choose where CrAIte will create your organized library",
+    "syncing": "Syncing...",
+    "neverGenerated": "Library not yet generated",
     "includeCategories": "Include categories",
+    "categoriesCount": "{count}/{total} categories · {samples} samples",
+    "selectAll": "All",
+    "selectNone": "None",
     "lastGenerated": "Last generated: {date} — {count} files linked"
   },
   "settings": {
@@ -49,10 +65,13 @@
     "scanning": "Scanning...",
     "scanInterval": "Scan interval",
     "scanIntervalDescription": "How often to check for new samples",
+    "interval5": "5 minutes",
     "interval15": "15 minutes",
     "interval30": "30 minutes",
     "interval60": "1 hour",
     "interval120": "2 hours",
+    "interval240": "4 hours",
+    "interval480": "8 hours",
     "footer": "CrAIte minimizes to the system tray when closed and continues scanning in the background."
   },
   "languages": {

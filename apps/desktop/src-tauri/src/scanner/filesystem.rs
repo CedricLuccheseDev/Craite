@@ -19,7 +19,7 @@ fn scan_recursive(dir: &Path, results: &mut Vec<PathBuf>, depth: usize) -> Resul
             MAX_SCAN_DEPTH,
             dir.display()
         );
-        return Ok(()); // Continue scanning other directories instead of failing
+        return Ok(());
     }
 
     if !dir.is_dir() {
@@ -35,17 +35,20 @@ fn scan_recursive(dir: &Path, results: &mut Vec<PathBuf>, depth: usize) -> Resul
         let entry = entry?;
         let path = entry.path();
 
-        // Skip symlinks to avoid potential security issues and infinite loops
-        if let Ok(metadata) = entry.metadata() {
-            if metadata.is_symlink() {
-                log::debug!("Skipping symlink: {}", path.display());
-                continue;
-            }
+        // Use file_type() — avoids an extra stat syscall vs entry.metadata()
+        let file_type = match entry.file_type() {
+            Ok(ft) => ft,
+            Err(_) => continue,
+        };
+
+        if file_type.is_symlink() {
+            log::debug!("Skipping symlink: {}", path.display());
+            continue;
         }
 
-        if path.is_dir() {
+        if file_type.is_dir() {
             scan_recursive(&path, results, depth + 1)?;
-        } else if is_audio_file(&path) {
+        } else if file_type.is_file() && is_audio_file(&path) {
             results.push(path);
         }
     }

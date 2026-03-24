@@ -8,8 +8,8 @@ export function useTauri() {
     });
   }
 
-  async function createLinks(outputDir: string): Promise<number> {
-    return await invoke<number>('create_links', { outputDir });
+  async function createLinks(outputDir: string, excludedCategories: string[]): Promise<number> {
+    return await invoke<number>('create_links', { outputDir, excludedCategories });
   }
 
   async function detectSources(): Promise<Source[]> {
@@ -62,6 +62,10 @@ export function useTauri() {
     return await invoke<string>('create_daw_library_folder', { path });
   }
 
+  async function openFolder(path: string): Promise<void> {
+    return await invoke<void>('open_folder', { path });
+  }
+
   // Reset
   async function resetApp(): Promise<void> {
     return await invoke<void>('reset_app');
@@ -95,6 +99,7 @@ export function useTauri() {
     loadAllSettings,
     detectInstalledDaws,
     createDawLibraryFolder,
+    openFolder,
     resetApp,
     setBackgroundScanEnabled,
     setScanInterval,

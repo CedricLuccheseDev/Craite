@@ -54,7 +54,10 @@ export function useLibraryActions() {
 
     configStore.startGenerating();
     try {
-      const count = await tauri.createLinks(configStore.outputDir);
+      const count = await tauri.createLinks(
+        configStore.outputDir,
+        [...configStore.excludedCategories],
+      );
       configStore.setGenerationResult(count);
     } catch (error) {
       configStore.isGenerating = false;
@@ -66,6 +69,7 @@ export function useLibraryActions() {
     const selected = await open({ directory: true, multiple: false });
     if (selected) {
       configStore.setOutputDir(selected as string);
+      await generateLibrary();
     }
   }
 

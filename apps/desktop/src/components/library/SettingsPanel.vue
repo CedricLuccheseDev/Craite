@@ -17,10 +17,13 @@ const languageOptions = [
 ];
 
 const intervalOptions = computed(() => [
+  { label: t('settings.interval5'), value: 5 },
   { label: t('settings.interval15'), value: 15 },
   { label: t('settings.interval30'), value: 30 },
   { label: t('settings.interval60'), value: 60 },
   { label: t('settings.interval120'), value: 120 },
+  { label: t('settings.interval240'), value: 240 },
+  { label: t('settings.interval480'), value: 480 },
 ]);
 
 function onLocaleChange(value: string) {
@@ -103,13 +106,17 @@ function onLocaleChange(value: string) {
             {{ t('settings.scanIntervalDescription') }}
           </span>
         </div>
-        <USelectMenu
-          :model-value="intervalOptions.find(o => o.value === intervalMinutes)"
+        <USelect
+          :model-value="intervalMinutes"
           :items="intervalOptions"
           value-key="value"
+          label-key="label"
+          color="neutral"
+          variant="outline"
+          size="sm"
           :disabled="!bgEnabled"
           class="w-40"
-          @update:model-value="(opt: { label: string; value: number }) => updateInterval(opt.value)"
+          @update:model-value="updateInterval"
         />
       </div>
     </div>

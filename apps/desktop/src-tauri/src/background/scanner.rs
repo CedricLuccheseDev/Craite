@@ -85,7 +85,14 @@ fn perform_scan() -> Result<BackgroundScanResult, String> {
 
     // Auto-regenerate links if output_dir is configured
     let linked_count = match repository::get_setting(&conn, "output_dir") {
-        Ok(Some(dir)) if !dir.is_empty() => regenerate_links(&dir).unwrap_or(0),
+        Ok(Some(dir)) if !dir.is_empty() => {
+            let excluded: Vec<String> = repository::get_setting(&conn, "excluded_categories")
+                .ok()
+                .flatten()
+                .and_then(|json| serde_json::from_str(&json).ok())
+                .unwrap_or_default();
+            regenerate_links(&dir, &excluded).unwrap_or(0)
+        }
         _ => 0,
     };
 

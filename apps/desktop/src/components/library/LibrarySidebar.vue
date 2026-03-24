@@ -50,12 +50,12 @@ async function restartOnboarding() {
 </script>
 
 <template>
-  <aside class="flex flex-col gap-8 py-8 px-4 w-[200px] shrink-0 bg-black/10">
-    <div class="px-2">
-      <span class="font-display text-xl font-bold tracking-tight">CrAIte</span>
+  <aside class="flex flex-col gap-8 py-9 px-3 w-[220px] shrink-0 bg-black/10">
+    <div class="px-4">
+      <span class="font-display text-[22px] font-bold tracking-tight">CrAIte</span>
     </div>
 
-    <nav class="flex flex-col gap-0.5">
+    <nav class="flex flex-col gap-1">
       <button
         v-for="item in navItems"
         :key="item.id"
@@ -63,7 +63,7 @@ async function restartOnboarding() {
         :class="{ 'bg-surface text-white': activeSection === item.id }"
         @click="emit('update:activeSection', item.id)"
       >
-        <UIcon :name="item.icon" class="text-base shrink-0" />
+        <UIcon :name="item.icon" class="text-[16px] shrink-0" />
         <span>{{ item.label }}</span>
       </button>
     </nav>
@@ -88,8 +88,8 @@ async function restartOnboarding() {
 @reference "../../assets/styles/variables.css";
 
 .nav-item {
-  @apply flex items-center gap-2 w-full py-2.5 px-5 rounded-full
-    text-sm font-medium text-muted bg-transparent border-none
+  @apply flex items-center gap-3 w-full py-3 px-4 rounded-full
+    text-[14px] font-medium text-muted bg-transparent border-none
     cursor-pointer transition-colors duration-150
     hover:bg-surface-hover hover:text-white;
 }

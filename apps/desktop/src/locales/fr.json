@@ -10,7 +10,17 @@
     "results": "{count} résultats",
     "searchPlaceholder": "Rechercher des samples...",
     "allCategories": "Tout",
-    "noSamples": "Aucun sample trouvé"
+    "unclassified": "Non classifiés",
+    "noSamples": "Aucun sample trouvé",
+    "group": {
+      "drums": "Drums",
+      "bass": "Bass",
+      "synths": "Synths",
+      "vocal": "Vocal",
+      "fx": "FX",
+      "loops": "Loops",
+      "other": "Autre"
+    }
   },
   "stats": {
     "samples": "Samples",
@@ -34,7 +44,13 @@
     "noDirectory": "Aucun répertoire sélectionné",
     "change": "Modifier",
     "choose": "Choisir",
+    "chooseHint": "Choisissez où CrAIte créera votre bibliothèque organisée",
+    "syncing": "Synchronisation...",
+    "neverGenerated": "Bibliothèque pas encore générée",
     "includeCategories": "Catégories incluses",
+    "categoriesCount": "{count}/{total} catégories · {samples} samples",
+    "selectAll": "Tout",
+    "selectNone": "Rien",
     "lastGenerated": "Dernière génération : {date} — {count} fichiers liés"
   },
   "settings": {
@@ -49,10 +65,13 @@
     "scanning": "Analyse...",
     "scanInterval": "Intervalle d'analyse",
     "scanIntervalDescription": "Fréquence de vérification des nouveaux samples",
+    "interval5": "5 minutes",
     "interval15": "15 minutes",
     "interval30": "30 minutes",
     "interval60": "1 heure",
     "interval120": "2 heures",
+    "interval240": "4 heures",
+    "interval480": "8 heures",
     "footer": "CrAIte se minimise dans la barre système à la fermeture et continue l'analyse en arrière-plan."
   },
   "languages": {

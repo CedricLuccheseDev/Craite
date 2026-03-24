@@ -66,11 +66,11 @@ watch(
 
       <!-- No samples -->
       <template v-else-if="scanDone && totalSamples === 0">
-        <div class="flex flex-col items-center gap-2.5 text-center">
-          <h2 class="text-[40px] font-extrabold tracking-[-1.5px]">
+        <div class="flex flex-col items-center gap-3 text-center">
+          <h2 class="text-[44px] font-extrabold tracking-[-1.5px]">
             {{ t('onboarding.result.noSamples') }}
           </h2>
-          <p class="text-base text-muted">
+          <p class="text-[17px] text-muted">
             {{ t('onboarding.result.noSamplesHint') }}
           </p>
         </div>
@@ -78,23 +78,23 @@ watch(
 
       <!-- Results found -->
       <template v-else-if="scanDone">
-        <div class="flex flex-col items-center gap-2.5 text-center">
-          <h2 class="text-[40px] font-extrabold tracking-[-1.5px]">
+        <div class="flex flex-col items-center gap-3 text-center">
+          <h2 class="text-[44px] font-extrabold tracking-[-1.5px]">
             {{ t('onboarding.result.libraryReady') }}
           </h2>
-          <p class="text-base text-muted">
+          <p class="text-[17px] text-muted">
             {{ t('onboarding.result.samplesOrganized', { count: totalSamples.toLocaleString() }) }}
           </p>
         </div>
 
-        <ul class="list-none w-full max-w-105 max-h-48 overflow-y-auto">
+        <ul class="list-none w-full max-w-105 max-h-52 overflow-y-auto">
           <li
             v-for="(cat, index) in categories"
             :key="cat.name"
-            class="flex items-center gap-4 py-3.5 border-b border-zinc-800 stagger-item first:border-t"
-            :style="{ animationDelay: `${index * 50}ms` }"
+            class="flex items-center gap-4 py-4 border-b border-zinc-800 stagger-item first:border-t"
+            :style="{ animationDelay: `${index * 40}ms` }"
           >
-            <span class="size-2 rounded-full shrink-0" :style="{ background: getCategoryColor(cat.name) }" />
+            <span class="size-2.5 rounded-full shrink-0" :style="{ background: getCategoryColor(cat.name) }" />
             <span class="flex-1 text-[15px] font-medium capitalize">
               {{ cat.name }}
             </span>
@@ -107,10 +107,10 @@ watch(
     </div>
 
     <!-- Actions: pinned to bottom -->
-    <div class="shrink-0 flex flex-col items-center gap-2 pb-10 pt-4">
+    <div class="shrink-0 flex flex-col items-center gap-3 pb-12 pt-4">
       <!-- Welcome -->
       <template v-if="!scanStarted">
-        <UButton color="primary" variant="solid" size="xl" class="px-8 py-3.5" @click="emit('start')">
+        <UButton color="primary" variant="solid" size="xl" class="px-10 py-4" @click="emit('start')">
           {{ t('onboarding.welcome.next') }}
         </UButton>
       </template>
@@ -129,7 +129,7 @@ watch(
           variant="solid"
           size="xl"
           icon="i-lucide-folder-plus"
-          class="px-8 py-3.5"
+          class="px-10 py-4"
           @click="emit('addFolder')"
         >
           {{ t('onboarding.result.addFolder') }}
@@ -141,7 +141,7 @@ watch(
 
       <!-- Results found -->
       <template v-else-if="scanDone">
-        <UButton color="primary" variant="solid" size="lg" class="px-8 py-3.5" @click="emit('continue')">
+        <UButton color="primary" variant="solid" size="xl" class="px-10 py-4" @click="emit('continue')">
           {{ t('onboarding.result.continue') }}
         </UButton>
         <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-folder-plus" @click="emit('addFolder')">

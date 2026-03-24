@@ -10,40 +10,39 @@ const libraryStore = useLibraryStore();
 </script>
 
 <template>
-  <section class="h-full flex flex-col gap-6 bg-surface rounded-2xl p-8">
+  <section class="h-full flex flex-col gap-6 bg-surface rounded-2xl p-9">
     <div class="flex flex-col gap-4 shrink-0">
       <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold tracking-tight">
+        <h2 class="text-[22px] font-bold tracking-tight shrink-0">
           {{ t('browse.title') }}
         </h2>
-        <span class="text-[13px] text-muted tabular-nums">
+        <LibraryStats />
+      </div>
+      <div class="flex items-center justify-between">
+        <UInput
+          :model-value="libraryStore.searchQuery"
+          :placeholder="t('browse.searchPlaceholder')"
+          color="neutral"
+          variant="outline"
+          icon="i-lucide-search"
+          class="w-72"
+          @update:model-value="libraryStore.setSearchQuery"
+        />
+        <span class="text-sm text-muted tabular-nums">
           {{ t('browse.results', { count: libraryStore.filteredSamples.length }) }}
         </span>
       </div>
-      <LibraryStats />
     </div>
 
-    <div class="shrink-0">
-      <UInput
-        :model-value="libraryStore.searchQuery"
-        :placeholder="t('browse.searchPlaceholder')"
-        color="neutral"
-        variant="outline"
-        icon="i-lucide-search"
-        class="w-70"
-        @update:model-value="libraryStore.setSearchQuery"
-      />
-    </div>
-
-    <div class="flex-1 min-h-0 flex gap-6 overflow-hidden">
-      <div class="w-45 shrink-0 overflow-y-auto scrollbar-thin">
+    <div class="flex-1 min-h-0 flex gap-7 overflow-hidden">
+      <div class="w-52 shrink-0 overflow-y-auto scrollbar-thin pr-2">
         <CategoryTree
           :categories="libraryStore.categories"
           :selected="libraryStore.selectedCategory"
           @select="libraryStore.selectCategory"
         />
       </div>
-      <div class="flex-1 min-w-0 min-h-0 scrollbar-thin">
+      <div class="flex-1 min-w-0 min-h-0 overflow-y-auto scrollbar-thin">
         <SampleList :samples="libraryStore.filteredSamples" />
       </div>
     </div>

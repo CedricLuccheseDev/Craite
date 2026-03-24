@@ -52,7 +52,7 @@ onUnmounted(() => {
     <div
       v-for="sample in visibleSamples"
       :key="sample.id"
-      class="flex items-center justify-between py-2 px-4 bg-surface transition-colors duration-150 hover:bg-surface-hover"
+      class="flex items-center justify-between py-3 px-5 bg-surface transition-colors duration-150 hover:bg-surface-hover"
     >
       <AudioPlayer :sample-path="sample.path" :sample-name="sample.name" />
       <UBadge :label="sample.category" color="neutral" variant="subtle" size="sm" />
