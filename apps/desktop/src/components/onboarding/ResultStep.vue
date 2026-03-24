@@ -12,7 +12,6 @@ interface Props {
 
 defineProps<Props>();
 const emit = defineEmits<{ addFolder: []; continue: [] }>();
-
 </script>
 
 <template>
@@ -33,17 +32,13 @@ const emit = defineEmits<{ addFolder: []; continue: [] }>();
         variant="solid"
         size="xl"
         icon="i-lucide-folder-plus"
+        class="px-8 py-3.5"
         @click="emit('addFolder')"
       >
         {{ t('onboarding.result.addFolder') }}
       </UButton>
 
-      <UButton
-        color="neutral"
-        variant="ghost"
-        size="sm"
-        @click="emit('continue')"
-      >
+      <UButton color="neutral" variant="ghost" size="sm" @click="emit('continue')">
         {{ t('onboarding.result.skipForNow') }}
       </UButton>
     </template>
@@ -63,14 +58,10 @@ const emit = defineEmits<{ addFolder: []; continue: [] }>();
         <li
           v-for="(cat, index) in categories"
           :key="cat.name"
-          class="flex items-center gap-4 py-3.5 border-b border-zinc-800
-            stagger-item first:border-t"
+          class="flex items-center gap-4 py-3.5 border-b border-zinc-800 stagger-item first:border-t"
           :style="{ animationDelay: `${index * 50}ms` }"
         >
-          <span
-            class="size-2 rounded-full shrink-0"
-            :style="{ background: getCategoryColor(cat.name) }"
-          />
+          <span class="size-2 rounded-full shrink-0" :style="{ background: getCategoryColor(cat.name) }" />
           <span class="flex-1 text-[15px] font-medium capitalize">
             {{ cat.name }}
           </span>
@@ -81,21 +72,10 @@ const emit = defineEmits<{ addFolder: []; continue: [] }>();
       </ul>
 
       <div class="flex flex-col items-center gap-2">
-        <UButton
-          color="primary"
-          variant="solid"
-          size="lg"
-          @click="emit('continue')"
-        >
+        <UButton color="primary" variant="solid" size="lg" class="px-8 py-3.5" @click="emit('continue')">
           {{ t('onboarding.result.continue') }}
         </UButton>
-        <UButton
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          icon="i-lucide-folder-plus"
-          @click="emit('addFolder')"
-        >
+        <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-folder-plus" @click="emit('addFolder')">
           {{ t('onboarding.result.addMoreFolders') }}
         </UButton>
       </div>

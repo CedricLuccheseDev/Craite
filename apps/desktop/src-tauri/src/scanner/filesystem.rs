@@ -1,6 +1,6 @@
-use std::path::{Path, PathBuf};
 use crate::error::CraiteError;
 use crate::scanner::source_paths::PlatformPaths;
+use std::path::{Path, PathBuf};
 
 pub const AUDIO_EXTENSIONS: &[&str] = &["wav", "mp3", "flac", "ogg", "aiff", "aif"];
 const MAX_SCAN_DEPTH: usize = 20;
@@ -14,14 +14,19 @@ pub fn scan_directory(dir: &Path) -> Result<Vec<PathBuf>, CraiteError> {
 
 fn scan_recursive(dir: &Path, results: &mut Vec<PathBuf>, depth: usize) -> Result<(), CraiteError> {
     if depth > MAX_SCAN_DEPTH {
-        log::warn!("Max scan depth ({}) exceeded at: {}", MAX_SCAN_DEPTH, dir.display());
+        log::warn!(
+            "Max scan depth ({}) exceeded at: {}",
+            MAX_SCAN_DEPTH,
+            dir.display()
+        );
         return Ok(()); // Continue scanning other directories instead of failing
     }
 
     if !dir.is_dir() {
-        return Err(CraiteError::Scanner(
-            format!("Not a directory: {}", dir.display()),
-        ));
+        return Err(CraiteError::Scanner(format!(
+            "Not a directory: {}",
+            dir.display()
+        )));
     }
 
     let entries = std::fs::read_dir(dir)?;

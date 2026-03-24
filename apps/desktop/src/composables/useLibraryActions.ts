@@ -34,8 +34,7 @@ export function useLibraryActions() {
       libraryStore.setCategories(result.categories);
 
       await generateLibrary();
-    }
-    catch (error) {
+    } catch (error) {
       scanStore.setScanError(String(error));
     }
   }
@@ -57,8 +56,7 @@ export function useLibraryActions() {
     try {
       const count = await tauri.createLinks(configStore.outputDir);
       configStore.setGenerationResult(count);
-    }
-    catch (error) {
+    } catch (error) {
       configStore.isGenerating = false;
       console.error('Failed to generate library:', error);
     }

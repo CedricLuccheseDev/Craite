@@ -1,5 +1,5 @@
-use rusqlite::{Connection, Result, params};
 use crate::db::models::{Sample, Source};
+use rusqlite::{params, Connection, Result};
 
 // --- Samples ---
 
@@ -8,8 +8,8 @@ pub fn insert_samples(conn: &Connection, samples: &[Sample]) -> Result<()> {
 
     let mut stmt = tx.prepare(
         "INSERT OR REPLACE INTO samples
-            (name, path, category, subcategory, confidence, source, duration, sample_rate, linked_path)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
+            (name, path, category, subcategory, confidence, source, duration, sample_rate, linked_path, mtime)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
     )?;
 
     for sample in samples {
@@ -23,6 +23,7 @@ pub fn insert_samples(conn: &Connection, samples: &[Sample]) -> Result<()> {
             sample.duration,
             sample.sample_rate,
             sample.linked_path,
+            sample.mtime,
         ])?;
     }
 
@@ -33,7 +34,7 @@ pub fn insert_samples(conn: &Connection, samples: &[Sample]) -> Result<()> {
 pub fn load_all_samples(conn: &Connection) -> Result<Vec<Sample>> {
     let mut stmt = conn.prepare(
         "SELECT id, name, path, category, subcategory, confidence, source,
-                duration, sample_rate, linked_path
+                duration, sample_rate, linked_path, mtime
          FROM samples ORDER BY category, name",
     )?;
 
@@ -49,17 +50,81 @@ pub fn load_all_samples(conn: &Connection) -> Result<Vec<Sample>> {
             duration: row.get(7)?,
             sample_rate: row.get(8)?,
             linked_path: row.get(9)?,
+            mtime: row.get(10)?,
         })
     })?;
 
     rows.collect()
 }
 
+pub fn load_samples_by_source(conn: &Connection, source: &str) -> Result<Vec<Sample>> {
+    let mut stmt = conn.prepare(
+        "SELECT id, name, path, category, subcategory, confidence, source,
+                duration, sample_rate, linked_path, mtime
+         FROM samples WHERE source = ?1 ORDER BY category, name",
+    )?;
+    let rows = stmt.query_map(params![source], |row| {
+        Ok(Sample {
+            id: row.get(0)?,
+            name: row.get(1)?,
+            path: row.get(2)?,
+            category: row.get(3)?,
+            subcategory: row.get(4)?,
+            confidence: row.get(5)?,
+            source: row.get(6)?,
+            duration: row.get(7)?,
+            sample_rate: row.get(8)?,
+            linked_path: row.get(9)?,
+            mtime: row.get(10)?,
+        })
+    })?;
+    rows.collect()
+}
+
+#[cfg(test)]
 pub fn clear_samples_by_source(conn: &Connection, source: &str) -> Result<usize> {
     conn.execute("DELETE FROM samples WHERE source = ?1", params![source])
 }
 
+/// Load existing (path, mtime) pairs for a source to enable incremental scan
+pub fn load_mtimes_by_source(
+    conn: &Connection,
+    source: &str,
+) -> Result<std::collections::HashMap<String, u64>> {
+    let mut stmt = conn.prepare("SELECT path, mtime FROM samples WHERE source = ?1")?;
+    let rows = stmt.query_map(params![source], |row| {
+        Ok((row.get::<_, String>(0)?, row.get::<_, u64>(1)?))
+    })?;
+    let mut map = std::collections::HashMap::new();
+    for row in rows {
+        let (path, mtime) = row?;
+        map.insert(path, mtime);
+    }
+    Ok(map)
+}
+
+/// Delete samples whose paths are no longer on disk
+pub fn remove_samples_by_paths(conn: &Connection, paths: &[String]) -> Result<usize> {
+    if paths.is_empty() {
+        return Ok(0);
+    }
+    let tx = conn.unchecked_transaction()?;
+    let mut deleted = 0;
+    let mut stmt = tx.prepare("DELETE FROM samples WHERE path = ?1")?;
+    for path in paths {
+        deleted += stmt.execute(params![path])?;
+    }
+    drop(stmt);
+    tx.commit()?;
+    Ok(deleted)
+}
+
 // --- Sources ---
+
+#[cfg(test)]
+pub fn delete_source(conn: &Connection, path: &str) -> Result<usize> {
+    conn.execute("DELETE FROM sources WHERE path = ?1", params![path])
+}
 
 pub fn insert_source(conn: &Connection, source: &Source) -> Result<()> {
     conn.execute(
@@ -77,9 +142,8 @@ pub fn insert_source(conn: &Connection, source: &Source) -> Result<()> {
 }
 
 pub fn load_all_sources(conn: &Connection) -> Result<Vec<Source>> {
-    let mut stmt = conn.prepare(
-        "SELECT path, label, enabled, source_type, sample_count FROM sources",
-    )?;
+    let mut stmt =
+        conn.prepare("SELECT path, label, enabled, source_type, sample_count FROM sources")?;
 
     let rows = stmt.query_map([], |row| {
         let enabled: i32 = row.get(2)?;
@@ -101,10 +165,6 @@ pub fn update_source_enabled(conn: &Connection, path: &str, enabled: bool) -> Re
         "UPDATE sources SET enabled = ?1 WHERE path = ?2",
         params![enabled as i32, path],
     )
-}
-
-pub fn delete_source(conn: &Connection, path: &str) -> Result<usize> {
-    conn.execute("DELETE FROM sources WHERE path = ?1", params![path])
 }
 
 pub fn clear_all_data(conn: &Connection) -> Result<()> {
@@ -159,7 +219,8 @@ mod tests {
                 source TEXT NOT NULL,
                 duration REAL NOT NULL DEFAULT 0.0,
                 sample_rate INTEGER NOT NULL DEFAULT 0,
-                linked_path TEXT
+                linked_path TEXT,
+                mtime INTEGER NOT NULL DEFAULT 0
             );
 
             CREATE TABLE sources (
@@ -182,34 +243,28 @@ mod tests {
 
     // --- Sample tests ---
 
+    fn test_sample(name: &str, path: &str, category: &str, source: &str) -> Sample {
+        Sample {
+            id: 0,
+            name: name.to_string(),
+            path: path.to_string(),
+            category: category.to_string(),
+            subcategory: "".to_string(),
+            confidence: 0.8,
+            source: source.to_string(),
+            duration: 0.0,
+            sample_rate: 0,
+            linked_path: None,
+            mtime: 0,
+        }
+    }
+
     #[test]
     fn test_insert_and_load_samples() {
         let conn = setup_test_db();
         let samples = vec![
-            Sample {
-                id: None,
-                name: "kick_01".to_string(),
-                path: "/samples/kick_01.wav".to_string(),
-                category: "kick".to_string(),
-                subcategory: "".to_string(),
-                confidence: 0.8,
-                source: "/samples".to_string(),
-                duration: Some(1.5),
-                sample_rate: Some(44100),
-                linked_path: None,
-            },
-            Sample {
-                id: None,
-                name: "snare_02".to_string(),
-                path: "/samples/snare_02.wav".to_string(),
-                category: "snare".to_string(),
-                subcategory: "".to_string(),
-                confidence: 0.9,
-                source: "/samples".to_string(),
-                duration: Some(0.8),
-                sample_rate: Some(48000),
-                linked_path: None,
-            },
+            test_sample("kick_01", "/samples/kick_01.wav", "kick", "/samples"),
+            test_sample("snare_02", "/samples/snare_02.wav", "snare", "/samples"),
         ];
 
         insert_samples(&conn, &samples).unwrap();
@@ -226,30 +281,8 @@ mod tests {
     fn test_clear_samples_by_source() {
         let conn = setup_test_db();
         let samples = vec![
-            Sample {
-                id: None,
-                name: "sample1".to_string(),
-                path: "/path1/sample1.wav".to_string(),
-                category: "kick".to_string(),
-                subcategory: "".to_string(),
-                confidence: 0.8,
-                source: "/path1".to_string(),
-                duration: None,
-                sample_rate: None,
-                linked_path: None,
-            },
-            Sample {
-                id: None,
-                name: "sample2".to_string(),
-                path: "/path2/sample2.wav".to_string(),
-                category: "snare".to_string(),
-                subcategory: "".to_string(),
-                confidence: 0.8,
-                source: "/path2".to_string(),
-                duration: None,
-                sample_rate: None,
-                linked_path: None,
-            },
+            test_sample("sample1", "/path1/sample1.wav", "kick", "/path1"),
+            test_sample("sample2", "/path2/sample2.wav", "snare", "/path2"),
         ];
 
         insert_samples(&conn, &samples).unwrap();
@@ -356,18 +389,7 @@ mod tests {
         let conn = setup_test_db();
 
         // Insert test data
-        let sample = Sample {
-            id: None,
-            name: "test".to_string(),
-            path: "/test.wav".to_string(),
-            category: "kick".to_string(),
-            subcategory: "".to_string(),
-            confidence: 0.8,
-            source: "/test".to_string(),
-            duration: None,
-            sample_rate: None,
-            linked_path: None,
-        };
+        let sample = test_sample("test", "/test.wav", "kick", "/test");
         insert_samples(&conn, &[sample]).unwrap();
 
         let source = Source {

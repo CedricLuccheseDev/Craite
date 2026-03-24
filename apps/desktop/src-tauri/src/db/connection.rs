@@ -2,8 +2,7 @@ use rusqlite::{Connection, Result};
 use std::path::PathBuf;
 
 pub fn get_db_path() -> PathBuf {
-    let mut path = dirs_next()
-        .unwrap_or_else(|| PathBuf::from("."));
+    let mut path = dirs_next().unwrap_or_else(|| PathBuf::from("."));
     path.push("craite.db");
     path
 }
@@ -52,9 +51,11 @@ fn initialize_tables(conn: &Connection) -> Result<()> {
     )?;
 
     // Migration: add confidence column for existing databases
-    let _ = conn.execute_batch(
-        "ALTER TABLE samples ADD COLUMN confidence REAL NOT NULL DEFAULT 0.0;",
-    );
+    let _ =
+        conn.execute_batch("ALTER TABLE samples ADD COLUMN confidence REAL NOT NULL DEFAULT 0.0;");
+
+    // Migration: add mtime column for incremental scan
+    let _ = conn.execute_batch("ALTER TABLE samples ADD COLUMN mtime INTEGER NOT NULL DEFAULT 0;");
 
     Ok(())
 }

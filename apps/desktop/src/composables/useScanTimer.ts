@@ -18,7 +18,7 @@ export function useScanTimer(isScanning: Ref<boolean>) {
     }
   }
 
-  watch(isScanning, (scanning) => {
+  watch(isScanning, scanning => {
     if (scanning) startTimer();
     else stopTimer();
   });

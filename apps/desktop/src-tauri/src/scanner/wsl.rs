@@ -36,8 +36,12 @@ fn resolve_via_cmd() -> Option<String> {
 }
 
 const SYSTEM_USER_DIRS: &[&str] = &[
-    "All Users", "Default", "Default User", "Public",
-    "TEMP", "desktop.ini",
+    "All Users",
+    "Default",
+    "Default User",
+    "Public",
+    "TEMP",
+    "desktop.ini",
 ];
 
 fn resolve_via_user_dirs() -> Option<String> {

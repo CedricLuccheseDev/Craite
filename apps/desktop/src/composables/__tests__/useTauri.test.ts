@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import { useTauri } from '../useTauri';
 
 // Mock Tauri invoke
@@ -7,8 +7,12 @@ vi.mock('@tauri-apps/api/core', () => ({
 }));
 
 describe('useTauri', () => {
-  const { invoke } = await import('@tauri-apps/api/core');
-  const mockInvoke = vi.mocked(invoke);
+  let mockInvoke: ReturnType<typeof vi.fn>;
+
+  beforeAll(async () => {
+    const { invoke } = await import('@tauri-apps/api/core');
+    mockInvoke = vi.mocked(invoke);
+  });
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -21,9 +25,9 @@ describe('useTauri', () => {
 
       const { scanDirectories } = useTauri();
       const sources = [
-        { path: '/path1', enabled: true },
-        { path: '/path2', enabled: false },
-        { path: '/path3', enabled: true },
+        { path: '/path1', label: 'Path 1', enabled: true, type: 'custom' as const, sampleCount: 0 },
+        { path: '/path2', label: 'Path 2', enabled: false, type: 'custom' as const, sampleCount: 0 },
+        { path: '/path3', label: 'Path 3', enabled: true, type: 'custom' as const, sampleCount: 0 },
       ];
 
       const result = await scanDirectories(sources);

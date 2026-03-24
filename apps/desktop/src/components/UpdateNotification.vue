@@ -16,21 +16,23 @@ const isVisible = computed(() => props.phase !== 'idle');
 
 const title = computed(() => {
   switch (props.phase) {
-    case 'available': return `Update available — v${props.updateInfo?.version ?? ''}`;
-    case 'downloading': return 'Downloading update...';
-    case 'ready': return 'Update ready to install';
-    case 'error': return 'Update failed';
-    default: return '';
+    case 'available':
+      return `Update available — v${props.updateInfo?.version ?? ''}`;
+    case 'downloading':
+      return 'Downloading update...';
+    case 'ready':
+      return 'Update ready to install';
+    case 'error':
+      return 'Update failed';
+    default:
+      return '';
   }
 });
 </script>
 
 <template>
   <Transition name="slide-up">
-    <UCard
-      v-if="isVisible"
-      class="fixed bottom-6 right-6 w-80 z-9999"
-    >
+    <UCard v-if="isVisible" class="fixed bottom-6 right-6 w-80 z-9999">
       <div class="flex items-start justify-between gap-3 mb-3">
         <span class="text-sm font-semibold text-primary">{{ title }}</span>
         <UButton
@@ -50,10 +52,7 @@ const title = computed(() => {
         {{ updateInfo.body }}
       </p>
 
-      <p
-        v-if="phase === 'error'"
-        class="text-xs text-red-400 mb-3"
-      >
+      <p v-if="phase === 'error'" class="text-xs text-red-400 mb-3">
         {{ errorMessage }}
       </p>
 
@@ -65,22 +64,10 @@ const title = computed(() => {
       />
 
       <div class="flex justify-end">
-        <UButton
-          v-if="phase === 'available'"
-          color="primary"
-          variant="solid"
-          size="sm"
-          @click="emit('install')"
-        >
+        <UButton v-if="phase === 'available'" color="primary" variant="solid" size="sm" @click="emit('install')">
           Install
         </UButton>
-        <UButton
-          v-if="phase === 'ready'"
-          color="primary"
-          variant="solid"
-          size="sm"
-          @click="emit('restart')"
-        >
+        <UButton v-if="phase === 'ready'" color="primary" variant="solid" size="sm" @click="emit('restart')">
           Restart now
         </UButton>
       </div>
@@ -91,7 +78,9 @@ const title = computed(() => {
 <style scoped>
 .slide-up-enter-active,
 .slide-up-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .slide-up-enter-from,

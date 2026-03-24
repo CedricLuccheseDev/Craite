@@ -26,10 +26,7 @@ const emit = defineEmits<{ finish: [] }>();
 
       <div class="flex flex-col gap-5 w-full max-w-105">
         <div class="flex items-start gap-4">
-          <span
-            class="shrink-0 size-9 flex items-center justify-center
-              rounded-md bg-surface text-orange-500 text-lg"
-          >
+          <span class="shrink-0 size-9 flex items-center justify-center rounded-md bg-surface text-orange-500 text-lg">
             <UIcon name="i-lucide-search" />
           </span>
           <div class="flex flex-col gap-0.5">
@@ -42,10 +39,7 @@ const emit = defineEmits<{ finish: [] }>();
           </div>
         </div>
         <div class="flex items-start gap-4">
-          <span
-            class="shrink-0 size-9 flex items-center justify-center
-              rounded-md bg-surface text-orange-500 text-lg"
-          >
+          <span class="shrink-0 size-9 flex items-center justify-center rounded-md bg-surface text-orange-500 text-lg">
             <UIcon name="i-lucide-play" />
           </span>
           <div class="flex flex-col gap-0.5">
@@ -58,10 +52,7 @@ const emit = defineEmits<{ finish: [] }>();
           </div>
         </div>
         <div class="flex items-start gap-4">
-          <span
-            class="shrink-0 size-9 flex items-center justify-center
-              rounded-md bg-surface text-orange-500 text-lg"
-          >
+          <span class="shrink-0 size-9 flex items-center justify-center rounded-md bg-surface text-orange-500 text-lg">
             <UIcon name="i-lucide-folder-plus" />
           </span>
           <div class="flex flex-col gap-0.5">
@@ -78,12 +69,7 @@ const emit = defineEmits<{ finish: [] }>();
 
     <!-- Actions: pinned to bottom -->
     <div class="shrink-0 flex flex-col items-center gap-2 pb-10 pt-4">
-      <UButton
-        color="primary"
-        variant="solid"
-        size="xl"
-        @click="emit('finish')"
-      >
+      <UButton color="primary" variant="solid" size="xl" class="px-8 py-3.5" @click="emit('finish')">
         {{ t('onboarding.ready.openLibrary') }}
       </UButton>
     </div>

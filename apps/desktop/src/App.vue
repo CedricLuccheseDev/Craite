@@ -7,7 +7,8 @@ import { useAppInit } from '@/composables/useAppInit';
 import { useBackgroundScan } from '@/composables/useBackgroundScan';
 import UpdateNotification from '@/components/UpdateNotification.vue';
 
-const { phase, updateInfo, downloadPercent, errorMessage, setupListeners, checkForUpdate, installUpdate, dismiss } = useUpdater();
+const { phase, updateInfo, downloadPercent, errorMessage, setupListeners, checkForUpdate, installUpdate, dismiss } =
+  useUpdater();
 const { initialize } = useAppInit();
 const { setupListeners: setupBackgroundListeners } = useBackgroundScan();
 
@@ -38,14 +39,22 @@ onMounted(async () => {
 
 <style>
 @layer base {
-  html, body {
+  html,
+  body {
     @apply w-full h-full overflow-hidden antialiased;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      sans-serif;
     background: #0a0a0a;
     color: #ffffff;
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: 'Space Grotesk', sans-serif;
   }
 

@@ -12,6 +12,9 @@ pub struct Sample {
     pub duration: f64,
     pub sample_rate: u32,
     pub linked_path: Option<String>,
+    /// File modification time (seconds since epoch) for incremental scan
+    #[serde(default)]
+    pub mtime: u64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

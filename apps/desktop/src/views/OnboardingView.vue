@@ -5,7 +5,9 @@ import { open } from '@tauri-apps/plugin-dialog';
 import { useOnboarding, completeOnboarding } from '@/composables/useOnboarding';
 import { useTauri } from '@/composables/useTauri';
 import { useScanStore } from '@/stores/scan';
+import { useLibraryStore } from '@/stores/library';
 import { useLibraryConfigStore } from '@/stores/libraryConfig';
+import { buildCategoriesFromSamples } from '@/utils/categoryBuilder';
 import type { DawInfo } from '@/types/sample';
 import GridBackground from '@/components/onboarding/GridBackground.vue';
 import StepDots from '@/components/onboarding/StepDots.vue';
@@ -15,18 +17,12 @@ import ReadyStep from '@/components/onboarding/ReadyStep.vue';
 
 const router = useRouter();
 const scanStore = useScanStore();
+const libraryStore = useLibraryStore();
 const configStore = useLibraryConfigStore();
 const tauri = useTauri();
 const scanStarted = ref(false);
 
-const {
-  currentStep,
-  scanProgress,
-  scanTotal,
-  isScanning,
-  stepIndex,
-  goToStep,
-} = useOnboarding();
+const { currentStep, scanProgress, scanTotal, isScanning, stepIndex, goToStep } = useOnboarding();
 
 // 4 visual dots: welcome(0) → scan/result(1) → daw(2) → ready(3)
 const visualStepIndex = computed(() => {
@@ -46,7 +42,7 @@ async function runScan() {
   try {
     if (scanStore.sources.length === 0) {
       const detected = await tauri.detectSources();
-      scanStore.setDetectedSources(detected);
+      scanStore.setDetectedSources(detected, false);
     }
 
     const result = await tauri.scanDirectories(scanStore.enabledSources);
@@ -54,6 +50,7 @@ async function runScan() {
     scanProgress.value = result.totalFiles;
     scanStore.setScanResult(result);
     scanStore.updateSourceCounts(result.samples);
+    scanStore.removeEmptySources();
   } catch (error) {
     console.error('Scan failed:', error);
     scanStore.setScanError(String(error));
@@ -62,8 +59,9 @@ async function runScan() {
   }
 }
 
-function onSkip() {
+async function onSkip() {
   completeOnboarding();
+  await loadSamplesIntoLibrary();
   router.push('/library');
 }
 
@@ -100,9 +98,22 @@ function onDawSkip() {
   goToStep('ready');
 }
 
-function onFinish() {
+async function onFinish() {
   completeOnboarding();
+  await loadSamplesIntoLibrary();
   router.push('/library');
+}
+
+async function loadSamplesIntoLibrary() {
+  try {
+    const samples = await tauri.loadSamples();
+    if (samples.length > 0) {
+      libraryStore.setSamples(samples);
+      libraryStore.setCategories(buildCategoriesFromSamples(samples));
+    }
+  } catch (error) {
+    console.error('Failed to load samples after onboarding:', error);
+  }
 }
 </script>
 
@@ -127,11 +138,7 @@ function onFinish() {
         @add-folder="onAddFolder"
       />
 
-      <DawStep
-        v-else-if="currentStep === 'daw'"
-        @select="onDawSelect"
-        @skip="onDawSkip"
-      />
+      <DawStep v-else-if="currentStep === 'daw'" @select="onDawSelect" @skip="onDawSkip" />
 
       <ReadyStep
         v-else-if="currentStep === 'ready'"

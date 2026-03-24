@@ -30,3 +30,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+apps/desktop/auto-imports.d.ts
+apps/desktop/components.d.ts

@@ -1,5 +1,4 @@
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div class="grid-bg" aria-hidden="true">
@@ -27,8 +26,7 @@
 .grid-lines::before {
   content: '';
   @apply absolute inset-0;
-  background-image:
-    linear-gradient(to bottom, rgba(255, 107, 53, 0.1) 1px, transparent 1px);
+  background-image: linear-gradient(to bottom, rgba(255, 107, 53, 0.1) 1px, transparent 1px);
   background-size: 48px 192px;
 }
 

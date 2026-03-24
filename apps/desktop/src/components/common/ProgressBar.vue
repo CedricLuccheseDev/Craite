@@ -18,11 +18,5 @@ const modelValue = computed(() => {
 </script>
 
 <template>
-  <UProgress
-    :model-value="modelValue"
-    :max="100"
-    color="success"
-    animation="carousel"
-    class="w-full max-w-100"
-  />
+  <UProgress :model-value="modelValue" :max="100" color="success" animation="carousel" class="w-full max-w-100" />
 </template>

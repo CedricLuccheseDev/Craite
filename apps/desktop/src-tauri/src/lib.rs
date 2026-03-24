@@ -9,15 +9,14 @@ mod scanner;
 mod tray;
 mod watcher;
 
-use std::sync::Mutex;
 use audio::preview::AudioPreview;
 use background::state::BackgroundScanState;
-use commands::{
-    background as bg_cmd, classify, daw, persistence, scan, updater,
-    watcher as watcher_cmd,
-};
 use commands::scan::AudioState;
 use commands::watcher::WatcherState;
+use commands::{
+    background as bg_cmd, classify, daw, persistence, scan, updater, watcher as watcher_cmd,
+};
+use std::sync::Mutex;
 use tauri::Manager;
 use tauri_plugin_autostart::MacosLauncher;
 
@@ -42,7 +41,8 @@ pub fn run() {
         }))
         .setup(|app| {
             #[cfg(desktop)]
-            app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
+            app.handle()
+                .plugin(tauri_plugin_updater::Builder::new().build())?;
             #[cfg(desktop)]
             app.handle().plugin(tauri_plugin_process::init())?;
 
@@ -57,7 +57,8 @@ pub fn run() {
             // Load background scan settings from DB
             let bg_state = BackgroundScanState::default();
             if let Ok(conn) = db::connection::open_connection() {
-                if let Ok(Some(val)) = db::repository::get_setting(&conn, "background_scan_enabled") {
+                if let Ok(Some(val)) = db::repository::get_setting(&conn, "background_scan_enabled")
+                {
                     bg_state.set_enabled(val == "true");
                 }
                 if let Ok(Some(val)) = db::repository::get_setting(&conn, "scan_interval_minutes") {
@@ -92,6 +93,7 @@ pub fn run() {
             scan::detect_sources,
             scan::preview_sample,
             scan::stop_preview,
+            scan::read_audio_file,
             classify::create_links,
             persistence::save_samples,
             persistence::load_samples,

@@ -32,20 +32,12 @@
   "plugins": {
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVBQzU2RjI4NTlCN0FDOEMKUldTTXJMZFpLRy9GNm04YUlTR0dvN2FCNkpaQklrdFc3YkppT25jakNFQnVZMlBNdlAxWC9OWUcK",
-      "endpoints": [
-        "https://github.com/CedricLuccheseDev/Craite/releases/latest/download/latest.json"
-      ]
+      "endpoints": ["https://craite.app/api/update"]
     }
   },
   "bundle": {
     "active": true,
     "targets": "all",
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ]
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"]
   }
 }

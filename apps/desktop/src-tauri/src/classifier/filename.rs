@@ -1,5 +1,6 @@
-use std::path::Path;
+use super::engine::rule_engine;
 use super::rules::RULES;
+use std::path::Path;
 
 /// Classification result for a single file
 pub struct Classification {
@@ -8,7 +9,8 @@ pub struct Classification {
     pub confidence: f32,
 }
 
-/// Classify a sample based on its filename and parent directory
+/// Classify a sample based on its filename and parent directory.
+/// Uses a pre-compiled AhoCorasick automaton for single-pass matching.
 pub fn classify_by_filename(path: &Path) -> Classification {
     let filename = path
         .file_stem()
@@ -25,17 +27,14 @@ pub fn classify_by_filename(path: &Path) -> Classification {
 
     let combined = format!("{parent} {filename}");
 
-    // Check each rule against filename + parent directory
-    for rule in RULES {
-        for keyword in rule.keywords {
-            if combined.contains(keyword) {
-                return Classification {
-                    category: rule.category.to_string(),
-                    subcategory: extract_subcategory(&filename, rule.category),
-                    confidence: 0.8,
-                };
-            }
-        }
+    // Single-pass multi-pattern match via AhoCorasick
+    if let Some((rule_idx, _keyword)) = rule_engine().find_match(&combined) {
+        let rule = &RULES[rule_idx];
+        return Classification {
+            category: rule.category.to_string(),
+            subcategory: extract_subcategory(&filename, rule.category),
+            confidence: 0.8,
+        };
     }
 
     Classification {
@@ -49,14 +48,22 @@ fn extract_subcategory(filename: &str, category: &str) -> String {
     // Try to extract a more specific subcategory
     match category {
         "hihat" => {
-            if filename.contains("open") { "open".to_string() }
-            else if filename.contains("closed") { "closed".to_string() }
-            else { String::new() }
+            if filename.contains("open") {
+                "open".to_string()
+            } else if filename.contains("closed") {
+                "closed".to_string()
+            } else {
+                String::new()
+            }
         }
         "bass" => {
-            if filename.contains("808") { "808".to_string() }
-            else if filename.contains("sub") { "sub".to_string() }
-            else { String::new() }
+            if filename.contains("808") {
+                "808".to_string()
+            } else if filename.contains("sub") {
+                "sub".to_string()
+            } else {
+                String::new()
+            }
         }
         _ => String::new(),
     }

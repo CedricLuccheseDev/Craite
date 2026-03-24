@@ -27,7 +27,12 @@ pub async fn check_for_update(app: AppHandle) -> Result<(), String> {
         Ok(Some(u)) => u,
         Ok(None) => return Ok(()),
         Err(e) => {
-            let _ = app.emit("update-error", UpdateErrorPayload { message: e.to_string() });
+            let _ = app.emit(
+                "update-error",
+                UpdateErrorPayload {
+                    message: e.to_string(),
+                },
+            );
             return Ok(());
         }
     };

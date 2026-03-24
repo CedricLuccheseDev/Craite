@@ -1,6 +1,6 @@
-use tauri::{AppHandle, Manager};
 use tauri::menu::MenuEvent;
-use tauri::tray::{TrayIconEvent, MouseButton, MouseButtonState};
+use tauri::tray::{MouseButton, MouseButtonState, TrayIconEvent};
+use tauri::{AppHandle, Manager};
 
 pub fn handle_menu_event(app: &AppHandle, event: MenuEvent) {
     match event.id().as_ref() {

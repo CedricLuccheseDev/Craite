@@ -1,28 +1,21 @@
 {
   "name": "craite",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev:desktop": "pnpm --filter @app/desktop dev",
+    "dev": "pnpm --filter @app/desktop tauri dev",
     "dev:landing": "pnpm --filter @app/landing dev",
-    "build:desktop": "pnpm --filter @app/desktop build",
+    "build": "pnpm --filter @app/desktop tauri build",
     "build:landing": "pnpm --filter @app/landing build",
-    "tauri:dev": "pnpm --filter @app/desktop tauri dev",
-    "tauri:build": "pnpm --filter @app/desktop tauri build",
     "lint": "eslint apps/",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage",
-    "test:desktop": "pnpm --filter @app/desktop test",
-    "test:landing": "pnpm --filter @app/landing test",
+    "lint:fix": "eslint apps/ --fix",
     "format": "prettier --write \"apps/**/*.{ts,tsx,vue,js,json,css,md}\"",
     "format:check": "prettier --check \"apps/**/*.{ts,tsx,vue,js,json,css,md}\"",
-    "audit": "pnpm audit && cd apps/desktop/src-tauri && cargo audit",
-    "audit:fix": "pnpm audit --fix",
-    "prepare": "simple-git-hooks",
-    "docker:landing:build": "docker build -t craite-landing .",
-    "docker:landing:run": "docker run -p 3000:3000 craite-landing"
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "typecheck": "pnpm --filter @app/desktop exec vue-tsc --noEmit && pnpm --filter @app/landing exec nuxi typecheck",
+    "prepare": "simple-git-hooks"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -33,7 +26,7 @@
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-vue": "^10.8.0",
-    "happy-dom": "^15.11.7",
+    "globals": "^17.4.0",
     "jsdom": "^25.0.1",
     "lint-staged": "^15.2.11",
     "prettier": "^3.4.2",
@@ -43,6 +36,12 @@
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
+  },
+  "pnpm": {
+    "overrides": {
+      "reka-ui": "^2.9.2",
+      "unplugin": "^2.3.2"
+    }
   },
   "lint-staged": {
     "apps/**/*.{ts,tsx,vue,js}": [

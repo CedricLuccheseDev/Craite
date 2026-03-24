@@ -19,7 +19,7 @@ pub async fn save_samples(samples: Vec<Sample>) -> Result<(), String> {
 
 #[tauri::command]
 pub async fn load_samples() -> Result<Vec<Sample>, String> {
-    run_blocking(|| with_db(|conn| repository::load_all_samples(conn))).await
+    run_blocking(|| with_db(repository::load_all_samples)).await
 }
 
 #[tauri::command]
@@ -29,7 +29,7 @@ pub async fn save_source(source: Source) -> Result<(), String> {
 
 #[tauri::command]
 pub async fn load_sources() -> Result<Vec<Source>, String> {
-    run_blocking(|| with_db(|conn| repository::load_all_sources(conn))).await
+    run_blocking(|| with_db(repository::load_all_sources)).await
 }
 
 #[tauri::command]
@@ -47,10 +47,10 @@ pub async fn save_setting(key: String, value: String) -> Result<(), String> {
 
 #[tauri::command]
 pub async fn load_all_settings() -> Result<Vec<(String, String)>, String> {
-    run_blocking(|| with_db(|conn| repository::load_all_settings(conn))).await
+    run_blocking(|| with_db(repository::load_all_settings)).await
 }
 
 #[tauri::command]
 pub async fn reset_app() -> Result<(), String> {
-    run_blocking(|| with_db(|conn| repository::clear_all_data(conn))).await
+    run_blocking(|| with_db(repository::clear_all_data)).await
 }

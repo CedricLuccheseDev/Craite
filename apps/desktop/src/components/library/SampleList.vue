@@ -16,18 +16,17 @@ const { t } = useI18n();
 const displayCount = ref(PAGE_SIZE);
 const scrollContainer = ref<HTMLElement | null>(null);
 
-const visibleSamples = computed(() =>
-  props.samples.slice(0, displayCount.value),
-);
+const visibleSamples = computed(() => props.samples.slice(0, displayCount.value));
 
-const hasMore = computed(() =>
-  displayCount.value < props.samples.length,
-);
+const hasMore = computed(() => displayCount.value < props.samples.length);
 
 // Reset pagination when samples change (filter, search, category)
-watch(() => props.samples.length, () => {
-  displayCount.value = PAGE_SIZE;
-});
+watch(
+  () => props.samples.length,
+  () => {
+    displayCount.value = PAGE_SIZE;
+  }
+);
 
 function onScroll() {
   const el = scrollContainer.value;
@@ -49,31 +48,17 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div
-    ref="scrollContainer"
-    class="flex flex-col gap-px overflow-y-auto h-full"
-  >
+  <div ref="scrollContainer" class="flex flex-col gap-px overflow-y-auto h-full">
     <div
       v-for="sample in visibleSamples"
       :key="sample.id"
       class="flex items-center justify-between py-2 px-4 bg-surface transition-colors duration-150 hover:bg-surface-hover"
     >
-      <AudioPlayer
-        :sample-path="sample.path"
-        :sample-name="sample.name"
-      />
-      <UBadge
-        :label="sample.category"
-        color="neutral"
-        variant="subtle"
-        size="sm"
-      />
+      <AudioPlayer :sample-path="sample.path" :sample-name="sample.name" />
+      <UBadge :label="sample.category" color="neutral" variant="subtle" size="sm" />
     </div>
 
-    <p
-      v-if="samples.length === 0"
-      class="p-12 text-center text-muted"
-    >
+    <p v-if="samples.length === 0" class="p-12 text-center text-muted">
       {{ t('browse.noSamples') }}
     </p>
   </div>

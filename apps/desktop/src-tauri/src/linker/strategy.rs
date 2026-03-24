@@ -1,5 +1,5 @@
-use std::path::Path;
 use crate::error::CraiteError;
+use std::path::Path;
 
 #[derive(Debug, Clone, Copy)]
 pub enum LinkStrategy {
@@ -21,9 +21,13 @@ pub fn determine_strategy(source: &Path, target: &Path) -> LinkStrategy {
 
 fn has_symlink_permission() -> bool {
     #[cfg(unix)]
-    { true }
+    {
+        true
+    }
     #[cfg(not(unix))]
-    { false }
+    {
+        false
+    }
 }
 
 /// Create a link from source to target using the given strategy
@@ -62,7 +66,9 @@ fn same_filesystem(a: &Path, b: &Path) -> bool {
         use std::os::unix::fs::MetadataExt;
         let meta_a = std::fs::metadata(a).ok();
         // Use the parent of the target since it may not exist yet
-        let target_check = if b.exists() { b.to_path_buf() } else {
+        let target_check = if b.exists() {
+            b.to_path_buf()
+        } else {
             b.parent().unwrap_or(b).to_path_buf()
         };
         let meta_b = std::fs::metadata(&target_check).ok();

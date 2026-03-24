@@ -14,9 +14,7 @@ export function useWatcher() {
 
   async function startWatching() {
     const scanStore = useScanStore();
-    const paths = scanStore.sources
-      .filter(s => s.enabled)
-      .map(s => s.path);
+    const paths = scanStore.sources.filter(s => s.enabled).map(s => s.path);
 
     if (paths.length === 0) return;
 

@@ -24,6 +24,10 @@ export function useTauri() {
     return await invoke<void>('stop_preview');
   }
 
+  async function readAudioFile(path: string): Promise<number[]> {
+    return await invoke<number[]>('read_audio_file', { path });
+  }
+
   // Persistence
   async function loadSamples(): Promise<Sample[]> {
     return await invoke<Sample[]>('load_samples');
@@ -82,6 +86,7 @@ export function useTauri() {
     detectSources,
     previewSample,
     stopPreview,
+    readAudioFile,
     loadSamples,
     loadSources,
     saveSource,

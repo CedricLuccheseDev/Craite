@@ -20,15 +20,16 @@
 - CSS: kebab-case for classes, CSS custom properties for theming
 
 ## Commands
-- `pnpm dev:desktop` — Start Vite dev server (desktop frontend)
+- `pnpm dev` — Start Tauri dev mode (frontend + Rust backend)
 - `pnpm dev:landing` — Start Nuxt dev server (landing page)
-- `pnpm tauri:dev` — Start full Tauri dev mode
-- `pnpm tauri:build` — Build distributable
-- `pnpm build:desktop` — Build desktop frontend
+- `pnpm build` — Build Tauri distributable
 - `pnpm build:landing` — Build landing for production
 - `pnpm lint` — Run ESLint on all apps
-- `pnpm docker:landing:build` — Build Docker image for landing
-- `pnpm docker:landing:run` — Run landing Docker container
+- `pnpm lint:fix` — Lint and auto-fix
+- `pnpm format` — Format all files with Prettier
+- `pnpm format:check` — Check formatting
+- `pnpm test` — Run tests (Vitest)
+- `pnpm typecheck` — Typecheck desktop + landing
 
 ## Key Paths
 - Desktop frontend: `apps/desktop/src/`
