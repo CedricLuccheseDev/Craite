@@ -31,4 +31,5 @@ Thumbs.db
 # Logs
 *.log
 
-*.d.ts
+apps/desktop/auto-imports.d.ts
+apps/desktop/components.d.ts

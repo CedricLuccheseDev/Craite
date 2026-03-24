@@ -60,7 +60,7 @@ pub fn preview_sample(
 
             let is_done = sink
                 .lock()
-                .map(|guard| guard.as_ref().map_or(true, |s| s.empty()))
+                .map(|guard| guard.as_ref().is_none_or(|s| s.empty()))
                 .unwrap_or(true);
 
             if is_done {

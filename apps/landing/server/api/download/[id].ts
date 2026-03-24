@@ -30,7 +30,7 @@ export default defineEventHandler(async event => {
 
   setHeader(event, 'Content-Disposition', `attachment; filename="${asset.name}"`);
   setHeader(event, 'Content-Type', asset.content_type);
-  setHeader(event, 'Content-Length', String(asset.size));
+  setHeader(event, 'Content-Length', asset.size);
 
   return sendWebResponse(event, response);
 });

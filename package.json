@@ -39,7 +39,8 @@
   },
   "pnpm": {
     "overrides": {
-      "reka-ui": "^2.9.2"
+      "reka-ui": "^2.9.2",
+      "unplugin": "^2.3.2"
     }
   },
   "lint-staged": {
