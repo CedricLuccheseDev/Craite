@@ -31,7 +31,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVBQzU2RjI4NTlCN0FDOEMKUldTTXJMZFpLRy9GNm04YUlTR0dvN2FCNkpaQklrdFc3YkppT25jakNFQnVZMlBNdlAxWC9OWUcK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDhCOUM0NjIxQTI1QTU1MTAKUldRUVZWcWlJVWFjaTVzM1pIamx2cHB4NWJKUFFOZHIyNzJOcEZsVGZmTzdtOFg3M0E1b0J4MWQK",
       "endpoints": ["https://craite.app/api/update"]
     }
   },
