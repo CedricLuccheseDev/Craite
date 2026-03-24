@@ -29,8 +29,7 @@ export const useLibraryConfigStore = defineStore('libraryConfig', () => {
     const next = new Set(excludedCategories.value);
     if (next.has(name)) {
       next.delete(name);
-    }
-    else {
+    } else {
       next.add(name);
     }
     excludedCategories.value = next;

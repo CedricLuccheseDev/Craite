@@ -9,12 +9,7 @@ defineProps<Props>();
 
 <template>
   <div class="flex gap-3 justify-center">
-    <span
-      v-for="i in total"
-      :key="i"
-      class="dot"
-      :class="{ active: i - 1 === current, completed: i - 1 < current }"
-    />
+    <span v-for="i in total" :key="i" class="dot" :class="{ active: i - 1 === current, completed: i - 1 < current }" />
   </div>
 </template>
 
@@ -23,7 +18,7 @@ defineProps<Props>();
 
 .dot {
   @apply size-3 rounded-full bg-zinc-800 transition-all duration-300;
-  transition-timing-function: cubic-bezier(.16, 1, .3, 1);
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dot.active {

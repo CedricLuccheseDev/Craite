@@ -15,11 +15,7 @@ export function useAppInit() {
   const settingsStore = useSettingsStore();
 
   async function initialize(): Promise<void> {
-    await Promise.all([
-      loadSources(),
-      loadSamples(),
-      loadSettings(),
-    ]);
+    await Promise.all([loadSources(), loadSamples(), loadSettings()]);
   }
 
   async function loadSources(): Promise<void> {

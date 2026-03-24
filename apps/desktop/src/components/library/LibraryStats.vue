@@ -20,15 +20,8 @@ const stats = computed(() => [
 
 <template>
   <div class="flex gap-6">
-    <div
-      v-for="stat in stats"
-      :key="stat.label"
-      class="flex items-center gap-1"
-    >
-      <UIcon
-        :name="stat.icon"
-        class="text-sm text-muted"
-      />
+    <div v-for="stat in stats" :key="stat.label" class="flex items-center gap-1">
+      <UIcon :name="stat.icon" class="text-sm text-muted" />
       <span class="text-[15px] font-bold tabular-nums">{{ stat.value }}</span>
       <span class="text-xs text-muted">{{ stat.label }}</span>
     </div>

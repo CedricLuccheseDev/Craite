@@ -40,10 +40,7 @@ function onLocaleChange(value: string) {
     </div>
 
     <div class="flex flex-col gap-4">
-      <div
-        class="flex items-center justify-between gap-6
-          py-4 px-6 bg-zinc-950 rounded-[10px]"
-      >
+      <div class="flex items-center justify-between gap-6 py-4 px-6 bg-zinc-950 rounded-[10px]">
         <div class="flex flex-col gap-0.5">
           <span class="text-[13px] font-semibold">
             {{ t('settings.language') }}
@@ -65,10 +62,7 @@ function onLocaleChange(value: string) {
         />
       </div>
 
-      <div
-        class="flex items-center justify-between gap-6
-          py-4 px-6 bg-zinc-950 rounded-[10px]"
-      >
+      <div class="flex items-center justify-between gap-6 py-4 px-6 bg-zinc-950 rounded-[10px]">
         <div class="flex flex-col gap-0.5">
           <span class="text-[13px] font-semibold">
             {{ t('settings.autostart') }}
@@ -85,35 +79,22 @@ function onLocaleChange(value: string) {
         />
       </div>
 
-      <div
-        class="flex items-center justify-between gap-6
-          py-4 px-6 bg-zinc-950 rounded-[10px]"
-      >
+      <div class="flex items-center justify-between gap-6 py-4 px-6 bg-zinc-950 rounded-[10px]">
         <div class="flex flex-col gap-0.5">
           <span class="text-[13px] font-semibold">
             {{ t('settings.backgroundScan') }}
           </span>
           <span class="text-xs text-muted flex items-center gap-1">
             {{ t('settings.backgroundScanDescription') }}
-            <span
-              v-if="isScanning"
-              class="text-[11px] text-orange-500 font-medium"
-            >
+            <span v-if="isScanning" class="text-[11px] text-orange-500 font-medium">
               {{ t('settings.scanning') }}
             </span>
           </span>
         </div>
-        <USwitch
-          :model-value="bgEnabled"
-          color="primary"
-          @update:model-value="toggleEnabled"
-        />
+        <USwitch :model-value="bgEnabled" color="primary" @update:model-value="toggleEnabled" />
       </div>
 
-      <div
-        class="flex items-center justify-between gap-6
-          py-4 px-6 bg-zinc-950 rounded-[10px]"
-      >
+      <div class="flex items-center justify-between gap-6 py-4 px-6 bg-zinc-950 rounded-[10px]">
         <div class="flex flex-col gap-0.5">
           <span class="text-[13px] font-semibold">
             {{ t('settings.scanInterval') }}

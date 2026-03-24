@@ -41,10 +41,7 @@ function clearSelection() {
       class="w-full justify-start"
       @click="handleSelect(cat.name)"
     >
-      <span
-        class="size-2 rounded-full shrink-0"
-        :style="{ background: cat.color }"
-      />
+      <span class="size-2 rounded-full shrink-0" :style="{ background: cat.color }" />
       <span class="flex-1 capitalize text-left">{{ cat.name }}</span>
       <span class="font-mono text-xs text-muted ml-auto">{{ cat.count }}</span>
     </UButton>

@@ -57,8 +57,7 @@ const { rescan, addSourceFolder } = useLibraryActions();
       <div
         v-for="source in scanStore.sources"
         :key="source.path"
-        class="flex items-center gap-4 py-2 px-4 bg-surface
-          transition-colors duration-150 hover:bg-surface-hover"
+        class="flex items-center gap-4 py-2 px-4 bg-surface transition-colors duration-150 hover:bg-surface-hover"
       >
         <UCheckbox
           :model-value="source.enabled"
@@ -69,21 +68,13 @@ const { rescan, addSourceFolder } = useLibraryActions();
           <span class="text-[13px] font-semibold">{{ source.label }}</span>
           <span class="text-[11px] text-muted truncate">{{ source.path }}</span>
         </div>
-        <UBadge
-          :label="source.type"
-          color="neutral"
-          variant="subtle"
-          size="xs"
-        />
+        <UBadge :label="source.type" color="neutral" variant="subtle" size="xs" />
         <span class="text-xs tabular-nums text-muted">
           {{ source.sampleCount.toLocaleString() }}
         </span>
       </div>
 
-      <p
-        v-if="scanStore.sources.length === 0"
-        class="p-8 text-center text-muted bg-surface"
-      >
+      <p v-if="scanStore.sources.length === 0" class="p-8 text-center text-muted bg-surface">
         {{ t('sources.noSources') }}
       </p>
     </div>

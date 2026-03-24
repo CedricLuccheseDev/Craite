@@ -13,10 +13,7 @@ const gradientStyle = computed(() => ({
 </script>
 
 <template>
-  <div
-    class="ambient-orb"
-    :style="gradientStyle"
-  />
+  <div class="ambient-orb" :style="gradientStyle" />
 </template>
 
 <style scoped>
@@ -27,11 +24,12 @@ const gradientStyle = computed(() => ({
     pointer-events-none z-0;
   transform: translate(-50%, -50%);
   animation: pulse-glow 4s ease-in-out infinite;
-  transition: background 1s cubic-bezier(.16, 1, .3, 1);
+  transition: background 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.6;
     transform: translate(-50%, -50%) scale(1);
   }

@@ -27,25 +27,13 @@ const { pickOutputDir } = useLibraryActions();
           {{ t('export.outputDir') }}
         </span>
         <div class="flex items-center gap-2 flex-1 min-w-0">
-          <span
-            v-if="configStore.outputDir"
-            class="text-[13px] truncate flex-1"
-          >
+          <span v-if="configStore.outputDir" class="text-[13px] truncate flex-1">
             {{ configStore.outputDir }}
           </span>
-          <span
-            v-else
-            class="text-[13px] text-muted flex-1"
-          >
+          <span v-else class="text-[13px] text-muted flex-1">
             {{ t('export.noDirectory') }}
           </span>
-          <UButton
-            icon="i-lucide-folder"
-            color="neutral"
-            variant="outline"
-            size="xs"
-            @click="pickOutputDir"
-          >
+          <UButton icon="i-lucide-folder" color="neutral" variant="outline" size="xs" @click="pickOutputDir">
             {{ configStore.outputDir ? t('export.change') : t('export.choose') }}
           </UButton>
         </div>
@@ -66,21 +54,20 @@ const { pickOutputDir } = useLibraryActions();
               color="primary"
               @update:model-value="configStore.toggleCategory(cat.name)"
             />
-            <span
-              class="size-1.5 rounded-full"
-              :style="{ background: cat.color }"
-            />
+            <span class="size-1.5 rounded-full" :style="{ background: cat.color }" />
             <span class="text-[13px]">{{ cat.name }}</span>
           </label>
         </div>
       </div>
     </div>
 
-    <p
-      v-if="configStore.lastGeneratedAt"
-      class="text-xs text-muted"
-    >
-      {{ t('export.lastGenerated', { date: configStore.lastGeneratedAt, count: configStore.linkedCount.toLocaleString() }) }}
+    <p v-if="configStore.lastGeneratedAt" class="text-xs text-muted">
+      {{
+        t('export.lastGenerated', {
+          date: configStore.lastGeneratedAt,
+          count: configStore.linkedCount.toLocaleString(),
+        })
+      }}
     </p>
   </section>
 </template>

@@ -22,12 +22,12 @@ export function useUpdater() {
   });
 
   async function setupListeners(): Promise<void> {
-    await listen<UpdateInfo>('update-available', (event) => {
+    await listen<UpdateInfo>('update-available', event => {
       updateInfo.value = event.payload;
       phase.value = 'available';
     });
 
-    await listen<{ downloaded: number; total: number | null }>('update-progress', (event) => {
+    await listen<{ downloaded: number; total: number | null }>('update-progress', event => {
       phase.value = 'downloading';
       downloadedBytes.value = event.payload.downloaded;
       totalBytes.value = event.payload.total;
@@ -37,7 +37,7 @@ export function useUpdater() {
       phase.value = 'ready';
     });
 
-    await listen<{ message: string }>('update-error', (event) => {
+    await listen<{ message: string }>('update-error', event => {
       errorMessage.value = event.payload.message;
       phase.value = 'error';
     });

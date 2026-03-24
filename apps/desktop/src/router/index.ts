@@ -17,7 +17,7 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to) => {
+router.beforeEach(to => {
   if (to.name === 'onboarding' && isOnboardingCompleted()) {
     return { name: 'library' };
   }

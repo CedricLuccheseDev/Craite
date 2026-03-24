@@ -23,9 +23,7 @@ export function useBackgroundScan() {
 
   async function loadStatus() {
     try {
-      const [isEnabled, interval, scanning] = await invoke<[boolean, number, boolean]>(
-        'get_background_scan_status',
-      );
+      const [isEnabled, interval, scanning] = await invoke<[boolean, number, boolean]>('get_background_scan_status');
       enabled.value = isEnabled;
       intervalMinutes.value = interval;
       isScanning.value = scanning;
@@ -59,11 +57,11 @@ export function useBackgroundScan() {
     unlisteners.push(
       await listen('background-scan-started', () => {
         isScanning.value = true;
-      }),
+      })
     );
 
     unlisteners.push(
-      await listen<BackgroundScanResult>('background-scan-completed', async (event) => {
+      await listen<BackgroundScanResult>('background-scan-completed', async event => {
         isScanning.value = false;
         try {
           const samples = await tauri.loadSamples();
@@ -76,13 +74,13 @@ export function useBackgroundScan() {
         } catch (error) {
           console.error('Failed to reload after background scan:', error);
         }
-      }),
+      })
     );
 
     unlisteners.push(
       await listen('background-scan-error', () => {
         isScanning.value = false;
-      }),
+      })
     );
 
     return unlisteners;
