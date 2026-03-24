@@ -1,6 +1,10 @@
 export default defineNuxtConfig({
   modules: ['@nuxt/ui'],
 
+  runtimeConfig: {
+    githubToken: process.env.GITHUB_TOKEN,
+  },
+
   css: ['~/assets/css/main.css'],
 
   fonts: {

@@ -2,34 +2,28 @@ name: Release & Deploy
 
 on:
   push:
-    branches: [main]
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
-  release-please:
-    name: Create Release
+  prepare:
+    name: Extract version
     runs-on: ubuntu-latest
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      tag_name: ${{ steps.release.outputs.tag_name }}
-      version: ${{ steps.release.outputs.version }}
+      version: ${{ steps.version.outputs.version }}
     steps:
-      - name: Run release-please
-        uses: googleapis/release-please-action@v4
-        id: release
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Strip v prefix
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
 
   build-tauri:
     name: Build Tauri App
-    needs: release-please
-    # Build on EVERY main push, not just releases
+    needs: prepare
     uses: ./.github/workflows/build-desktop.yml
     with:
-      # Use release tag if available, otherwise use dev tag
-      tag_name: ${{ needs.release-please.outputs.tag_name || format('dev-{0}', github.sha) }}
-      version: ${{ needs.release-please.outputs.version || '0.0.0-dev' }}
+      tag_name: ${{ github.ref_name }}
+      version: ${{ needs.prepare.outputs.version }}
     secrets: inherit
