@@ -32,6 +32,11 @@ pub fn create_link(
         std::fs::create_dir_all(parent)?;
     }
 
+    // Remove existing file to avoid "File exists" errors on re-link
+    if target.exists() {
+        std::fs::remove_file(target)?;
+    }
+
     match strategy {
         LinkStrategy::Hardlink => {
             std::fs::hard_link(source, target)?;

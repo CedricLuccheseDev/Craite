@@ -5,11 +5,13 @@ pub mod wsl;
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex as StdMutex};
 
 use rayon::prelude::*;
+use tauri::{AppHandle, Emitter};
 
 use crate::classifier::audio::classify_by_audio;
-use crate::classifier::filename::classify_by_filename;
+use crate::classifier::path::classify_by_path;
 use crate::classifier::rules::RULES;
 use crate::db::models::{Category, Sample, ScanResult};
 use crate::error::ResultExt;
@@ -17,7 +19,7 @@ use crate::scanner::filesystem::scan_directory;
 
 /// Scan source directories, classify files, persist results, and return a ScanResult.
 /// Uses rayon for parallel classification and incremental scanning (mtime-based).
-pub fn execute_scan(source_paths: &[String]) -> Result<ScanResult, String> {
+pub fn execute_scan(source_paths: &[String], app: Option<&AppHandle>) -> Result<ScanResult, String> {
     let conn = crate::db::connection::open_connection().str_err()?;
 
     // Read output_dir so we can skip files inside it (prevents indexing generated links
@@ -26,18 +28,18 @@ pub fn execute_scan(source_paths: &[String]) -> Result<ScanResult, String> {
         .str_err()?
         .unwrap_or_default();
 
+    // Shared state for throttled event emission
+    let last_emit = Arc::new(StdMutex::new(std::time::Instant::now()));
+    let file_counter = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+
     let mut all_samples: Vec<Sample> = Vec::new();
 
     for source_path in source_paths {
         let path = Path::new(source_path);
-        let mut files = scan_directory(path).str_err()?;
+        let files = scan_directory(path, app, &file_counter, &last_emit, &output_dir).str_err()?;
 
-        // Filter out files inside the output directory
-        if !output_dir.is_empty() {
-            files.retain(|f| !f.to_string_lossy().starts_with(&output_dir));
-        }
-
-        let source_samples = classify_incremental(&conn, source_path, &files)?;
+        let source_samples =
+            classify_incremental(&conn, source_path, &files, &last_emit, &file_counter, app)?;
         all_samples.extend(source_samples);
     }
 
@@ -61,6 +63,9 @@ fn classify_incremental(
     conn: &rusqlite::Connection,
     source_path: &str,
     files: &[PathBuf],
+    last_emit: &Arc<StdMutex<std::time::Instant>>,
+    file_counter: &Arc<std::sync::atomic::AtomicUsize>,
+    app: Option<&AppHandle>,
 ) -> Result<Vec<Sample>, String> {
     let existing = crate::db::repository::load_mtimes_by_source(conn, source_path).str_err()?;
 
@@ -97,14 +102,40 @@ fn classify_incremental(
     let unchanged_count = files.len() - to_classify.len();
 
     // Parallel classification of new/modified files using rayon
+    let le = Arc::clone(last_emit);
+    let fc = Arc::clone(file_counter);
+    let app_clone = app.cloned();
     let new_samples: Vec<Sample> = to_classify
         .par_iter()
         .map(|(file, mtime)| {
-            let mut classification = classify_by_filename(file);
+            // Emit file name + count (throttled)
+            if let Some(ref app) = app_clone {
+                let count = fc.load(std::sync::atomic::Ordering::Relaxed);
+                let should_emit = le
+                    .lock()
+                    .map(|mut last| {
+                        let now = std::time::Instant::now();
+                        if now.duration_since(*last).as_millis() >= 16 {
+                            *last = now;
+                            true
+                        } else {
+                            false
+                        }
+                    })
+                    .unwrap_or(false);
 
-            // For unknowns, attempt lightweight audio analysis (WAV only).
-            // This runs in the same rayon thread — analysis is capped at ~512ms of audio
-            // per file so the overhead per file is a few milliseconds at most.
+                if should_emit {
+                    let name = file
+                        .file_name()
+                        .and_then(|n| n.to_str())
+                        .unwrap_or("");
+                    let _ = app.emit("scan-file", (name, count));
+                }
+            }
+
+            let source_root = Path::new(source_path);
+            let mut classification = classify_by_path(file, source_root);
+
             if classification.category == "unknown" {
                 if let Some(audio_cls) = classify_by_audio(file) {
                     classification = audio_cls;
@@ -127,6 +158,7 @@ fn classify_incremental(
                 sample_rate: classification.sample_rate,
                 linked_path: None,
                 mtime: *mtime,
+                hidden: false,
             }
         })
         .collect();

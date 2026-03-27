@@ -45,6 +45,10 @@ export function useTauri() {
     return await invoke<void>('update_source_enabled', { path, enabled });
   }
 
+  async function deleteSource(path: string): Promise<void> {
+    return await invoke<void>('delete_source', { path });
+  }
+
   async function saveSetting(key: string, value: string): Promise<void> {
     return await invoke<void>('save_setting', { key, value });
   }
@@ -60,6 +64,10 @@ export function useTauri() {
 
   async function createDawLibraryFolder(path: string): Promise<string> {
     return await invoke<string>('create_daw_library_folder', { path });
+  }
+
+  async function setSampleHidden(id: number, hidden: boolean): Promise<void> {
+    return await invoke<void>('set_sample_hidden', { id, hidden });
   }
 
   async function openFolder(path: string): Promise<void> {
@@ -94,11 +102,13 @@ export function useTauri() {
     loadSamples,
     loadSources,
     saveSource,
+    deleteSource,
     updateSourceEnabled,
     saveSetting,
     loadAllSettings,
     detectInstalledDaws,
     createDawLibraryFolder,
+    setSampleHidden,
     openFolder,
     resetApp,
     setBackgroundScanEnabled,

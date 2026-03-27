@@ -3,15 +3,23 @@
     "browse": "Browse",
     "sources": "Sources",
     "export": "Export",
-    "settings": "Settings"
+    "settings": "Settings",
+    "collapse": "Collapse",
+    "expand": "Expand"
   },
   "browse": {
     "title": "Browse",
+    "description": "Search and preview your sample library",
     "results": "{count} results",
     "searchPlaceholder": "Search samples...",
     "allCategories": "All",
     "unclassified": "Unclassified",
     "noSamples": "No samples found",
+    "emptyTitle": "No samples yet",
+    "emptyHint": "Add source folders to scan your audio samples",
+    "goToSources": "Add sources",
+    "exportHint": "Set up an export folder to organize your samples for your DAW",
+    "goToExport": "Set up export",
     "group": {
       "drums": "Drums",
       "bass": "Bass",
@@ -29,12 +37,17 @@
     "linked": "Linked"
   },
   "sources": {
-    "title": "Source Folders",
+    "title": "Sources",
     "description": "Directories CrAIte scans for audio samples",
     "addFolder": "Add folder",
     "rescan": "Rescan",
     "scanning": "Scanning sources...",
-    "noSources": "No source folders configured"
+    "sourceCount": "{active}/{total} active",
+    "noSources": "No source folders configured",
+    "noSourcesHint": "Auto-detect sample folders on your system or add one manually",
+    "autoDetect": "Auto-detect",
+    "goToBrowse": "Browse samples",
+    "goToExport": "Set up export"
   },
   "export": {
     "title": "Library Output",
@@ -42,10 +55,17 @@
     "generate": "Generate Library",
     "outputDir": "Output directory",
     "noDirectory": "No directory selected",
+    "open": "Open",
     "change": "Change",
     "choose": "Choose",
     "chooseHint": "Choose where CrAIte will create your organized library",
     "syncing": "Syncing...",
+    "emptyTitle": "No samples to export",
+    "emptyHint": "Add source folders and scan your samples first",
+    "goToSources": "Add sources",
+    "generated": "Library generated",
+    "upToDate": "Up to date",
+    "filesLinked": "files linked",
     "neverGenerated": "Library not yet generated",
     "includeCategories": "Include categories",
     "categoriesCount": "{count}/{total} categories · {samples} samples",
@@ -72,16 +92,44 @@
     "interval120": "2 hours",
     "interval240": "4 hours",
     "interval480": "8 hours",
+    "devSection": "Developer",
+    "restartOnboarding": "Restart onboarding",
+    "restartOnboardingDescription": "Reset the app and go back to the welcome screen",
+    "restart": "Restart",
+    "clearCache": "Clear all data",
+    "clearCacheDescription": "Delete database, settings, and generated library",
+    "clear": "Clear",
     "footer": "CrAIte minimizes to the system tray when closed and continues scanning in the background."
   },
   "languages": {
     "en": "English",
     "fr": "Français"
   },
+  "notify": {
+    "error": "Error",
+    "success": "Success",
+    "scanFailed": "Scan failed. Check folder permissions and try again.",
+    "generateFailed": "Library generation failed. Check disk space and permissions.",
+    "openFolderFailed": "Could not open folder.",
+    "audioPlaybackFailed": "Could not play this sample.",
+    "resetFailed": "Failed to reset the application.",
+    "clearCacheFailed": "Failed to clear cache.",
+    "dawSetupFailed": "Failed to set up DAW library folder.",
+    "scanComplete": "{count} samples found across {categories} categories",
+    "libraryGenerated": "{count} files linked",
+    "settingSaved": "Setting saved",
+    "backgroundScanComplete": "Auto-scan complete — {count} samples",
+    "backgroundScanAdded": "Auto-scan: +{added} samples ({total} total)",
+    "backgroundScanRemoved": "Auto-scan: -{removed} samples ({total} total)",
+    "sourceAdded": "Source folder added"
+  },
   "onboarding": {
     "welcome": {
       "subtitle": "Your intelligent sample library",
       "description": "CrAIte scans your folders, organizes your samples by category, and makes them instantly accessible from your DAW.",
+      "featureScan": "Auto-detect sources",
+      "featureClassify": "AI classification",
+      "featureExport": "DAW integration",
       "next": "Get Started"
     },
     "scan": {
@@ -89,6 +137,8 @@
       "complete": "Scan complete",
       "samplesFound": "{count} samples found",
       "slowHint": "Large libraries may take a moment...",
+      "filesFound": "files found",
+      "classifying": "Classifying samples...",
       "skip": "Skip"
     },
     "result": {

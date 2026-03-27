@@ -25,6 +25,7 @@
 /* Button overrides — rounded-pill, airy padding, clean micro-interactions */
 button,
 [role='button'] {
+  cursor: pointer;
   box-shadow: none !important;
   border-radius: 9999px !important;
   font-weight: 500 !important;
@@ -51,6 +52,30 @@ button:focus-visible,
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-orange-500) 30%, transparent) !important;
   outline: 1.5px solid var(--color-orange-500);
   outline-offset: 2px;
+}
+
+/* Scrollbar: overlay so it doesn't take layout space */
+.scrollbar-thin {
+  overflow-y: overlay !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 :root {

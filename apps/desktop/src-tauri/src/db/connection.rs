@@ -57,6 +57,9 @@ fn initialize_tables(conn: &Connection) -> Result<()> {
     // Migration: add mtime column for incremental scan
     let _ = conn.execute_batch("ALTER TABLE samples ADD COLUMN mtime INTEGER NOT NULL DEFAULT 0;");
 
+    // Migration: add hidden column for per-sample export exclusion
+    let _ = conn.execute_batch("ALTER TABLE samples ADD COLUMN hidden INTEGER NOT NULL DEFAULT 0;");
+
     Ok(())
 }
 

@@ -1,6 +1,7 @@
 import { nextTick } from 'vue';
 import { open } from '@tauri-apps/plugin-dialog';
 import { useTauri } from '@/composables/useTauri';
+import { useNotify } from '@/composables/useNotify';
 import { useScanStore } from '@/stores/scan';
 import { useLibraryStore } from '@/stores/library';
 import { useLibraryConfigStore } from '@/stores/libraryConfig';
@@ -8,6 +9,7 @@ import type { Source } from '@/types/sample';
 
 export function useLibraryActions() {
   const tauri = useTauri();
+  const notify = useNotify();
   const scanStore = useScanStore();
   const libraryStore = useLibraryStore();
   const configStore = useLibraryConfigStore();
@@ -30,12 +32,16 @@ export function useLibraryActions() {
       const result = await tauri.scanDirectories(scanStore.sources);
       scanStore.setScanResult(result);
       scanStore.updateSourceCounts(result.samples);
+      scanStore.removeEmptySources();
       libraryStore.setSamples(result.samples);
       libraryStore.setCategories(result.categories);
 
+      notify.success('notify.scanComplete', { count: result.totalFiles, categories: result.categories.length });
       await generateLibrary();
     } catch (error) {
       scanStore.setScanError(String(error));
+      console.error('Scan failed:', error);
+      notify.error('notify.scanFailed');
     }
   }
 
@@ -62,6 +68,7 @@ export function useLibraryActions() {
     } catch (error) {
       configStore.isGenerating = false;
       console.error('Failed to generate library:', error);
+      notify.error('notify.generateFailed');
     }
   }
 
@@ -83,6 +90,7 @@ export function useLibraryActions() {
         type: 'custom',
         sampleCount: 0,
       });
+      notify.info('notify.sourceAdded');
     }
   }
 

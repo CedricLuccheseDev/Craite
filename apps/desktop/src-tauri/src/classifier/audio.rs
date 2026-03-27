@@ -1,4 +1,4 @@
-use super::filename::Classification;
+use super::Classification;
 use std::path::Path;
 
 /// Attempt to classify a sample by analysing its audio content.

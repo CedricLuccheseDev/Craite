@@ -4,11 +4,15 @@ import { ref } from 'vue';
 // Shared across all AudioPlayer instances: only one sample plays at a time
 const activeAudio = ref<HTMLAudioElement | null>(null);
 const activePath = ref<string | null>(null);
+
+// Global blob URL cache — persists across component mounts
+const blobUrlCache = new Map<string, string>();
 </script>
 
 <script setup lang="ts">
 import { computed, onUnmounted } from 'vue';
 import { useTauri } from '@/composables/useTauri';
+import { useNotify } from '@/composables/useNotify';
 
 interface Props {
   samplePath: string;
@@ -17,13 +21,11 @@ interface Props {
 
 const props = defineProps<Props>();
 const { readAudioFile } = useTauri();
+const notify = useNotify();
 
 const hasError = ref(false);
 const isLoading = ref(false);
 const isPlaying = computed(() => activePath.value === props.samplePath);
-
-// Cache blob URLs to avoid re-reading the same file
-const blobUrlCache = new Map<string, string>();
 
 function stopCurrent() {
   if (activeAudio.value) {
@@ -92,6 +94,7 @@ async function togglePlay() {
   } catch {
     hasError.value = true;
     isLoading.value = false;
+    notify.error('notify.audioPlaybackFailed');
   }
 }
 
@@ -100,10 +103,12 @@ onUnmounted(() => {
     stopCurrent();
   }
 });
+
+defineExpose({ togglePlay });
 </script>
 
 <template>
-  <div class="flex items-center gap-2">
+  <div class="flex items-center gap-2 min-w-0">
     <UButton
       :icon="
         hasError

@@ -3,15 +3,23 @@
     "browse": "Parcourir",
     "sources": "Sources",
     "export": "Export",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "collapse": "Réduire",
+    "expand": "Agrandir"
   },
   "browse": {
     "title": "Parcourir",
+    "description": "Recherchez et prévisualisez votre bibliothèque de samples",
     "results": "{count} résultats",
     "searchPlaceholder": "Rechercher des samples...",
     "allCategories": "Tout",
     "unclassified": "Non classifiés",
     "noSamples": "Aucun sample trouvé",
+    "emptyTitle": "Aucun sample pour le moment",
+    "emptyHint": "Ajoutez des dossiers sources pour analyser vos samples audio",
+    "goToSources": "Ajouter des sources",
+    "exportHint": "Configurez un dossier d'export pour organiser vos samples pour votre DAW",
+    "goToExport": "Configurer l'export",
     "group": {
       "drums": "Drums",
       "bass": "Bass",
@@ -29,12 +37,17 @@
     "linked": "Liés"
   },
   "sources": {
-    "title": "Dossiers sources",
+    "title": "Sources",
     "description": "Répertoires analysés par CrAIte pour trouver vos samples audio",
     "addFolder": "Ajouter un dossier",
     "rescan": "Re-scanner",
     "scanning": "Analyse des sources...",
-    "noSources": "Aucun dossier source configuré"
+    "sourceCount": "{active}/{total} actives",
+    "noSources": "Aucun dossier source configuré",
+    "noSourcesHint": "Détectez automatiquement les dossiers de samples ou ajoutez-en un manuellement",
+    "autoDetect": "Auto-détecter",
+    "goToBrowse": "Parcourir les samples",
+    "goToExport": "Configurer l'export"
   },
   "export": {
     "title": "Sortie de bibliothèque",
@@ -42,10 +55,17 @@
     "generate": "Générer la bibliothèque",
     "outputDir": "Répertoire de sortie",
     "noDirectory": "Aucun répertoire sélectionné",
+    "open": "Ouvrir",
     "change": "Modifier",
     "choose": "Choisir",
     "chooseHint": "Choisissez où CrAIte créera votre bibliothèque organisée",
     "syncing": "Synchronisation...",
+    "emptyTitle": "Aucun sample à exporter",
+    "emptyHint": "Ajoutez des dossiers sources et analysez vos samples d'abord",
+    "goToSources": "Ajouter des sources",
+    "generated": "Bibliothèque générée",
+    "upToDate": "À jour",
+    "filesLinked": "fichiers liés",
     "neverGenerated": "Bibliothèque pas encore générée",
     "includeCategories": "Catégories incluses",
     "categoriesCount": "{count}/{total} catégories · {samples} samples",
@@ -72,16 +92,44 @@
     "interval120": "2 heures",
     "interval240": "4 heures",
     "interval480": "8 heures",
+    "devSection": "Développeur",
+    "restartOnboarding": "Relancer l'onboarding",
+    "restartOnboardingDescription": "Réinitialiser l'app et revenir à l'écran d'accueil",
+    "restart": "Relancer",
+    "clearCache": "Supprimer toutes les données",
+    "clearCacheDescription": "Supprimer la base de données, les paramètres et la bibliothèque générée",
+    "clear": "Supprimer",
     "footer": "CrAIte se minimise dans la barre système à la fermeture et continue l'analyse en arrière-plan."
   },
   "languages": {
     "en": "English",
     "fr": "Français"
   },
+  "notify": {
+    "error": "Erreur",
+    "success": "Succès",
+    "scanFailed": "L'analyse a échoué. Vérifiez les permissions et réessayez.",
+    "generateFailed": "La génération a échoué. Vérifiez l'espace disque et les permissions.",
+    "openFolderFailed": "Impossible d'ouvrir le dossier.",
+    "audioPlaybackFailed": "Impossible de lire ce sample.",
+    "resetFailed": "Échec de la réinitialisation.",
+    "clearCacheFailed": "Échec de la suppression du cache.",
+    "dawSetupFailed": "Échec de la configuration du dossier DAW.",
+    "scanComplete": "{count} samples trouvés dans {categories} catégories",
+    "libraryGenerated": "{count} fichiers liés",
+    "settingSaved": "Paramètre enregistré",
+    "backgroundScanComplete": "Scan auto terminé — {count} samples",
+    "backgroundScanAdded": "Scan auto : +{added} samples ({total} au total)",
+    "backgroundScanRemoved": "Scan auto : -{removed} samples ({total} au total)",
+    "sourceAdded": "Dossier source ajouté"
+  },
   "onboarding": {
     "welcome": {
       "subtitle": "Votre bibliothèque de samples intelligente",
       "description": "CrAIte analyse vos dossiers, organise vos samples par catégorie et les rend instantanément accessibles depuis votre DAW.",
+      "featureScan": "Détection auto",
+      "featureClassify": "Classification IA",
+      "featureExport": "Intégration DAW",
       "next": "Commencer"
     },
     "scan": {
@@ -89,6 +137,8 @@
       "complete": "Analyse terminée",
       "samplesFound": "{count} samples trouvés",
       "slowHint": "Les grandes bibliothèques peuvent prendre un moment...",
+      "filesFound": "fichiers trouvés",
+      "classifying": "Classification des samples...",
       "skip": "Passer"
     },
     "result": {

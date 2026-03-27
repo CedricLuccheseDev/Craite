@@ -6,6 +6,7 @@ export function buildCategoriesFromSamples(samples: Sample[]): Category[] {
   let unknownCount = 0;
 
   for (const sample of samples) {
+    if (sample.hidden) continue;
     if (sample.category === 'unknown') {
       unknownCount++;
       continue;

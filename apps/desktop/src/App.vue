@@ -10,12 +10,13 @@ import UpdateNotification from '@/components/UpdateNotification.vue';
 const { phase, updateInfo, downloadPercent, errorMessage, setupListeners, checkForUpdate, installUpdate, dismiss } =
   useUpdater();
 const { initialize } = useAppInit();
-const { setupListeners: setupBackgroundListeners } = useBackgroundScan();
+const { loadStatus: loadBgStatus, setupListeners: setupBackgroundListeners } = useBackgroundScan();
 
 onMounted(async () => {
   await initialize();
   await setupListeners();
-  await setupBackgroundListeners();
+  try { await setupBackgroundListeners(); } catch (e) { console.error('bg listeners failed:', e); }
+  try { await loadBgStatus(); } catch (e) { console.error('bg status failed:', e); }
   if (!import.meta.env.DEV) {
     await checkForUpdate();
   }
@@ -34,6 +35,7 @@ onMounted(async () => {
       @dismiss="dismiss"
       @restart="relaunch"
     />
+    <UToaster position="bottom-right" />
   </UApp>
 </template>
 

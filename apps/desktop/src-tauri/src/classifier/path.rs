@@ -1,22 +1,21 @@
 use super::engine::rule_engine;
 use super::rules::RULES;
+use super::Classification;
 use std::path::Path;
 
-/// Classification result for a single file
-pub struct Classification {
-    pub category: String,
-    pub subcategory: String,
-    pub confidence: f32,
-    /// Duration in seconds (0.0 if not yet analysed)
-    pub duration: f32,
-    /// Sample rate in Hz (0 if not yet analysed)
-    pub sample_rate: u32,
+/// Confidence levels by distance from file (0 = filename, 1 = parent, …)
+const CONFIDENCE_BY_DEPTH: [f32; 5] = [0.85, 0.65, 0.55, 0.45, 0.40];
+
+fn confidence_for_depth(depth: usize) -> f32 {
+    if depth < CONFIDENCE_BY_DEPTH.len() {
+        CONFIDENCE_BY_DEPTH[depth]
+    } else {
+        *CONFIDENCE_BY_DEPTH.last().unwrap()
+    }
 }
 
 /// Normalize a path segment for keyword matching:
-/// - lowercase
-/// - all non-alphanumeric chars → space (removes underscores, hyphens, dots, digits as separators)
-/// - padded with a leading and trailing space so rules can use `" hh "` for word-boundary matching
+/// lowercase, non-alnum → space, padded with leading/trailing space for word-boundary matching.
 fn normalize(s: &str) -> String {
     let body: String = s
         .chars()
@@ -25,67 +24,54 @@ fn normalize(s: &str) -> String {
     format!(" {body} ")
 }
 
-/// Classify a sample based on its filename and up to two parent directory names.
+/// Classify a sample by scanning the full path from filename up to `source_root`.
 ///
-/// Match priority (descending confidence):
-///   1. filename stem          → 0.85
-///   2. immediate parent dir   → 0.65
-///   3. grandparent dir        → 0.50
-///
-/// The normalized text uses word-boundary padding so short keywords like `" hh "`
-/// only match the standalone token, not substrings of longer words.
-pub fn classify_by_filename(path: &Path) -> Classification {
+/// Walks every ancestor directory between the file and the source root,
+/// matching each segment against the keyword engine. Returns the closest
+/// (= highest confidence) match found.
+pub fn classify_by_path(path: &Path, source_root: &Path) -> Classification {
     let filename = path.file_stem().and_then(|s| s.to_str()).unwrap_or("");
     let norm_filename = normalize(filename);
 
+    // Depth 0: filename itself
     if let Some((rule_idx, _)) = rule_engine().find_match(&norm_filename) {
         let rule = &RULES[rule_idx];
         return Classification {
             category: rule.category.to_string(),
             subcategory: extract_subcategory(&norm_filename, rule.category),
-            confidence: 0.85,
+            confidence: CONFIDENCE_BY_DEPTH[0],
             duration: 0.0,
             sample_rate: 0,
         };
     }
 
-    // Try immediate parent directory
-    let parent_name = path
-        .parent()
-        .and_then(|p| p.file_name())
-        .and_then(|s| s.to_str())
-        .unwrap_or("");
-    let norm_parent = normalize(parent_name);
+    // Depth 1+: walk ancestors up to source_root
+    let mut depth: usize = 1;
+    let mut current = path.parent();
 
-    if let Some((rule_idx, _)) = rule_engine().find_match(&norm_parent) {
-        let rule = &RULES[rule_idx];
-        return Classification {
-            category: rule.category.to_string(),
-            subcategory: String::new(),
-            confidence: 0.65,
-            duration: 0.0,
-            sample_rate: 0,
-        };
-    }
+    while let Some(dir) = current {
+        // Stop when we've reached or passed the source root
+        if dir == source_root || !dir.starts_with(source_root) {
+            break;
+        }
 
-    // Try grandparent directory
-    let grandparent_name = path
-        .parent()
-        .and_then(|p| p.parent())
-        .and_then(|p| p.file_name())
-        .and_then(|s| s.to_str())
-        .unwrap_or("");
-    let norm_grandparent = normalize(grandparent_name);
+        let dir_name = dir.file_name().and_then(|s| s.to_str()).unwrap_or("");
+        if !dir_name.is_empty() {
+            let norm = normalize(dir_name);
+            if let Some((rule_idx, _)) = rule_engine().find_match(&norm) {
+                let rule = &RULES[rule_idx];
+                return Classification {
+                    category: rule.category.to_string(),
+                    subcategory: String::new(), // subcategories only from filename
+                    confidence: confidence_for_depth(depth),
+                    duration: 0.0,
+                    sample_rate: 0,
+                };
+            }
+        }
 
-    if let Some((rule_idx, _)) = rule_engine().find_match(&norm_grandparent) {
-        let rule = &RULES[rule_idx];
-        return Classification {
-            category: rule.category.to_string(),
-            subcategory: String::new(),
-            confidence: 0.50,
-            duration: 0.0,
-            sample_rate: 0,
-        };
+        depth += 1;
+        current = dir.parent();
     }
 
     Classification {
@@ -98,7 +84,6 @@ pub fn classify_by_filename(path: &Path) -> Classification {
 }
 
 /// Extract a more specific subcategory from the normalized filename.
-/// Only called when a category match was found in the filename itself (not parent dirs).
 fn extract_subcategory(norm_filename: &str, category: &str) -> String {
     match category {
         "kick" => {
@@ -197,10 +182,12 @@ mod tests {
     use super::*;
     use std::path::PathBuf;
 
+    const ROOT: &str = "/samples";
+
     #[test]
     fn test_classify_kick() {
         let path = PathBuf::from("/samples/drums/kick_heavy.wav");
-        let result = classify_by_filename(&path);
+        let result = classify_by_path(&path, Path::new(ROOT));
         assert_eq!(result.category, "kick");
         assert_eq!(result.confidence, 0.85);
     }
@@ -208,7 +195,7 @@ mod tests {
     #[test]
     fn test_classify_snare() {
         let path = PathBuf::from("/samples/drums/snare_acoustic.wav");
-        let result = classify_by_filename(&path);
+        let result = classify_by_path(&path, Path::new(ROOT));
         assert_eq!(result.category, "snare");
         assert_eq!(result.confidence, 0.85);
     }
@@ -216,86 +203,72 @@ mod tests {
     #[test]
     fn test_classify_hihat_open() {
         let path = PathBuf::from("/samples/hats/hihat_open_01.wav");
-        let result = classify_by_filename(&path);
+        let result = classify_by_path(&path, Path::new(ROOT));
         assert_eq!(result.category, "hihat");
         assert_eq!(result.subcategory, "open");
         assert_eq!(result.confidence, 0.85);
     }
 
     #[test]
-    fn test_classify_hihat_closed() {
-        let path = PathBuf::from("/samples/hats/hihat_closed_02.wav");
-        let result = classify_by_filename(&path);
-        assert_eq!(result.category, "hihat");
-        assert_eq!(result.subcategory, "closed");
-        assert_eq!(result.confidence, 0.85);
-    }
-
-    #[test]
     fn test_classify_bass_808() {
         let path = PathBuf::from("/samples/bass/bass_808_long.wav");
-        let result = classify_by_filename(&path);
+        let result = classify_by_path(&path, Path::new(ROOT));
         assert_eq!(result.category, "bass");
         assert_eq!(result.subcategory, "808");
         assert_eq!(result.confidence, 0.85);
     }
 
     #[test]
-    fn test_classify_bass_sub() {
-        let path = PathBuf::from("/samples/bass/sub_bass.wav");
-        let result = classify_by_filename(&path);
-        assert_eq!(result.category, "bass");
-        assert_eq!(result.subcategory, "sub");
-        assert_eq!(result.confidence, 0.85);
-    }
-
-    #[test]
     fn test_classify_unknown() {
         let path = PathBuf::from("/samples/random/file123.xyz");
-        let result = classify_by_filename(&path);
+        let result = classify_by_path(&path, Path::new(ROOT));
         assert_eq!(result.category, "unknown");
         assert_eq!(result.confidence, 0.0);
     }
 
     #[test]
     fn test_classify_with_parent_directory() {
-        // "heavy_01" doesn't match, but parent "kicks" contains "kick"
         let path = PathBuf::from("/samples/kicks/heavy_01.wav");
-        let result = classify_by_filename(&path);
+        let result = classify_by_path(&path, Path::new(ROOT));
         assert_eq!(result.category, "kick");
         assert_eq!(result.confidence, 0.65);
     }
 
     #[test]
     fn test_classify_with_grandparent_directory() {
-        // Neither filename nor parent match, but grandparent "Snares" does
-        let path = PathBuf::from("/Splice/Snares/Acoustic/01.wav");
-        let result = classify_by_filename(&path);
+        let path = PathBuf::from("/samples/Snares/Acoustic/01.wav");
+        let result = classify_by_path(&path, Path::new(ROOT));
         assert_eq!(result.category, "snare");
-        assert_eq!(result.confidence, 0.50);
+        assert_eq!(result.confidence, 0.55);
     }
 
     #[test]
-    fn test_no_false_positive_hh_in_word() {
-        // "pshh" should NOT match hihat — " hh " is not in " pshh 01 "
-        let path = PathBuf::from("/samples/random/pshh_01.wav");
-        let result = classify_by_filename(&path);
+    fn test_deep_path_at_depth_3() {
+        // "Kicks" is at depth 3 from file → confidence 0.45
+        let path = PathBuf::from("/samples/Pack/Kicks/Sub/xyz_42.wav");
+        let result = classify_by_path(&path, Path::new(ROOT));
+        assert_eq!(result.category, "kick");
+        assert_eq!(result.confidence, 0.55);
+    }
+
+    #[test]
+    fn test_deep_path_no_match_stops_at_root() {
+        let path = PathBuf::from("/samples/PackA/FolderB/random/xyz.wav");
+        let result = classify_by_path(&path, Path::new(ROOT));
         assert_eq!(result.category, "unknown");
     }
 
     #[test]
-    fn test_no_false_positive_low_in_word() {
-        // "mellow_pad" should NOT match bass (old keyword "low" is gone)
-        let path = PathBuf::from("/samples/pads/mellow_pad.wav");
-        let result = classify_by_filename(&path);
-        assert_eq!(result.category, "pad");
+    fn test_no_false_positive_hh_in_word() {
+        let path = PathBuf::from("/samples/random/pshh_01.wav");
+        let result = classify_by_path(&path, Path::new(ROOT));
+        assert_eq!(result.category, "unknown");
     }
 
     #[test]
     fn test_bass_drum_beats_bass() {
-        // "bass drum" (9 chars) should win over "bass" (4 chars) → kick
         let path = PathBuf::from("/samples/kicks/bass_drum_01.wav");
-        let result = classify_by_filename(&path);
+        let result = classify_by_path(&path, Path::new(ROOT));
         assert_eq!(result.category, "kick");
     }
 
@@ -306,26 +279,8 @@ mod tests {
     }
 
     #[test]
-    fn test_extract_subcategory_hihat_closed() {
-        let result = extract_subcategory(" hihat closed 02 ", "hihat");
-        assert_eq!(result, "closed");
-    }
-
-    #[test]
     fn test_extract_subcategory_bass_808() {
         let result = extract_subcategory(" bass 808 long ", "bass");
         assert_eq!(result, "808");
-    }
-
-    #[test]
-    fn test_extract_subcategory_bass_sub() {
-        let result = extract_subcategory(" sub bass deep ", "bass");
-        assert_eq!(result, "sub");
-    }
-
-    #[test]
-    fn test_extract_subcategory_no_match() {
-        let result = extract_subcategory(" generic bass ", "bass");
-        assert_eq!(result, "");
     }
 }

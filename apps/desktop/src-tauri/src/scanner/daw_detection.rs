@@ -170,9 +170,12 @@ const DAWS: &[DawDef] = &[
         name: "Cubase",
         candidates: |p| {
             vec![
-                format!("{}/Steinberg/Content/VST Sound", p.programdata),
-                "/Library/Application Support/Steinberg/Content/VST Sound".into(),
-                format!("{}/Steinberg", p.appdata),
+                format!("{}/Steinberg/Cubase", p.appdata),
+                format!("{}/Steinberg/Cubase 14", p.programfiles),
+                format!("{}/Steinberg/Cubase 13", p.programfiles),
+                format!("{}/Steinberg/Cubase 12", p.programfiles),
+                "/Applications/Cubase 14.app".into(),
+                "/Applications/Cubase 13.app".into(),
             ]
         },
         library_candidates: |p| {
@@ -201,9 +204,9 @@ const DAWS: &[DawDef] = &[
         name: "Pro Tools",
         candidates: |p| {
             vec![
-                format!("{}/Common Files/Avid/Audio/Plug-Ins", p.programfiles),
-                "/Library/Application Support/Avid/Audio/Plug-Ins".into(),
+                format!("{}/Avid/Pro Tools", p.programfiles),
                 format!("{}/Avid/Pro Tools", p.appdata),
+                "/Applications/Pro Tools.app".into(),
             ]
         },
         library_candidates: |_| vec![],

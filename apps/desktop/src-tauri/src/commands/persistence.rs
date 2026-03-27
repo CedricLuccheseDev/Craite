@@ -41,6 +41,22 @@ pub async fn update_source_enabled(path: String, enabled: bool) -> Result<(), St
 }
 
 #[tauri::command]
+pub async fn set_sample_hidden(id: i64, hidden: bool) -> Result<(), String> {
+    run_blocking(move || {
+        with_db(|conn| repository::set_sample_hidden(conn, id, hidden).map(|_| ()))
+    })
+    .await
+}
+
+#[tauri::command]
+pub async fn delete_source(path: String) -> Result<(), String> {
+    run_blocking(move || {
+        with_db(|conn| repository::delete_source(conn, &path).map(|_| ()))
+    })
+    .await
+}
+
+#[tauri::command]
 pub async fn save_setting(key: String, value: String) -> Result<(), String> {
     run_blocking(move || with_db(|conn| repository::set_setting(conn, &key, &value))).await
 }

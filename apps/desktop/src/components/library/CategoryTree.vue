@@ -2,6 +2,8 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { Category } from '@/types/sample';
+import { getCategoryIcon } from '@/utils/categoryIcons';
+import { GROUPS } from '@/utils/categoryGroups';
 
 interface Props {
   categories: Category[];
@@ -12,15 +14,6 @@ const props = defineProps<Props>();
 
 const { t } = useI18n();
 const emit = defineEmits<{ select: [name: string | null] }>();
-
-const GROUPS: { key: string; keys: string[] }[] = [
-  { key: 'drums', keys: ['kick', 'snare', 'hihat', 'clap', 'cymbal', 'tom', 'perc'] },
-  { key: 'bass', keys: ['bass'] },
-  { key: 'synths', keys: ['pad', 'lead', 'arp', 'chord', 'keys', 'guitar', 'strings', 'brass'] },
-  { key: 'vocal', keys: ['vocal'] },
-  { key: 'fx', keys: ['fx'] },
-  { key: 'loops', keys: ['loop'] },
-]
 
 const knownCategories = computed(() => props.categories.filter(c => c.name !== 'unknown'));
 const unknownCategory = computed(() => props.categories.find(c => c.name === 'unknown') ?? null);
@@ -72,7 +65,7 @@ function clearSelection() {
         class="w-full justify-start"
         @click="handleSelect(cat.name)"
       >
-        <span class="size-2 rounded-full shrink-0" :style="{ background: cat.color }" />
+        <UIcon :name="getCategoryIcon(cat.name)" class="text-[13px] shrink-0" :style="{ color: cat.color }" />
         <span class="flex-1 capitalize text-left">{{ cat.name }}</span>
         <span class="font-mono text-xs text-muted ml-auto">{{ cat.count }}</span>
       </UButton>
@@ -92,7 +85,7 @@ function clearSelection() {
         class="w-full justify-start"
         @click="handleSelect(cat.name)"
       >
-        <span class="size-2 rounded-full shrink-0" :style="{ background: cat.color }" />
+        <UIcon :name="getCategoryIcon(cat.name)" class="text-[13px] shrink-0" :style="{ color: cat.color }" />
         <span class="flex-1 capitalize text-left">{{ cat.name }}</span>
         <span class="font-mono text-xs text-muted ml-auto">{{ cat.count }}</span>
       </UButton>
