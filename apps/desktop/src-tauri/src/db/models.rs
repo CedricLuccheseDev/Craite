@@ -15,6 +15,9 @@ pub struct Sample {
     /// File modification time (seconds since epoch) for incremental scan
     #[serde(default)]
     pub mtime: u64,
+    /// Whether this sample is excluded from export
+    #[serde(default)]
+    pub hidden: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -4,8 +4,9 @@ import { useTauri } from '@/composables/useTauri';
 import type { Sample, Source, ScanResult, Category } from '@/types/sample';
 
 export const useScanStore = defineStore('scan', () => {
-  const { saveSource, updateSourceEnabled } = useTauri();
+  const { saveSource, deleteSource, updateSourceEnabled } = useTauri();
   const sources = ref<Source[]>([]);
+  const dismissedPaths = new Set<string>();
   const scanResult = ref<ScanResult | null>(null);
   const isScanning = ref(false);
   const scanProgress = ref(0);
@@ -31,9 +32,10 @@ export const useScanStore = defineStore('scan', () => {
   }
 
   function setDetectedSources(detected: Source[], persist = true) {
-    sources.value = detected;
+    const filtered = detected.filter(s => !dismissedPaths.has(s.path));
+    sources.value = filtered;
     if (persist) {
-      detected.forEach(s => persistSource(s));
+      filtered.forEach(s => persistSource(s));
     }
   }
 
@@ -73,10 +75,24 @@ export const useScanStore = defineStore('scan', () => {
     }
   }
 
+  function removeSource(path: string) {
+    sources.value = sources.value.filter(s => s.path !== path);
+    dismissedPaths.add(path);
+    deleteSource(path).catch((err: unknown) => {
+      console.error('Failed to delete source:', err);
+    });
+  }
+
   function removeEmptySources() {
+    const empty = sources.value.filter(s => s.sampleCount === 0);
     const nonEmpty = sources.value.filter(s => s.sampleCount > 0);
     sources.value = nonEmpty;
-    nonEmpty.forEach(s => persistSource(s));
+    empty.forEach(s => {
+      dismissedPaths.add(s.path);
+      deleteSource(s.path).catch((err: unknown) => {
+        console.error('Failed to delete empty source:', err);
+      });
+    });
   }
 
   function setScanError(message: string) {
@@ -105,6 +121,7 @@ export const useScanStore = defineStore('scan', () => {
     addCustomSource,
     setScanResult,
     updateSourceCounts,
+    removeSource,
     removeEmptySources,
     startScan,
     setScanError,

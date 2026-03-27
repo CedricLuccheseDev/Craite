@@ -13,15 +13,28 @@
   --color-muted: #a1a1aa;
 
   --font-display: 'Space Grotesk', sans-serif;
+
+  /* Timing & easing */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 360ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Button overrides — rounded-pill, airy padding, clean */
+/* Button overrides — rounded-pill, airy padding, clean micro-interactions */
 button,
 [role='button'] {
+  cursor: pointer;
   box-shadow: none !important;
   border-radius: 9999px !important;
   font-weight: 500 !important;
   letter-spacing: -0.01em;
+  transition:
+    transform var(--duration-fast) var(--ease-out-expo),
+    background-color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease,
+    opacity var(--duration-fast) ease !important;
 }
 
 button:hover,
@@ -29,25 +42,69 @@ button:hover,
   box-shadow: none !important;
 }
 
+button:active,
+[role='button']:active {
+  transform: scale(0.96) !important;
+}
+
 button:focus-visible,
 [role='button']:focus-visible {
-  box-shadow: none !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-orange-500) 30%, transparent) !important;
   outline: 1.5px solid var(--color-orange-500);
   outline-offset: 2px;
+}
+
+/* Scrollbar: overlay so it doesn't take layout space */
+.scrollbar-thin {
+  overflow-y: overlay !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 :root {
   color-scheme: dark;
 
-  /* Category colors — used via dynamic :style bindings */
+  /* Category colors — group-based, all subcategories share the group color */
+  /* Drums */
   --color-kick: #ff6b35;
-  --color-snare: #3b82f6;
-  --color-hihat: #eab308;
-  --color-clap: #8b5cf6;
-  --color-pad: #22c55e;
-  --color-lead: #ec4899;
+  --color-snare: #ff6b35;
+  --color-hihat: #ff6b35;
+  --color-clap: #ff6b35;
+  --color-tom: #ff6b35;
+  --color-cymbal: #ff6b35;
+  --color-perc: #ff6b35;
+  /* Bass */
   --color-bass: #ef4444;
+  /* Melodic */
+  --color-pad: #4ade80;
+  --color-lead: #4ade80;
+  --color-arp: #4ade80;
+  --color-chord: #4ade80;
+  --color-keys: #4ade80;
+  --color-guitar: #4ade80;
+  --color-strings: #4ade80;
+  --color-brass: #4ade80;
+  /* Vocal */
+  --color-vocal: #f472b6;
+  /* FX */
   --color-fx: #06b6d4;
-  --color-vocal: #f97316;
-  --color-loop: #6366f1;
+  /* Loops */
+  --color-loop: #818cf8;
 }

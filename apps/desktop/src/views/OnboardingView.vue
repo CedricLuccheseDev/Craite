@@ -4,12 +4,14 @@ import { useRouter } from 'vue-router';
 import { open } from '@tauri-apps/plugin-dialog';
 import { useOnboarding, completeOnboarding } from '@/composables/useOnboarding';
 import { useTauri } from '@/composables/useTauri';
+import { useNotify } from '@/composables/useNotify';
 import { useScanStore } from '@/stores/scan';
 import { useLibraryStore } from '@/stores/library';
 import { useLibraryConfigStore } from '@/stores/libraryConfig';
 import { buildCategoriesFromSamples } from '@/utils/categoryBuilder';
+import { useSettingsStore } from '@/stores/settings';
 import type { DawInfo } from '@/types/sample';
-import GridBackground from '@/components/onboarding/GridBackground.vue';
+import type { SupportedLocale } from '@/plugins/i18n';
 import StepDots from '@/components/onboarding/StepDots.vue';
 import ScanStep from '@/components/onboarding/ScanStep.vue';
 import DawStep from '@/components/onboarding/DawStep.vue';
@@ -20,22 +22,35 @@ const scanStore = useScanStore();
 const libraryStore = useLibraryStore();
 const configStore = useLibraryConfigStore();
 const tauri = useTauri();
+const notify = useNotify();
+const settingsStore = useSettingsStore();
 const scanStarted = ref(false);
+
+const languageOptions = [
+  { label: 'EN', value: 'en' },
+  { label: 'FR', value: 'fr' },
+];
+
+function onLocaleChange(value: string) {
+  settingsStore.setLocale(value as SupportedLocale);
+}
 
 const { currentStep, scanProgress, scanTotal, isScanning, stepIndex, goToStep } = useOnboarding();
 
-// 4 visual dots: welcome(0) → scan/result(1) → daw(2) → ready(3)
 const visualStepIndex = computed(() => {
   if (currentStep.value === 'scan' && !scanStarted.value) return 0;
   return stepIndex.value + 1;
 });
 
+const scanRunning = ref(false);
+
 async function runScan() {
+  if (scanRunning.value) return;
+  scanRunning.value = true;
   scanStarted.value = true;
   isScanning.value = true;
   scanStore.startScan();
 
-  // Wait for Vue to render the scanning UI and the browser to paint it
   await nextTick();
   await new Promise(resolve => setTimeout(resolve, 300));
 
@@ -54,8 +69,10 @@ async function runScan() {
   } catch (error) {
     console.error('Scan failed:', error);
     scanStore.setScanError(String(error));
+    notify.error('notify.scanFailed');
   } finally {
     isScanning.value = false;
+    scanRunning.value = false;
   }
 }
 
@@ -68,7 +85,6 @@ async function onSkip() {
 async function onAddFolder() {
   const selected = await open({ directory: true, multiple: false });
   if (!selected) return;
-
   scanStore.addCustomSource(selected as string);
   await runScan();
 }
@@ -78,19 +94,16 @@ function onContinue() {
 }
 
 async function onDawSelect(daw: DawInfo | null, path: string) {
-  // Navigate immediately to avoid UI freeze from IPC calls
   goToStep('ready');
-
   try {
     await tauri.createDawLibraryFolder(path);
     configStore.setOutputDir(path);
-    if (daw) {
-      await tauri.saveSetting('daw_choice', daw.id);
-    }
-    const count = await tauri.createLinks(path);
+    if (daw) await tauri.saveSetting('daw_choice', daw.id);
+    const count = await tauri.createLinks(path, []);
     configStore.setGenerationResult(count);
   } catch (error) {
     console.error('Failed to generate library:', error);
+    notify.error('notify.dawSetupFailed');
   }
 }
 
@@ -118,34 +131,119 @@ async function loadSamplesIntoLibrary() {
 </script>
 
 <template>
-  <div class="flex flex-col w-full h-full bg-zinc-950 relative overflow-hidden">
-    <GridBackground />
+  <div class="onboarding">
+    <!-- Ambient gradients -->
+    <div class="glow glow-top" />
+    <div class="glow glow-bottom" />
 
-    <div class="shrink-0 pt-8 z-1 flex justify-center">
+    <!-- Top bar: progress + language -->
+    <div class="absolute top-6 inset-x-0 z-20 flex items-center justify-center px-6">
+      <div class="flex-1" />
       <StepDots :total="4" :current="visualStepIndex" />
+      <div class="flex-1 flex justify-end">
+        <USelect
+          :model-value="settingsStore.locale"
+          :items="languageOptions"
+          value-key="value"
+          label-key="label"
+          color="neutral"
+          variant="ghost"
+          size="xs"
+          class="w-16"
+          @update:model-value="onLocaleChange"
+        />
+      </div>
     </div>
 
-    <div class="flex-1 min-h-0 w-full z-1 flex flex-col">
-      <ScanStep
-        v-if="currentStep === 'scan'"
-        :is-scanning="isScanning"
-        :categories="scanStore.categories"
-        :total-samples="scanStore.totalSamples"
-        :scan-started="scanStarted"
-        @start="runScan"
-        @skip="onSkip"
-        @continue="onContinue"
-        @add-folder="onAddFolder"
-      />
+    <!-- Step content -->
+    <div class="relative z-10 flex-1 min-h-0 w-full max-w-4xl mx-auto flex flex-col px-8 pt-10">
+      <Transition name="step" mode="out-in">
+        <ScanStep
+          v-if="currentStep === 'scan'"
+          key="scan"
+          :is-scanning="isScanning"
+          :categories="scanStore.categories"
+          :total-samples="scanStore.totalSamples"
+          :scan-started="scanStarted"
+          @start="runScan"
+          @skip="onSkip"
+          @continue="onContinue"
+          @add-folder="onAddFolder"
+        />
 
-      <DawStep v-else-if="currentStep === 'daw'" @select="onDawSelect" @skip="onDawSkip" />
+        <DawStep v-else-if="currentStep === 'daw'" key="daw" @select="onDawSelect" @skip="onDawSkip" />
 
-      <ReadyStep
-        v-else-if="currentStep === 'ready'"
-        :total-samples="scanStore.totalSamples"
-        :category-count="scanStore.categories.length"
-        @finish="onFinish"
-      />
+        <ReadyStep
+          v-else-if="currentStep === 'ready'"
+          key="ready"
+          :total-samples="scanStore.totalSamples"
+          :category-count="scanStore.categories.length"
+          :categories="scanStore.categories"
+          @finish="onFinish"
+        />
+      </Transition>
     </div>
   </div>
 </template>
+
+<style scoped>
+.onboarding {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: #0a0a0a;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle ambient glows */
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(100px);
+}
+
+.glow-top {
+  width: 500px;
+  height: 350px;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(255, 107, 53, 0.08) 0%, transparent 70%);
+  animation: glow-pulse 8s ease-in-out infinite;
+}
+
+.glow-bottom {
+  width: 400px;
+  height: 250px;
+  bottom: -80px;
+  right: -50px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
+  animation: glow-pulse 10s ease-in-out infinite reverse;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Step transitions */
+.step-enter-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.step-leave-active {
+  transition: opacity 0.12s ease;
+}
+
+.step-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.step-leave-to {
+  opacity: 0;
+}
+</style>

@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { resetOnboarding } from '@/composables/useOnboarding';
-import { useTauri } from '@/composables/useTauri';
-import { useScanStore } from '@/stores/scan';
-import { useLibraryStore } from '@/stores/library';
 
 type Section = 'browse' | 'sources' | 'export' | 'settings';
 
@@ -17,69 +12,72 @@ defineProps<Props>();
 const emit = defineEmits<{ 'update:activeSection': [value: Section] }>();
 
 const { t } = useI18n();
-const router = useRouter();
-const tauri = useTauri();
-const scanStore = useScanStore();
-const libraryStore = useLibraryStore();
-const isDev = import.meta.env.DEV;
-const isResetting = ref(false);
+const collapsed = ref(localStorage.getItem('sidebar_collapsed') === 'true');
 
-const navItems = computed(() => [
-  { id: 'browse' as Section, label: t('nav.browse'), icon: 'i-lucide-music-2' },
+function toggleCollapsed() {
+  collapsed.value = !collapsed.value;
+  localStorage.setItem('sidebar_collapsed', String(collapsed.value));
+}
+
+const mainNavItems = computed(() => [
   { id: 'sources' as Section, label: t('nav.sources'), icon: 'i-lucide-hard-drive' },
+  { id: 'browse' as Section, label: t('nav.browse'), icon: 'i-lucide-music-2' },
   { id: 'export' as Section, label: t('nav.export'), icon: 'i-lucide-link' },
-  { id: 'settings' as Section, label: t('nav.settings'), icon: 'i-lucide-settings' },
 ]);
 
-async function restartOnboarding() {
-  isResetting.value = true;
-  resetOnboarding();
-  router.push('/');
-
-  // Heavy IPC in background after navigation
-  try {
-    await tauri.resetApp();
-  } catch (error) {
-    console.error('Failed to reset app:', error);
-  }
-  scanStore.setDetectedSources([], false);
-  libraryStore.setSamples([]);
-  libraryStore.setCategories([]);
-  isResetting.value = false;
-}
+const settingsItem = computed(() => (
+  { id: 'settings' as Section, label: t('nav.settings'), icon: 'i-lucide-settings' }
+));
 </script>
 
 <template>
-  <aside class="flex flex-col gap-8 py-8 px-4 w-[200px] shrink-0 bg-black/10">
-    <div class="px-2">
-      <span class="font-display text-xl font-bold tracking-tight">CrAIte</span>
+  <aside
+    class="sidebar"
+    :class="{ collapsed }"
+  >
+    <div class="flex items-center h-8" :class="collapsed ? 'justify-center' : 'justify-between px-4'">
+      <span v-if="!collapsed" class="font-display text-[22px] font-bold tracking-tight">CrAIte</span>
+      <UTooltip :text="collapsed ? t('nav.expand') : t('nav.collapse')">
+        <UButton
+          :icon="collapsed ? 'i-lucide-panel-left-open' : 'i-lucide-panel-left-close'"
+          color="neutral"
+          variant="ghost"
+          size="xs"
+          @click="toggleCollapsed"
+        />
+      </UTooltip>
     </div>
 
-    <nav class="flex flex-col gap-0.5">
-      <button
-        v-for="item in navItems"
-        :key="item.id"
-        class="nav-item"
-        :class="{ 'bg-surface text-white': activeSection === item.id }"
-        @click="emit('update:activeSection', item.id)"
-      >
-        <UIcon :name="item.icon" class="text-base shrink-0" />
-        <span>{{ item.label }}</span>
-      </button>
+    <nav class="flex flex-col gap-1" :class="collapsed ? 'items-center' : ''">
+      <UTooltip v-for="item in mainNavItems" :key="item.id" :text="item.label" :disabled="!collapsed">
+        <button
+          class="nav-item"
+          :class="[
+            { active: activeSection === item.id },
+            collapsed ? 'collapsed-item' : '',
+          ]"
+          @click="emit('update:activeSection', item.id)"
+        >
+          <UIcon :name="item.icon" class="text-[16px] shrink-0" />
+          <span v-if="!collapsed">{{ item.label }}</span>
+        </button>
+      </UTooltip>
     </nav>
 
-    <div class="mt-auto">
-      <UButton
-        v-if="isDev"
-        icon="i-lucide-rotate-ccw"
-        color="neutral"
-        variant="ghost"
-        size="xs"
-        class="opacity-30 transition-opacity duration-150 hover:opacity-100"
-        title="Restart onboarding (dev only)"
-        :loading="isResetting"
-        @click="restartOnboarding"
-      />
+    <div class="mt-auto" :class="collapsed ? 'flex justify-center' : ''">
+      <UTooltip :text="settingsItem.label" :disabled="!collapsed">
+        <button
+          class="nav-item"
+          :class="[
+            { active: activeSection === 'settings' },
+            collapsed ? 'collapsed-item' : '',
+          ]"
+          @click="emit('update:activeSection', 'settings')"
+        >
+          <UIcon :name="settingsItem.icon" class="text-[16px] shrink-0" />
+          <span v-if="!collapsed">{{ settingsItem.label }}</span>
+        </button>
+      </UTooltip>
     </div>
   </aside>
 </template>
@@ -87,10 +85,27 @@ async function restartOnboarding() {
 <style scoped>
 @reference "../../assets/styles/variables.css";
 
+.sidebar {
+  @apply flex flex-col gap-8 py-9 px-3 w-[220px] shrink-0 bg-black/10
+    transition-all duration-200 overflow-hidden;
+}
+
+.sidebar.collapsed {
+  @apply w-[60px] px-1.5;
+}
+
 .nav-item {
-  @apply flex items-center gap-2 w-full py-2.5 px-5 rounded-full
-    text-sm font-medium text-muted bg-transparent border-none
+  @apply flex items-center gap-3 w-full py-3 px-4 rounded-full
+    text-[14px] font-medium text-muted bg-transparent border-none
     cursor-pointer transition-colors duration-150
     hover:bg-surface-hover hover:text-white;
+}
+
+.nav-item.active {
+  @apply bg-white/10 text-white;
+}
+
+.nav-item.collapsed-item {
+  @apply px-0 size-10 justify-center rounded-full;
 }
 </style>

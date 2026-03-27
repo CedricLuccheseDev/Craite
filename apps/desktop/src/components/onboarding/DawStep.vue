@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { open } from '@tauri-apps/plugin-dialog';
 import type { DawInfo } from '@/types/sample';
 import { useTauri } from '@/composables/useTauri';
-import { getDawIconSvg, getCustomFolderSvg } from '@/utils/dawIcons';
+import { getDawIconPath, getDawIconSvg, getCustomFolderSvg } from '@/utils/dawIcons';
 
 const { t } = useI18n();
 
@@ -22,10 +22,15 @@ const isLoading = ref(true);
 const selectedDaw = computed(() => daws.value.find(d => d.id === selectedId.value) ?? null);
 
 onMounted(async () => {
-  daws.value = await tauri.detectInstalledDaws();
-  const firstDetected = daws.value.find(d => d.detected);
-  if (firstDetected) selectedId.value = firstDetected.id;
-  isLoading.value = false;
+  try {
+    daws.value = await tauri.detectInstalledDaws();
+    const firstDetected = daws.value.find(d => d.detected);
+    if (firstDetected) selectedId.value = firstDetected.id;
+  } catch (error) {
+    console.error('Failed to detect DAWs:', error);
+  } finally {
+    isLoading.value = false;
+  }
 });
 
 async function pickCustomFolder() {
@@ -45,69 +50,62 @@ function onConfirm() {
 </script>
 
 <template>
-  <div class="flex flex-col h-full w-full slide-up">
-    <!-- Content: centered -->
-    <div class="flex-1 min-h-0 flex flex-col items-center justify-center gap-8 px-16 overflow-y-auto">
-      <div class="flex flex-col items-center gap-2.5 text-center">
-        <h2 class="text-[40px] font-extrabold tracking-[-1.5px]">
+  <div class="flex flex-col h-full">
+    <div class="flex-1 min-h-0 overflow-y-auto scrollbar-thin">
+      <div class="flex flex-col items-center justify-center gap-4 min-h-full py-4">
+      <div class="flex flex-col items-center gap-2 text-center shrink-0">
+        <h2 class="font-display text-[28px] font-bold tracking-tight">
           {{ t('onboarding.daw.title') }}
         </h2>
-        <p class="text-base text-muted">
+        <p class="text-sm text-muted">
           {{ t('onboarding.daw.subtitle') }}
         </p>
       </div>
 
-      <div v-if="isLoading" class="flex items-center gap-2 text-muted">
+      <div v-if="isLoading" class="flex items-center gap-2 text-sm text-muted">
         <UIcon name="i-lucide-loader-2" class="animate-spin" />
         <span>{{ t('onboarding.daw.detecting') }}</span>
       </div>
 
-      <div v-else class="w-full max-w-160 grid grid-cols-3 gap-2.5">
+      <div v-else class="w-full max-w-xl grid grid-cols-4 gap-2">
         <label v-for="daw in daws" :key="daw.id" class="daw-card" :class="{ selected: selectedId === daw.id }">
           <input v-model="selectedId" type="radio" name="daw" :value="daw.id" class="sr-only" />
-          <span class="shrink-0 size-9" v-html="getDawIconSvg(daw.id)" />
-          <span class="flex flex-col gap-0.5 min-w-0">
-            <span class="text-[13px] font-medium truncate">
-              {{ daw.name }}
-            </span>
-            <span v-if="daw.detected" class="text-[11px] text-orange-500 font-medium">
-              {{ t('onboarding.daw.detected') }}
-            </span>
-          </span>
+          <img v-if="getDawIconPath(daw.id)" :src="getDawIconPath(daw.id)!" :alt="daw.name" class="shrink-0 size-6" />
+          <span v-else class="shrink-0 size-7 overflow-hidden flex items-center justify-center" v-html="getDawIconSvg(daw.id)" />
+          <span class="text-[12px] font-medium truncate">{{ daw.name }}</span>
         </label>
 
         <label class="daw-card" :class="{ selected: selectedId === 'custom' }">
           <input v-model="selectedId" type="radio" name="daw" value="custom" class="sr-only" />
-          <span class="shrink-0 size-9" v-html="getCustomFolderSvg()" />
-          <span class="flex flex-col gap-0.5 min-w-0">
-            <span class="text-[13px] font-medium truncate">
-              {{ t('onboarding.daw.customFolder') }}
-            </span>
+          <span class="shrink-0 size-7 overflow-hidden flex items-center justify-center" v-html="getCustomFolderSvg()" />
+          <span class="text-[12px] font-medium truncate">
+            {{ t('onboarding.daw.customFolder') }}
           </span>
         </label>
       </div>
 
       <p
         v-if="selectedId && selectedId !== 'custom' && selectedDaw"
-        class="w-full max-w-160 py-3 px-4 bg-surface rounded-md font-mono text-xs text-muted break-all"
+        class="w-full max-w-xl py-2 px-4 bg-zinc-900/60 rounded-lg border border-zinc-800/40 font-mono text-[11px] text-muted truncate"
       >
         {{ selectedDaw.libraryPath }}
       </p>
 
-      <div v-if="selectedId === 'custom'" class="w-full max-w-160">
+      <div v-if="selectedId === 'custom'" class="w-full">
         <UButton color="neutral" variant="outline" size="sm" icon="i-lucide-folder-open" @click="pickCustomFolder">
           {{ customPath || t('onboarding.daw.chooseFolder') }}
         </UButton>
       </div>
+      </div>
     </div>
 
-    <!-- Actions: pinned to bottom -->
-    <div class="shrink-0 flex flex-col items-center gap-2 pb-10 pt-4">
+    <!-- Actions -->
+    <div class="shrink-0 flex flex-col items-center gap-3 py-5">
       <UButton
         color="primary"
         variant="solid"
         size="lg"
-        class="px-8 py-3.5"
+        class="px-10"
         :disabled="!selectedId || (selectedId === 'custom' && !customPath)"
         @click="onConfirm"
       >
@@ -124,12 +122,13 @@ function onConfirm() {
 @reference "../../assets/styles/variables.css";
 
 .daw-card {
-  @apply flex items-center gap-2.5 p-3 border border-zinc-800
-    rounded-[10px] cursor-pointer transition-all duration-150;
+  @apply flex flex-col items-center justify-center gap-2 h-22 px-3 border border-zinc-800/60
+    rounded-xl cursor-pointer transition-all duration-150
+    bg-zinc-900/30;
 }
 
 .daw-card:hover {
-  @apply border-zinc-400 bg-surface;
+  @apply border-zinc-600 bg-zinc-800/40;
 }
 
 .daw-card.selected {

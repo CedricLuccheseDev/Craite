@@ -27,8 +27,12 @@ export function useWatcher() {
   }
 
   async function stopWatching() {
-    await invoke('stop_watching');
-    isWatching.value = false;
+    try {
+      await invoke('stop_watching');
+      isWatching.value = false;
+    } catch (error) {
+      console.error('Failed to stop watcher:', error);
+    }
   }
 
   async function setupListener() {

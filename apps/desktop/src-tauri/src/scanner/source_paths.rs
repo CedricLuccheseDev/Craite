@@ -90,7 +90,7 @@ const ALL_CANDIDATES: &[(&str, &str)] = &[
     ("{mnt}/Splice/sounds", "Splice"),
     ("{home}/Documents/Splice/Samples", "Splice"),
     ("{mnt}/Documents/Splice/Samples", "Splice"),
-    // ── FL Studio ──
+    // ── FL Studio (sample packs only) ──
     (
         "{programfiles}/Image-Line/FL Studio 20/Data/Patches/Packs",
         "FL Studio 20",
@@ -103,29 +103,15 @@ const ALL_CANDIDATES: &[(&str, &str)] = &[
         "{programfiles}/Image-Line/FL Studio 24/Data/Patches/Packs",
         "FL Studio 24",
     ),
-    ("{home}/Documents/Image-Line/FL Studio", "FL Studio User"),
-    ("{mnt}/Documents/Image-Line/FL Studio", "FL Studio User"),
     // ── Ableton Live ──
     (
         "{home}/Documents/Ableton/User Library",
         "Ableton User Library",
     ),
-    (
-        "{home}/Documents/Ableton/Factory Packs",
-        "Ableton Factory Packs",
-    ),
     ("{home}/Music/Ableton/User Library", "Ableton User Library"),
-    (
-        "{home}/Music/Ableton/Factory Packs",
-        "Ableton Factory Packs",
-    ),
     (
         "{mnt}/Documents/Ableton/User Library",
         "Ableton User Library",
-    ),
-    (
-        "{mnt}/Documents/Ableton/Factory Packs",
-        "Ableton Factory Packs",
     ),
     // ── Logic Pro (macOS) ──
     ("/Library/Audio/Apple Loops/Apple", "Apple Loops"),
@@ -133,44 +119,7 @@ const ALL_CANDIDATES: &[(&str, &str)] = &[
         "{home}/Library/Audio/Apple Loops/User Loops",
         "User Apple Loops",
     ),
-    (
-        "/Library/Application Support/Logic/Sampler Instruments",
-        "Logic Sampler",
-    ),
-    (
-        "/Library/Audio/Impulse Responses/Apple",
-        "Logic Impulse Responses",
-    ),
-    // ── Native Instruments ──
-    ("{home}/Documents/Native Instruments", "Native Instruments"),
-    ("{mnt}/Documents/Native Instruments", "Native Instruments"),
-    ("/Users/Shared", "NI Shared Content"),
-    ("C:/Users/Public/Documents", "NI Public Content"),
-    ("{mnt}/../Public/Documents", "NI Public Content"),
-    // ── Serum (Xfer) ──
-    ("{home}/Documents/Xfer/Serum Presets", "Serum"),
-    ("{mnt}/Documents/Xfer/Serum Presets", "Serum"),
-    ("/Library/Audio/Presets/Xfer Records/Serum Presets", "Serum"),
-    // ── Reason Studios ──
-    (
-        "{programdata}/Propellerhead Software/Soundbanks",
-        "Reason Soundbanks",
-    ),
-    (
-        "/Library/Application Support/Propellerhead Software/Soundbanks",
-        "Reason Soundbanks",
-    ),
-    ("{home}/Music/Reason Studios/ReFills", "Reason ReFills"),
     // ── Bitwig Studio ──
-    (
-        "{localappdata}/Bitwig Studio/installed-packages",
-        "Bitwig Packages",
-    ),
-    (
-        "{home}/Library/Application Support/Bitwig/Bitwig Studio/installed-packages",
-        "Bitwig Packages",
-    ),
-    ("{home}/.BitwigStudio/installed-packages", "Bitwig Packages"),
     ("{home}/Documents/Bitwig Studio", "Bitwig Studio"),
     ("{mnt}/Documents/Bitwig Studio", "Bitwig Studio"),
     // ── Studio One (PreSonus) ──
@@ -182,44 +131,15 @@ const ALL_CANDIDATES: &[(&str, &str)] = &[
         "{mnt}/Documents/Studio One/Sound Sets",
         "Studio One Sound Sets",
     ),
-    ("{home}/Documents/Studio One/Presets", "Studio One Presets"),
-    // ── Cubase / Steinberg ──
-    (
-        "{programdata}/Steinberg/Content/VST Sound",
-        "Steinberg VST Sound",
-    ),
-    (
-        "/Library/Application Support/Steinberg/Content/VST Sound",
-        "Steinberg VST Sound",
-    ),
-    (
-        "{appdata}/Steinberg/Content/VST Sound",
-        "Steinberg User Content",
-    ),
     // ── REAPER ──
     ("{home}/Documents/REAPER Media", "REAPER Media"),
     ("{mnt}/Documents/REAPER Media", "REAPER Media"),
-    // ── Renoise ──
-    ("{home}/Documents/Renoise", "Renoise"),
-    ("{home}/Renoise", "Renoise"),
     // ── Output Arcade ──
     ("{programdata}/Output/Arcade", "Arcade"),
     ("/Library/Application Support/Output/Arcade", "Arcade"),
     // ── Loopcloud ──
     ("{appdata}/Loopcloud/library", "Loopcloud"),
     ("{home}/Library/Loopcloud/library", "Loopcloud"),
-    // ── Pro Tools ──
-    (
-        "{programfiles}/Common Files/Avid/Audio/Plug-Ins",
-        "Pro Tools Plugins",
-    ),
-    (
-        "/Library/Application Support/Avid/Audio/Plug-Ins",
-        "Pro Tools Plugins",
-    ),
-    // ── iZotope ──
-    ("{home}/Documents/iZotope", "iZotope"),
-    ("{mnt}/Documents/iZotope", "iZotope"),
     // ── Cymatics ──
     ("{programdata}/Cymatics", "Cymatics"),
     ("/Library/Audio/Presets/Cymatics", "Cymatics"),

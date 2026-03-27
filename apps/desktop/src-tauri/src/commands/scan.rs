@@ -4,6 +4,7 @@ use std::sync::Mutex;
 use tauri::{AppHandle, Emitter, State};
 
 use crate::audio::preview::AudioPreview;
+use crate::background::state::BackgroundScanState;
 use crate::db::models::{ScanResult, Source};
 use crate::error::{run_blocking, ResultExt};
 use crate::scanner::execute_scan;
@@ -12,8 +13,16 @@ use crate::scanner::filesystem::detect_sample_directories;
 pub struct AudioState(pub Mutex<AudioPreview>);
 
 #[tauri::command]
-pub async fn scan_directories(sources: Vec<String>) -> Result<ScanResult, String> {
-    run_blocking(move || execute_scan(&sources)).await
+pub async fn scan_directories(
+    sources: Vec<String>,
+    app: AppHandle,
+    bg_state: State<'_, BackgroundScanState>,
+) -> Result<ScanResult, String> {
+    // Block background scan while manual scan is running
+    bg_state.mark_scanning(true);
+    let result = run_blocking(move || execute_scan(&sources, Some(&app))).await;
+    bg_state.mark_scanning(false);
+    result
 }
 
 #[tauri::command]

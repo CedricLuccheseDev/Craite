@@ -1,23 +1,26 @@
-interface DawIconStyle {
-  label: string;
-  colors: [string, string];
-}
-
-const STYLES: Record<string, DawIconStyle> = {
-  fl_studio: { label: 'FL', colors: ['#FF8C00', '#E65100'] },
-  ableton: { label: 'Ab', colors: ['#9BE564', '#5B9A1A'] },
-  bitwig: { label: 'Bw', colors: ['#FF6E40', '#D84315'] },
-  studio_one: { label: 'S1', colors: ['#42A5F5', '#1565C0'] },
-  logic: { label: 'LP', colors: ['#AB47BC', '#6A1B9A'] },
-  reaper: { label: 'Rp', colors: ['#66BB6A', '#2E7D32'] },
-  cubase: { label: 'Cb', colors: ['#EF5350', '#B71C1C'] },
-  reason: { label: 'Re', colors: ['#FFA726', '#E65100'] },
-  protools: { label: 'PT', colors: ['#7C4DFF', '#4527A0'] },
-  renoise: { label: 'Rn', colors: ['#FFAB40', '#BF360C'] },
+const DAW_ICONS: Record<string, string> = {
+  fl_studio: '/daws/flstudio.svg',
+  ableton: '/daws/ableton.svg',
+  bitwig: '/daws/bitwig.svg',
+  studio_one: '/daws/studioone.svg',
+  logic: '/daws/logicpro.svg',
+  reaper: '/daws/reaper.svg',
+  cubase: '/daws/cubase.svg',
+  protools: '/daws/protools.svg',
+  renoise: '/daws/renoise.svg',
 };
 
+// Fallback generated icon for DAWs without an SVG asset (e.g. Reason)
+const FALLBACK_STYLES: Record<string, { label: string; colors: [string, string] }> = {
+  reason: { label: 'Re', colors: ['#FFA726', '#E65100'] },
+};
+
+export function getDawIconPath(dawId: string): string | null {
+  return DAW_ICONS[dawId] ?? null;
+}
+
 export function getDawIconSvg(dawId: string, size = 36): string {
-  const s = STYLES[dawId];
+  const s = FALLBACK_STYLES[dawId];
   if (!s) return '';
 
   const r = Math.round(size * 0.22);

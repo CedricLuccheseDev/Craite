@@ -8,8 +8,8 @@ pub fn insert_samples(conn: &Connection, samples: &[Sample]) -> Result<()> {
 
     let mut stmt = tx.prepare(
         "INSERT OR REPLACE INTO samples
-            (name, path, category, subcategory, confidence, source, duration, sample_rate, linked_path, mtime)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+            (name, path, category, subcategory, confidence, source, duration, sample_rate, linked_path, mtime, hidden)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, COALESCE((SELECT hidden FROM samples WHERE path = ?2), ?11))",
     )?;
 
     for sample in samples {
@@ -24,6 +24,7 @@ pub fn insert_samples(conn: &Connection, samples: &[Sample]) -> Result<()> {
             sample.sample_rate,
             sample.linked_path,
             sample.mtime,
+            sample.hidden as i32,
         ])?;
     }
 
@@ -31,14 +32,20 @@ pub fn insert_samples(conn: &Connection, samples: &[Sample]) -> Result<()> {
     tx.commit()
 }
 
+pub fn count_all_samples(conn: &Connection) -> Result<usize> {
+    let count: i64 = conn.query_row("SELECT COUNT(*) FROM samples", [], |row| row.get(0))?;
+    Ok(count as usize)
+}
+
 pub fn load_all_samples(conn: &Connection) -> Result<Vec<Sample>> {
     let mut stmt = conn.prepare(
         "SELECT id, name, path, category, subcategory, confidence, source,
-                duration, sample_rate, linked_path, mtime
+                duration, sample_rate, linked_path, mtime, hidden
          FROM samples ORDER BY category, name",
     )?;
 
     let rows = stmt.query_map([], |row| {
+        let hidden: i32 = row.get(11)?;
         Ok(Sample {
             id: row.get(0)?,
             name: row.get(1)?,
@@ -51,6 +58,7 @@ pub fn load_all_samples(conn: &Connection) -> Result<Vec<Sample>> {
             sample_rate: row.get(8)?,
             linked_path: row.get(9)?,
             mtime: row.get(10)?,
+            hidden: hidden != 0,
         })
     })?;
 
@@ -60,10 +68,11 @@ pub fn load_all_samples(conn: &Connection) -> Result<Vec<Sample>> {
 pub fn load_samples_by_source(conn: &Connection, source: &str) -> Result<Vec<Sample>> {
     let mut stmt = conn.prepare(
         "SELECT id, name, path, category, subcategory, confidence, source,
-                duration, sample_rate, linked_path, mtime
+                duration, sample_rate, linked_path, mtime, hidden
          FROM samples WHERE source = ?1 ORDER BY category, name",
     )?;
     let rows = stmt.query_map(params![source], |row| {
+        let hidden: i32 = row.get(11)?;
         Ok(Sample {
             id: row.get(0)?,
             name: row.get(1)?,
@@ -76,9 +85,17 @@ pub fn load_samples_by_source(conn: &Connection, source: &str) -> Result<Vec<Sam
             sample_rate: row.get(8)?,
             linked_path: row.get(9)?,
             mtime: row.get(10)?,
+            hidden: hidden != 0,
         })
     })?;
     rows.collect()
+}
+
+pub fn set_sample_hidden(conn: &Connection, id: i64, hidden: bool) -> Result<usize> {
+    conn.execute(
+        "UPDATE samples SET hidden = ?1 WHERE id = ?2",
+        params![hidden as i32, id],
+    )
 }
 
 #[cfg(test)]
@@ -121,8 +138,8 @@ pub fn remove_samples_by_paths(conn: &Connection, paths: &[String]) -> Result<us
 
 // --- Sources ---
 
-#[cfg(test)]
 pub fn delete_source(conn: &Connection, path: &str) -> Result<usize> {
+    conn.execute("DELETE FROM samples WHERE source = ?1", params![path])?;
     conn.execute("DELETE FROM sources WHERE path = ?1", params![path])
 }
 
@@ -220,7 +237,8 @@ mod tests {
                 duration REAL NOT NULL DEFAULT 0.0,
                 sample_rate INTEGER NOT NULL DEFAULT 0,
                 linked_path TEXT,
-                mtime INTEGER NOT NULL DEFAULT 0
+                mtime INTEGER NOT NULL DEFAULT 0,
+                hidden INTEGER NOT NULL DEFAULT 0
             );
 
             CREATE TABLE sources (
@@ -256,6 +274,7 @@ mod tests {
             sample_rate: 0,
             linked_path: None,
             mtime: 0,
+            hidden: false,
         }
     }
 

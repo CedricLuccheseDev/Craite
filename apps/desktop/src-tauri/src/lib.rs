@@ -23,6 +23,7 @@ use tauri_plugin_autostart::MacosLauncher;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(
             tauri_plugin_log::Builder::new()
@@ -95,11 +96,15 @@ pub fn run() {
             scan::stop_preview,
             scan::read_audio_file,
             classify::create_links,
+            classify::open_folder,
+
             persistence::save_samples,
             persistence::load_samples,
             persistence::save_source,
             persistence::load_sources,
             persistence::update_source_enabled,
+            persistence::delete_source,
+            persistence::set_sample_hidden,
             persistence::save_setting,
             persistence::load_all_settings,
             persistence::reset_app,
