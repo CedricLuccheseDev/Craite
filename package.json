@@ -1,7 +1,7 @@
 {
   "name": "craite",
   "private": true,
-  "version": "0.4.1",
+  "version": "0.4.3",
   "type": "module",
   "scripts": {
     "dev": "pnpm --filter @app/desktop tauri dev",
@@ -15,7 +15,7 @@
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "typecheck": "pnpm --filter @app/desktop exec vue-tsc --noEmit && pnpm --filter @app/landing exec nuxi typecheck",
-    "check-all": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test --run && cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml -- -D warnings && cargo fmt --manifest-path apps/desktop/src-tauri/Cargo.toml -- --check && cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml",
+    "check-all": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test --run && cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml && cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml -- -D warnings && cargo fmt --check --manifest-path apps/desktop/src-tauri/Cargo.toml && cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml",
     "release": "git tag v$(node -p \"require('./package.json').version\") && git push origin v$(node -p \"require('./package.json').version\")",
     "prepare": "simple-git-hooks"
   },
@@ -42,7 +42,6 @@
   },
   "pnpm": {
     "overrides": {
-      "reka-ui": "^2.9.2",
       "unplugin": "^2.3.2"
     }
   },

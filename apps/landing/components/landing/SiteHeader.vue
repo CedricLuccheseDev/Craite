@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const isScrolled = ref(false);
-const { triggerDownload } = useGithubRelease();
 
 onMounted(() => {
   const handleScroll = () => {
@@ -9,6 +8,10 @@ onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true });
   onUnmounted(() => window.removeEventListener('scroll', handleScroll));
 });
+
+function scrollTo(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+}
 </script>
 
 <template>
@@ -23,13 +26,23 @@ onMounted(() => {
     <nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
       <NuxtLink to="/" class="text-xl font-bold tracking-tight"> Cr<span class="text-[#ff6b35]">AI</span>te </NuxtLink>
 
+      <div class="hidden sm:flex items-center gap-8">
+        <button class="text-sm text-zinc-400 hover:text-white transition-colors" @click="scrollTo('how-it-works')">
+          Comment ça marche
+        </button>
+        <button class="text-sm text-zinc-400 hover:text-white transition-colors" @click="scrollTo('faq')">FAQ</button>
+        <button class="text-sm text-zinc-400 hover:text-white transition-colors" @click="scrollTo('download')">
+          Télécharger
+        </button>
+      </div>
+
       <UButton
         color="neutral"
         variant="outline"
         label="Télécharger"
         icon="i-lucide-download"
-        class="px-5 py-2.5 rounded-full text-sm font-medium"
-        @click="triggerDownload"
+        class="px-5 py-2.5 rounded-full text-sm font-medium sm:hidden"
+        @click="scrollTo('download')"
       />
     </nav>
   </header>

@@ -12,11 +12,9 @@
       <!-- Produit -->
       <div class="flex flex-col gap-3">
         <span class="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-1">Produit</span>
-        <a href="#comment-ca-marche" class="text-sm text-zinc-500 hover:text-white transition-colors"
-          >Comment ça marche</a
-        >
+        <a href="#how-it-works" class="text-sm text-zinc-500 hover:text-white transition-colors">Comment ça marche</a>
         <a href="#faq" class="text-sm text-zinc-500 hover:text-white transition-colors">FAQ</a>
-        <a :href="downloadUrl" class="text-sm text-zinc-500 hover:text-white transition-colors">Télécharger</a>
+        <a href="#download" class="text-sm text-zinc-500 hover:text-white transition-colors">Télécharger</a>
       </div>
 
       <!-- Ressources -->
@@ -72,5 +70,4 @@
 
 <script setup lang="ts">
 const year = new Date().getFullYear();
-const { downloadUrl } = useGithubRelease();
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <section class="section-light px-6 py-24">
+  <section id="faq" class="section-light px-6 py-24">
     <div class="max-w-3xl mx-auto">
       <p class="text-center text-sm uppercase tracking-widest text-zinc-400 mb-4 font-medium">FAQ</p>
       <h2 class="text-3xl sm:text-4xl font-bold text-center mb-16 text-zinc-900">Questions fréquentes</h2>

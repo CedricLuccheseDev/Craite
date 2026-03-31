@@ -42,7 +42,7 @@ export default [
         watch: 'readonly',
         definePageMeta: 'readonly',
         navigateTo: 'readonly',
-        useGithubRelease: 'readonly',
+        useRelease: 'readonly',
       },
     },
   },

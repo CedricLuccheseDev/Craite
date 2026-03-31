@@ -12,6 +12,11 @@ use crate::scanner::filesystem::detect_sample_directories;
 
 pub struct AudioState(pub Mutex<AudioPreview>);
 
+// SAFETY: AudioPreview contains rodio::OutputStream which is !Send on macOS (CoreAudio backend).
+// Access is fully serialized through the Mutex, so sending between threads is safe.
+unsafe impl Send for AudioState {}
+unsafe impl Sync for AudioState {}
+
 #[tauri::command]
 pub async fn scan_directories(
     sources: Vec<String>,
