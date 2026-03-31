@@ -53,7 +53,7 @@ pub fn preview_sample(
     audio: State<'_, AudioState>,
     app: AppHandle,
 ) -> Result<(), String> {
-    let mut preview = audio.0.lock().str_err()?;
+    let mut preview = audio.inner().0.lock().str_err()?;
     let gen = preview.play(Path::new(&path)).str_err()?;
 
     // Monitor playback end in a background thread.
@@ -74,7 +74,9 @@ pub fn preview_sample(
 
             let is_done = sink
                 .lock()
-                .map(|guard| guard.as_ref().is_none_or(|s| s.empty()))
+                .map(|guard: std::sync::MutexGuard<Option<rodio::Sink>>| {
+                    guard.as_ref().is_none_or(|s| s.empty())
+                })
                 .unwrap_or(true);
 
             if is_done {
@@ -89,7 +91,7 @@ pub fn preview_sample(
 
 #[tauri::command]
 pub fn stop_preview(audio: State<'_, AudioState>) -> Result<(), String> {
-    let mut preview = audio.0.lock().str_err()?;
+    let mut preview = audio.inner().0.lock().str_err()?;
     preview.stop();
     Ok(())
 }
