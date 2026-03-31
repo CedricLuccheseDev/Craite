@@ -2,7 +2,6 @@ export default defineNuxtConfig({
   modules: ['@nuxt/ui'],
 
   runtimeConfig: {
-    githubToken: process.env.GITHUB_TOKEN,
     releaseUrl: process.env.RELEASE_URL || 'https://dl.craite.clhub.fr',
   },
 

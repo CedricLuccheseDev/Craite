@@ -38,8 +38,7 @@ export function useUpdater() {
     });
 
     await listen<{ message: string }>('update-error', event => {
-      errorMessage.value = event.payload.message;
-      phase.value = 'error';
+      console.warn('Update check failed:', event.payload.message);
     });
   }
 

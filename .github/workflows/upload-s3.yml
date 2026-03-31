@@ -41,18 +41,35 @@ jobs:
             --pattern "*.msi" \
             --pattern "*.dmg" \
             --pattern "*.AppImage" \
-            --pattern "*.deb"
+            --pattern "*.deb" \
+            --pattern "*.sig"
 
-      - name: Generate latest.json
+      - name: Get release info
+        id: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view "${{ steps.tag.outputs.tag }}" \
+            --repo "${{ github.repository }}" \
+            --json body,publishedAt \
+            --jq '{body: .body, pub_date: .publishedAt}' > release-info.json
+          cat release-info.json
+
+      - name: Generate latest.json and update.json
         run: |
           VERSION="${{ steps.tag.outputs.tag }}"
+          SEMVER="${VERSION#v}"
           BASE_URL="${{ secrets.S3_PUBLIC_URL }}/${VERSION}"
+          PUB_DATE=$(jq -r '.pub_date' release-info.json)
+          NOTES=$(jq -r '.body' release-info.json)
 
+          # --- latest.json (for landing page download buttons) ---
           PLATFORMS="{}"
 
           for file in release-assets/*; do
             [ -f "$file" ] || continue
             filename=$(basename "$file")
+            [[ "$filename" == *.sig ]] && continue
             size=$(stat --printf="%s" "$file")
 
             case "$filename" in
@@ -90,6 +107,51 @@ jobs:
           echo "{\"version\": \"$VERSION\", \"platforms\": $PLATFORMS}" | jq . > release-assets/latest.json
           cat release-assets/latest.json
 
+          # --- update.json (for Tauri auto-updater) ---
+          UPDATE_PLATFORMS="{}"
+
+          for file in release-assets/*.sig; do
+            [ -f "$file" ] || continue
+            sig=$(cat "$file")
+            base=$(basename "$file" .sig)
+
+            case "$base" in
+              *.msi)
+                UPDATE_PLATFORMS=$(echo "$UPDATE_PLATFORMS" | jq \
+                  --arg url "$BASE_URL/$base" \
+                  --arg sig "$sig" \
+                  '."windows-x86_64" = {url: $url, signature: $sig}')
+                ;;
+              *_aarch64.dmg)
+                UPDATE_PLATFORMS=$(echo "$UPDATE_PLATFORMS" | jq \
+                  --arg url "$BASE_URL/$base" \
+                  --arg sig "$sig" \
+                  '."darwin-aarch64" = {url: $url, signature: $sig}')
+                ;;
+              *_x64.dmg)
+                UPDATE_PLATFORMS=$(echo "$UPDATE_PLATFORMS" | jq \
+                  --arg url "$BASE_URL/$base" \
+                  --arg sig "$sig" \
+                  '."darwin-x86_64" = {url: $url, signature: $sig}')
+                ;;
+              *.AppImage)
+                UPDATE_PLATFORMS=$(echo "$UPDATE_PLATFORMS" | jq \
+                  --arg url "$BASE_URL/$base" \
+                  --arg sig "$sig" \
+                  '."linux-x86_64" = {url: $url, signature: $sig}')
+                ;;
+            esac
+          done
+
+          jq -n \
+            --arg version "$SEMVER" \
+            --arg notes "$NOTES" \
+            --arg pub_date "$PUB_DATE" \
+            --argjson platforms "$UPDATE_PLATFORMS" \
+            '{version: $version, notes: $notes, pub_date: $pub_date, platforms: $platforms}' \
+            > release-assets/update.json
+          cat release-assets/update.json
+
       - name: Configure AWS CLI for Garage
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
@@ -117,4 +179,6 @@ jobs:
           done
 
           aws s3 cp release-assets/latest.json "s3://${S3_BUCKET}/latest.json" \
+            --endpoint-url "$S3_ENDPOINT" --no-progress
+          aws s3 cp release-assets/update.json "s3://${S3_BUCKET}/update.json" \
             --endpoint-url "$S3_ENDPOINT" --no-progress
