@@ -1,0 +1,111 @@
+name: Upload to S3
+
+on:
+  workflow_run:
+    workflows: ['Release & Deploy']
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name (e.g. v0.4.4)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  upload:
+    name: Upload binaries to S3
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Resolve tag name
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ inputs.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download release assets from GitHub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p release-assets
+          gh release download "${{ steps.tag.outputs.tag }}" \
+            --repo "${{ github.repository }}" \
+            --dir release-assets \
+            --pattern "*.exe" \
+            --pattern "*.msi" \
+            --pattern "*.dmg" \
+            --pattern "*.AppImage" \
+            --pattern "*.deb"
+
+      - name: Generate latest.json
+        run: |
+          VERSION="${{ steps.tag.outputs.tag }}"
+          BASE_URL="${{ secrets.S3_PUBLIC_URL }}/${VERSION}"
+
+          PLATFORMS="{}"
+
+          for file in release-assets/*; do
+            [ -f "$file" ] || continue
+            filename=$(basename "$file")
+            size=$(stat --printf="%s" "$file")
+
+            case "$filename" in
+              *_x64-setup.exe|*.msi)
+                PLATFORMS=$(echo "$PLATFORMS" | jq \
+                  --arg url "$BASE_URL/$filename" \
+                  --arg name "$filename" \
+                  --argjson size "$size" \
+                  '.windows = {url: $url, filename: $name, size: $size}')
+                ;;
+              *_aarch64.dmg)
+                PLATFORMS=$(echo "$PLATFORMS" | jq \
+                  --arg url "$BASE_URL/$filename" \
+                  --arg name "$filename" \
+                  --argjson size "$size" \
+                  '.mac_arm = {url: $url, filename: $name, size: $size}')
+                ;;
+              *_x64.dmg)
+                PLATFORMS=$(echo "$PLATFORMS" | jq \
+                  --arg url "$BASE_URL/$filename" \
+                  --arg name "$filename" \
+                  --argjson size "$size" \
+                  '.mac_intel = {url: $url, filename: $name, size: $size}')
+                ;;
+              *.AppImage|*.deb)
+                PLATFORMS=$(echo "$PLATFORMS" | jq \
+                  --arg url "$BASE_URL/$filename" \
+                  --arg name "$filename" \
+                  --argjson size "$size" \
+                  '.linux = {url: $url, filename: $name, size: $size}')
+                ;;
+            esac
+          done
+
+          echo "{\"version\": \"$VERSION\", \"platforms\": $PLATFORMS}" | jq . > release-assets/latest.json
+          cat release-assets/latest.json
+
+      - name: Upload to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+          S3_ENDPOINT="${{ secrets.S3_ENDPOINT }}"
+          S3_BUCKET="${{ secrets.S3_BUCKET }}"
+          VERSION="${{ steps.tag.outputs.tag }}"
+
+          for file in release-assets/*; do
+            [ -f "$file" ] || continue
+            filename=$(basename "$file")
+            aws s3 cp "$file" "s3://${S3_BUCKET}/${VERSION}/${filename}" \
+              --endpoint-url "$S3_ENDPOINT"
+          done
+
+          aws s3 cp release-assets/latest.json "s3://${S3_BUCKET}/latest.json" \
+            --endpoint-url "$S3_ENDPOINT"
