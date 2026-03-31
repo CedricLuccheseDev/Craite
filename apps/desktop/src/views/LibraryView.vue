@@ -13,7 +13,7 @@ import AmbientBackground from '@/components/common/AmbientBackground.vue';
 
 const scanStore = useScanStore();
 
-const activeSection = ref<Section>('sources');
+const activeSection = ref<Section>('browse');
 provideNavigation(activeSection);
 useWatcher();
 </script>
