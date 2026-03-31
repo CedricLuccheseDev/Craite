@@ -49,6 +49,13 @@
 - **CrAIte repo (Windows)**: `G:\Mon Drive\1 - Projects\CrAIte\`
 - **Documentation & Design**: `G:\Mon Drive\1 - Projects\CrAIte\` — contains the landing page mockup and other design/spec files
 
+## Commits
+- Always use the project `/commit` skill (`.claude/commands/commit.md`), never the global one
+- `/commit` — bump patch + commit
+- `/commit minor` — bump minor + commit
+- `/commit major` — bump major + commit
+- Version must be bumped in all 5 files: `package.json` (root, desktop, landing), `tauri.conf.json`, `Cargo.toml`
+
 ## Styling
 - Dark theme only (background: #0a0a0a)
 - CSS custom properties in `apps/desktop/src/assets/styles/variables.css`
