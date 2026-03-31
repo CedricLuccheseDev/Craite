@@ -35,7 +35,8 @@
     "vitest": "^2.1.8"
   },
   "simple-git-hooks": {
-    "pre-commit": "npx lint-staged"
+    "pre-commit": "npx lint-staged",
+    "pre-push": "pnpm test --run && cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml -- -D warnings"
   },
   "pnpm": {
     "overrides": {
