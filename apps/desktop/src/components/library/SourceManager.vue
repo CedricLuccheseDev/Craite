@@ -10,15 +10,18 @@ import { useNotify } from '@/composables/useNotify';
 import { useBackgroundScan } from '@/composables/useBackgroundScan';
 import { buildCategoriesFromSamples } from '@/utils/categoryBuilder';
 
-
-
 const { t } = useI18n();
 const tauri = useTauri();
 const notify = useNotify();
 const scanStore = useScanStore();
 const libraryStore = useLibraryStore();
 const { rescan, generateLibrary, addSourceFolder } = useLibraryActions();
-const { enabled: bgScanEnabled, isScanning: bgIsScanning, loadStatus: loadBgStatus, intervalMinutes } = useBackgroundScan();
+const {
+  enabled: bgScanEnabled,
+  isScanning: bgIsScanning,
+  loadStatus: loadBgStatus,
+  intervalMinutes,
+} = useBackgroundScan();
 
 const countdown = ref<number | null>(null);
 let countdownTimer: ReturnType<typeof setInterval> | null = null;
@@ -169,10 +172,7 @@ onUnmounted(() => {
         <UIcon name="i-lucide-music-2" class="text-[14px]" />
         {{ totalSamples().toLocaleString() }} {{ t('stats.samples').toLowerCase() }}
       </span>
-      <span
-        v-if="bgScanEnabled"
-        class="flex items-center gap-1.5 ml-auto text-muted/50"
-      >
+      <span v-if="bgScanEnabled" class="flex items-center gap-1.5 ml-auto text-muted/50">
         <template v-if="bgIsScanning">
           <UIcon name="i-lucide-loader-2" class="animate-spin text-[14px] text-orange-500" />
           <span class="text-orange-500">{{ t('settings.scanning') }}</span>
@@ -239,38 +239,22 @@ onUnmounted(() => {
       </button>
 
       <!-- Empty state -->
-      <div
-        v-if="!scanStore.isScanning && scanStore.sources.length === 0"
-        class="empty-state"
-      >
+      <div v-if="!scanStore.isScanning && scanStore.sources.length === 0" class="empty-state">
         <div class="flex items-center justify-center size-12 rounded-2xl bg-zinc-800">
           <UIcon name="i-lucide-folder-plus" class="text-[22px] text-muted" />
         </div>
         <p class="text-sm font-medium text-white/80">{{ t('sources.noSources') }}</p>
         <p class="text-[12px] text-muted">{{ t('sources.noSourcesHint') }}</p>
         <div class="flex gap-2 mt-2">
-          <UButton
-            icon="i-lucide-scan"
-            color="primary"
-            variant="solid"
-            size="sm"
-            @click="rescan"
-          >
+          <UButton icon="i-lucide-scan" color="primary" variant="solid" size="sm" @click="rescan">
             {{ t('sources.autoDetect') }}
           </UButton>
-          <UButton
-            icon="i-lucide-folder-plus"
-            color="neutral"
-            variant="outline"
-            size="sm"
-            @click="addSourceFolder"
-          >
+          <UButton icon="i-lucide-folder-plus" color="neutral" variant="outline" size="sm" @click="addSourceFolder">
             {{ t('sources.addFolder') }}
           </UButton>
         </div>
       </div>
     </div>
-
   </section>
 </template>
 

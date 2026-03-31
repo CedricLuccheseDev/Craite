@@ -197,7 +197,9 @@ async function clearCache() {
       </div>
 
       <div class="flex flex-col gap-4">
-        <div class="flex items-center justify-between gap-6 py-4 px-6 bg-zinc-950 rounded-[10px] border border-orange-500/20">
+        <div
+          class="flex items-center justify-between gap-6 py-4 px-6 bg-zinc-950 rounded-[10px] border border-orange-500/20"
+        >
           <div class="flex flex-col gap-0.5">
             <span class="text-[13px] font-semibold">
               {{ t('settings.restartOnboarding') }}
@@ -218,7 +220,9 @@ async function clearCache() {
           </UButton>
         </div>
 
-        <div class="flex items-center justify-between gap-6 py-4 px-6 bg-zinc-950 rounded-[10px] border border-orange-500/20">
+        <div
+          class="flex items-center justify-between gap-6 py-4 px-6 bg-zinc-950 rounded-[10px] border border-orange-500/20"
+        >
           <div class="flex flex-col gap-0.5">
             <span class="text-[13px] font-semibold">
               {{ t('settings.clearCache') }}

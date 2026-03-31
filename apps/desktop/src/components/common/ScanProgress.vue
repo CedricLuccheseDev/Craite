@@ -23,7 +23,7 @@ function resetClassifyTimer() {
 }
 
 onMounted(async () => {
-  unlisten = await listen<[string, number]>('scan-file', (event) => {
+  unlisten = await listen<[string, number]>('scan-file', event => {
     currentFile.value = event.payload[0];
     fileCount.value = event.payload[1];
     resetClassifyTimer();
@@ -85,11 +85,20 @@ onUnmounted(() => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.4; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1); }
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>

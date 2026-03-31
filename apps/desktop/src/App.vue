@@ -15,8 +15,16 @@ const { loadStatus: loadBgStatus, setupListeners: setupBackgroundListeners } = u
 onMounted(async () => {
   await initialize();
   await setupListeners();
-  try { await setupBackgroundListeners(); } catch (e) { console.error('bg listeners failed:', e); }
-  try { await loadBgStatus(); } catch (e) { console.error('bg status failed:', e); }
+  try {
+    await setupBackgroundListeners();
+  } catch (e) {
+    console.error('bg listeners failed:', e);
+  }
+  try {
+    await loadBgStatus();
+  } catch (e) {
+    console.error('bg status failed:', e);
+  }
   if (!import.meta.env.DEV) {
     await checkForUpdate();
   }

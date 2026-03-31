@@ -71,22 +71,24 @@ function onConfirm() {
           <label v-for="daw in daws" :key="daw.id" class="daw-card" :class="{ selected: selectedId === daw.id }">
             <input v-model="selectedId" type="radio" name="daw" :value="daw.id" class="sr-only" />
             <img v-if="getDawIconPath(daw.id)" :src="getDawIconPath(daw.id)!" :alt="daw.name" class="shrink-0 size-6" />
-            <!-- eslint-disable-next-line vue/no-v-html -- SVG from internal static data, no XSS risk -->
+            <!-- eslint-disable vue/no-v-html -- SVG from internal static data, no XSS risk -->
             <span
               v-else
               class="shrink-0 size-7 overflow-hidden flex items-center justify-center"
               v-html="getDawIconSvg(daw.id)"
             />
+            <!-- eslint-enable vue/no-v-html -->
             <span class="text-[12px] font-medium truncate">{{ daw.name }}</span>
           </label>
 
           <label class="daw-card" :class="{ selected: selectedId === 'custom' }">
             <input v-model="selectedId" type="radio" name="daw" value="custom" class="sr-only" />
-            <!-- eslint-disable-next-line vue/no-v-html -- SVG from internal static data, no XSS risk -->
+            <!-- eslint-disable vue/no-v-html -- SVG from internal static data, no XSS risk -->
             <span
               class="shrink-0 size-7 overflow-hidden flex items-center justify-center"
               v-html="getCustomFolderSvg()"
             />
+            <!-- eslint-enable vue/no-v-html -->
             <span class="text-[12px] font-medium truncate">
               {{ t('onboarding.daw.customFolder') }}
             </span>
