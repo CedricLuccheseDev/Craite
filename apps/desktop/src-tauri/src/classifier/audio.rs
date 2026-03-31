@@ -87,9 +87,7 @@ fn extract_features(mono: &[f32], sample_rate: u32, duration: f32) -> AudioFeatu
     // Attack: samples until we reach 80% of peak
     let peak = mono.iter().copied().fold(0.0_f32, |a, s| a.max(s.abs()));
     let attack_samples = if peak > 0.001 {
-        mono.iter()
-            .position(|s| s.abs() >= peak * 0.8)
-            .unwrap_or(0)
+        mono.iter().position(|s| s.abs() >= peak * 0.8).unwrap_or(0)
     } else {
         0
     };

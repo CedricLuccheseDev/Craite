@@ -97,7 +97,6 @@ pub fn run() {
             scan::read_audio_file,
             classify::create_links,
             classify::open_folder,
-
             persistence::save_samples,
             persistence::load_samples,
             persistence::save_source,

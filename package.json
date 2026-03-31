@@ -15,6 +15,7 @@
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "typecheck": "pnpm --filter @app/desktop exec vue-tsc --noEmit && pnpm --filter @app/landing exec nuxi typecheck",
+    "release": "git tag v$(node -p \"require('./package.json').version\") && git push origin v$(node -p \"require('./package.json').version\")",
     "prepare": "simple-git-hooks"
   },
   "devDependencies": {

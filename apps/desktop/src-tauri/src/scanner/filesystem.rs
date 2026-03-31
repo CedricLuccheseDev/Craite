@@ -18,7 +18,15 @@ pub fn scan_directory(
     output_dir: &str,
 ) -> Result<Vec<PathBuf>, CraiteError> {
     let mut results = Vec::new();
-    scan_recursive(dir, &mut results, 0, app, last_emit, file_counter, output_dir)?;
+    scan_recursive(
+        dir,
+        &mut results,
+        0,
+        app,
+        last_emit,
+        file_counter,
+        output_dir,
+    )?;
     Ok(results)
 }
 
@@ -69,7 +77,15 @@ fn scan_recursive(
             if !output_dir.is_empty() && path.to_string_lossy().starts_with(output_dir) {
                 continue;
             }
-            scan_recursive(&path, results, depth + 1, app, last_emit, file_counter, output_dir)?;
+            scan_recursive(
+                &path,
+                results,
+                depth + 1,
+                app,
+                last_emit,
+                file_counter,
+                output_dir,
+            )?;
         } else if file_type.is_file() && is_audio_file(&path) {
             file_counter.fetch_add(1, Ordering::Relaxed);
             // Emit file name for UI feedback (throttled ~60fps)

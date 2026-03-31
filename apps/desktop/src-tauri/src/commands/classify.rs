@@ -120,7 +120,10 @@ fn remove_stale_links(dir: &Path, expected: &std::collections::HashSet<PathBuf>)
         if path.is_dir() {
             remove_stale_links(&path, expected);
             // Remove empty directories
-            if std::fs::read_dir(&path).map(|mut d| d.next().is_none()).unwrap_or(false) {
+            if std::fs::read_dir(&path)
+                .map(|mut d| d.next().is_none())
+                .unwrap_or(false)
+            {
                 let _ = std::fs::remove_dir(&path);
             }
         } else if !expected.contains(&path) {
@@ -130,7 +133,10 @@ fn remove_stale_links(dir: &Path, expected: &std::collections::HashSet<PathBuf>)
 }
 
 #[tauri::command]
-pub async fn create_links(output_dir: String, excluded_categories: Vec<String>) -> Result<usize, String> {
+pub async fn create_links(
+    output_dir: String,
+    excluded_categories: Vec<String>,
+) -> Result<usize, String> {
     run_blocking(move || regenerate_links(&output_dir, &excluded_categories)).await
 }
 
@@ -139,7 +145,11 @@ fn wsl_to_windows_path(path: &str) -> Option<String> {
     let stripped = path.strip_prefix("/mnt/")?;
     let drive = stripped.chars().next()?;
     let rest = &stripped[1..];
-    Some(format!("{}:{}", drive.to_uppercase(), rest.replace('/', "\\")))
+    Some(format!(
+        "{}:{}",
+        drive.to_uppercase(),
+        rest.replace('/', "\\")
+    ))
 }
 
 #[tauri::command]
@@ -169,4 +179,3 @@ pub fn open_folder(path: String) -> Result<(), String> {
 
     Ok(())
 }
-

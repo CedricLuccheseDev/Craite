@@ -19,7 +19,10 @@ use crate::scanner::filesystem::scan_directory;
 
 /// Scan source directories, classify files, persist results, and return a ScanResult.
 /// Uses rayon for parallel classification and incremental scanning (mtime-based).
-pub fn execute_scan(source_paths: &[String], app: Option<&AppHandle>) -> Result<ScanResult, String> {
+pub fn execute_scan(
+    source_paths: &[String],
+    app: Option<&AppHandle>,
+) -> Result<ScanResult, String> {
     let conn = crate::db::connection::open_connection().str_err()?;
 
     // Read output_dir so we can skip files inside it (prevents indexing generated links
@@ -95,7 +98,11 @@ fn classify_incremental(
                 Some(&stored_mtime) => mtime != stored_mtime,
                 None => true,
             };
-            if needs_classify { Some((file, mtime)) } else { None }
+            if needs_classify {
+                Some((file, mtime))
+            } else {
+                None
+            }
         })
         .collect();
 
@@ -125,10 +132,7 @@ fn classify_incremental(
                     .unwrap_or(false);
 
                 if should_emit {
-                    let name = file
-                        .file_name()
-                        .and_then(|n| n.to_str())
-                        .unwrap_or("");
+                    let name = file.file_name().and_then(|n| n.to_str()).unwrap_or("");
                     let _ = app.emit("scan-file", (name, count));
                 }
             }
