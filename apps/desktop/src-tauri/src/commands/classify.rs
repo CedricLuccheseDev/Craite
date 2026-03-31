@@ -162,9 +162,15 @@ pub fn open_folder(path: String) -> Result<(), String> {
         .spawn()
         .map_err(|e| e.to_string())?;
 
-    #[cfg(not(target_os = "windows"))]
+    #[cfg(target_os = "macos")]
+    std::process::Command::new("open")
+        .arg(&path)
+        .spawn()
+        .map_err(|e| e.to_string())?;
+
+    #[cfg(target_os = "linux")]
     {
-        // On WSL/Linux, try explorer.exe first (works in WSL), fall back to xdg-open
+        // On WSL, try explorer.exe first, fall back to xdg-open
         if std::process::Command::new("explorer.exe")
             .arg(&resolved)
             .spawn()
