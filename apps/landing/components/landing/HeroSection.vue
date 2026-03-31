@@ -39,7 +39,7 @@
           label="Télécharger gratuitement"
           icon="i-lucide-download"
           class="px-8 py-4 rounded-full text-base font-semibold"
-          @click="triggerDownload"
+          @click="scrollTo('download')"
         />
         <UButton
           color="neutral"
@@ -48,7 +48,7 @@
           icon="i-lucide-arrow-down"
           trailing
           class="px-8 py-4 rounded-full text-base"
-          @click="scrollToSteps"
+          @click="scrollTo('how-it-works')"
         />
       </div>
 
@@ -108,8 +108,6 @@
 </template>
 
 <script setup lang="ts">
-const { triggerDownload } = useGithubRelease();
-
 const daws = [
   { name: 'FL Studio', logo: '/daws/flstudio.svg' },
   { name: 'Ableton Live', logo: '/daws/ableton.svg' },
@@ -122,7 +120,7 @@ const daws = [
   { name: 'Pro Tools', logo: '/daws/protools.svg' },
 ];
 
-function scrollToSteps() {
-  document.getElementById('comment-ca-marche')?.scrollIntoView({ behavior: 'smooth' });
+function scrollTo(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 }
 </script>

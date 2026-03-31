@@ -1,5 +1,5 @@
 <template>
-  <section class="section-dark px-6 py-32 text-center">
+  <section id="download" class="section-dark px-6 py-32 text-center">
     <div class="max-w-3xl mx-auto">
       <h2 class="text-4xl sm:text-5xl font-bold mb-8 leading-tight">
         Tu as des centaines de samples<br />que tu n'utilises jamais.
@@ -11,13 +11,29 @@
         <strong class="text-white">CrAIte les organise tous. En quelques secondes. Directement dans ton DAW.</strong>
       </p>
 
-      <UButton
-        color="primary"
-        label="Télécharger CrAIte gratuitement"
-        icon="i-lucide-download"
-        class="px-8 py-4 rounded-full text-base font-semibold"
-        @click="triggerDownload"
-      />
+      <ClientOnly>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+          <button
+            v-for="item in downloadItems"
+            :key="item.key"
+            :disabled="!item.available"
+            class="group flex flex-col items-center gap-3 p-6 rounded-2xl border transition-all duration-200"
+            :class="
+              item.available
+                ? 'border-white/10 bg-white/3 hover:border-[#ff6b35]/40 hover:bg-[#ff6b35]/5 cursor-pointer'
+                : 'border-white/5 bg-white/2 opacity-40 cursor-not-allowed'
+            "
+            @click="item.available && triggerDownload(item.key)"
+          >
+            <UIcon :name="item.icon" class="text-2xl" :class="item.available ? 'text-[#ff6b35]' : 'text-zinc-600'" />
+            <span class="font-semibold">{{ item.label }}</span>
+            <span v-if="item.available && item.size" class="text-xs text-zinc-500">{{ formatSize(item.size) }}</span>
+            <span v-else-if="!item.available" class="text-xs text-zinc-600">Bientôt disponible</span>
+          </button>
+        </div>
+
+        <p v-if="version" class="mt-6 text-sm text-zinc-500">Version {{ version }}</p>
+      </ClientOnly>
 
       <div class="mt-8 flex flex-wrap gap-3 justify-center">
         <span
@@ -33,6 +49,35 @@
 </template>
 
 <script setup lang="ts">
-const { triggerDownload } = useGithubRelease();
+const { version, platforms, triggerDownload } = useRelease();
 const badges = ['Gratuit', 'Multi-plateforme', '100% local'];
+
+const downloadItems = computed(() => [
+  {
+    key: 'windows',
+    label: 'Windows',
+    icon: 'i-lucide-monitor',
+    available: !!platforms.value.windows,
+    size: platforms.value.windows?.size,
+  },
+  {
+    key: 'mac_arm',
+    label: 'macOS',
+    icon: 'i-lucide-laptop',
+    available: !!platforms.value.mac_arm || !!platforms.value.mac_intel,
+    size: platforms.value.mac_arm?.size ?? platforms.value.mac_intel?.size,
+  },
+  {
+    key: 'linux',
+    label: 'Linux',
+    icon: 'i-lucide-terminal',
+    available: !!platforms.value.linux,
+    size: platforms.value.linux?.size,
+  },
+]);
+
+function formatSize(bytes: number): string {
+  const mb = bytes / (1024 * 1024);
+  return `${mb.toFixed(1)} MB`;
+}
 </script>
