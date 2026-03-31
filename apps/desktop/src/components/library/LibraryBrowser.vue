@@ -42,7 +42,10 @@ const { navigateTo } = useNavigation();
     </div>
 
     <!-- Empty state: no samples at all -->
-    <div v-if="libraryStore.samples.length === 0" class="flex-1 flex flex-col items-center justify-center gap-4 text-center">
+    <div
+      v-if="libraryStore.samples.length === 0"
+      class="flex-1 flex flex-col items-center justify-center gap-4 text-center"
+    >
       <div class="flex items-center justify-center size-14 rounded-2xl bg-zinc-800">
         <UIcon name="i-lucide-music-2" class="text-[26px] text-muted" />
       </div>
@@ -76,7 +79,6 @@ const { navigateTo } = useNavigation();
           <SampleList :samples="libraryStore.filteredSamples" />
         </div>
       </div>
-
     </template>
   </section>
 </template>

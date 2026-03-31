@@ -147,5 +147,14 @@ export function useBackgroundScan() {
     return unlisteners;
   }
 
-  return { enabled, intervalMinutes, isScanning, secondsUntilNextScan, loadStatus, toggleEnabled, updateInterval, setupListeners };
+  return {
+    enabled,
+    intervalMinutes,
+    isScanning,
+    secondsUntilNextScan,
+    loadStatus,
+    toggleEnabled,
+    updateInterval,
+    setupListeners,
+  };
 }

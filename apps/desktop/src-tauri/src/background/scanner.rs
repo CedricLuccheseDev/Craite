@@ -32,7 +32,11 @@ pub async fn start_periodic_scan(app: AppHandle) {
             run_scan_cycle(&app).await;
         }
 
-        let sleep_secs = if interval_min == 0 { 10 } else { interval_min * 60 };
+        let sleep_secs = if interval_min == 0 {
+            10
+        } else {
+            interval_min * 60
+        };
         time::sleep(Duration::from_secs(sleep_secs)).await;
     }
 }

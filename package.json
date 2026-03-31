@@ -8,13 +8,15 @@
     "dev:landing": "pnpm --filter @app/landing dev",
     "build": "pnpm --filter @app/desktop tauri build",
     "build:landing": "pnpm --filter @app/landing build",
-    "lint": "eslint apps/",
+    "lint": "eslint apps/ --max-warnings 0",
     "lint:fix": "eslint apps/ --fix",
     "format": "prettier --write \"apps/**/*.{ts,tsx,vue,js,json,css,md}\"",
     "format:check": "prettier --check \"apps/**/*.{ts,tsx,vue,js,json,css,md}\"",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "typecheck": "pnpm --filter @app/desktop exec vue-tsc --noEmit && pnpm --filter @app/landing exec nuxi typecheck",
+    "check-all": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test --run && cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml -- -D warnings && cargo fmt --manifest-path apps/desktop/src-tauri/Cargo.toml -- --check && cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml",
+    "release": "git tag v$(node -p \"require('./package.json').version\") && git push origin v$(node -p \"require('./package.json').version\")",
     "prepare": "simple-git-hooks"
   },
   "devDependencies": {
@@ -35,7 +37,8 @@
     "vitest": "^2.1.8"
   },
   "simple-git-hooks": {
-    "pre-commit": "npx lint-staged"
+    "pre-commit": "npx lint-staged",
+    "pre-push": "pnpm check-all"
   },
   "pnpm": {
     "overrides": {

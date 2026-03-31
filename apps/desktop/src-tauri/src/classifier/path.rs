@@ -19,7 +19,13 @@ fn confidence_for_depth(depth: usize) -> f32 {
 fn normalize(s: &str) -> String {
     let body: String = s
         .chars()
-        .map(|c| if c.is_ascii_alphanumeric() { c.to_ascii_lowercase() } else { ' ' })
+        .map(|c| {
+            if c.is_ascii_alphanumeric() {
+                c.to_ascii_lowercase()
+            } else {
+                ' '
+            }
+        })
         .collect();
     format!(" {body} ")
 }

@@ -60,10 +60,7 @@ export function useLibraryActions() {
 
     configStore.startGenerating();
     try {
-      const count = await tauri.createLinks(
-        configStore.outputDir,
-        [...configStore.excludedCategories],
-      );
+      const count = await tauri.createLinks(configStore.outputDir, [...configStore.excludedCategories]);
       configStore.setGenerationResult(count);
     } catch (error) {
       configStore.isGenerating = false;

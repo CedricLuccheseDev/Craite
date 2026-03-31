@@ -15,7 +15,14 @@ pub const RULES: &[ClassificationRule] = &[
     ClassificationRule {
         category: "kick",
         // "bd" and "kck"/"kik" removed — too short, replaced by normalized variants
-        keywords: &["kick", " kck ", " kik ", "bass drum", "bassdrum", "kickdrum"],
+        keywords: &[
+            "kick",
+            " kck ",
+            " kik ",
+            "bass drum",
+            "bassdrum",
+            "kickdrum",
+        ],
         color: "#ff6b35",
     },
     ClassificationRule {
@@ -27,7 +34,16 @@ pub const RULES: &[ClassificationRule] = &[
     ClassificationRule {
         category: "hihat",
         // "hh" replaced with " hh " (word-boundary); "hat" kept (domain-specific enough)
-        keywords: &["hihat", "hi hat", "hi-hat", " hh ", " hat ", "closed hat", "open hat", "pedal hat"],
+        keywords: &[
+            "hihat",
+            "hi hat",
+            "hi-hat",
+            " hh ",
+            " hat ",
+            "closed hat",
+            "open hat",
+            "pedal hat",
+        ],
         color: "#ff6b35",
     },
     ClassificationRule {
@@ -39,7 +55,15 @@ pub const RULES: &[ClassificationRule] = &[
     ClassificationRule {
         category: "tom",
         // "tom" wrapped — "tomorrow"/"tomato" would not match " tom " after normalization
-        keywords: &[" tom ", "tom tom", "floor tom", "rack tom", "high tom", "mid tom", "low tom"],
+        keywords: &[
+            " tom ",
+            "tom tom",
+            "floor tom",
+            "rack tom",
+            "high tom",
+            "mid tom",
+            "low tom",
+        ],
         color: "#ff6b35",
     },
     ClassificationRule {
@@ -51,11 +75,19 @@ pub const RULES: &[ClassificationRule] = &[
     ClassificationRule {
         category: "perc",
         keywords: &[
-            "perc", "percussion",
-            "shaker", "tambourine", " tamb ",
-            "conga", "bongo", "cowbell",
-            "woodblock", "cajon", "maraca",
-            "agogo", "cabasa",
+            "perc",
+            "percussion",
+            "shaker",
+            "tambourine",
+            " tamb ",
+            "conga",
+            "bongo",
+            "cowbell",
+            "woodblock",
+            "cajon",
+            "maraca",
+            "agogo",
+            "cabasa",
         ],
         color: "#ff6b35",
     },
@@ -69,7 +101,15 @@ pub const RULES: &[ClassificationRule] = &[
     // --- Melodic (#4ade80) ---
     ClassificationRule {
         category: "pad",
-        keywords: &["pad", "atmosphere", "atmo", "ambient", "texture", "drone", "sustain pad"],
+        keywords: &[
+            "pad",
+            "atmosphere",
+            "atmo",
+            "ambient",
+            "texture",
+            "drone",
+            "sustain pad",
+        ],
         color: "#4ade80",
     },
     ClassificationRule {
@@ -93,7 +133,9 @@ pub const RULES: &[ClassificationRule] = &[
     ClassificationRule {
         category: "vocal",
         // "vox" wrapped with spaces to avoid matching "voxel" etc.
-        keywords: &["vocal", " vox ", "voice", "acapella", "adlib", "choir", "hook", "chant"],
+        keywords: &[
+            "vocal", " vox ", "voice", "acapella", "adlib", "choir", "hook", "chant",
+        ],
         color: "#f472b6",
     },
     // --- FX (#06b6d4) ---
@@ -102,9 +144,17 @@ pub const RULES: &[ClassificationRule] = &[
         // "noise" removed (too generic); " fx " and " sfx " wrapped for word boundary
         // "effect" kept (6 chars, specific enough)
         keywords: &[
-            " fx ", " sfx ", "effect",
-            "riser", "impact", "sweep", "downlift", "uplifter",
-            "whoosh", "reverse", "transition",
+            " fx ",
+            " sfx ",
+            "effect",
+            "riser",
+            "impact",
+            "sweep",
+            "downlift",
+            "uplifter",
+            "whoosh",
+            "reverse",
+            "transition",
         ],
         color: "#06b6d4",
     },

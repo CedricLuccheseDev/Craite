@@ -20,7 +20,7 @@ const tauri = useTauri();
 const notify = useNotify();
 const playerRefs = new Map<number, InstanceType<typeof AudioPlayer>>();
 
-function setPlayerRef(id: number, el: any) {
+function setPlayerRef(id: number, el: InstanceType<typeof AudioPlayer> | null) {
   if (el) playerRefs.set(id, el);
   else playerRefs.delete(id);
 }
@@ -100,7 +100,12 @@ onUnmounted(() => {
         class="text-[13px] shrink-0"
         :style="{ color: getCategoryColor(sample.category) }"
       />
-      <AudioPlayer :ref="(el: any) => setPlayerRef(sample.id, el)" :sample-path="sample.path" :sample-name="sample.name" class="flex-1 min-w-0" />
+      <AudioPlayer
+        :ref="(el: any) => setPlayerRef(sample.id, el)"
+        :sample-path="sample.path"
+        :sample-name="sample.name"
+        class="flex-1 min-w-0"
+      />
       <div class="flex items-center gap-2 shrink-0" @click.stop>
         <UButton
           :icon="sample.hidden ? 'i-lucide-eye-off' : 'i-lucide-eye'"

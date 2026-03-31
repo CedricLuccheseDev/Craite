@@ -43,7 +43,9 @@ useWatcher();
 
 <style scoped>
 .page-enter-active {
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 
 .page-leave-active {

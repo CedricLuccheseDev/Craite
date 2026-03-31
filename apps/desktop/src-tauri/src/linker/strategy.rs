@@ -4,7 +4,6 @@ use std::path::Path;
 #[derive(Debug, Clone, Copy)]
 pub enum LinkStrategy {
     Hardlink,
-    Symlink,
     #[allow(dead_code)]
     Copy,
 }
@@ -40,22 +39,6 @@ pub fn create_link(
     match strategy {
         LinkStrategy::Hardlink => {
             std::fs::hard_link(source, target)?;
-        }
-        LinkStrategy::Symlink => {
-            #[cfg(unix)]
-            std::os::unix::fs::symlink(source, target)?;
-            #[cfg(windows)]
-            {
-                // Symlinks on Windows require Developer Mode or admin privileges.
-                // Fall back to copy if creation fails.
-                if std::os::windows::fs::symlink_file(source, target).is_err() {
-                    log::warn!(
-                        "Symlink creation failed (Developer Mode may be required), falling back to copy: {}",
-                        target.display()
-                    );
-                    std::fs::copy(source, target)?;
-                }
-            }
         }
         LinkStrategy::Copy => {
             std::fs::copy(source, target)?;
@@ -102,7 +85,9 @@ fn same_filesystem(a: &Path, b: &Path) -> bool {
         }
         let target_check = first_existing_ancestor(b).unwrap_or_else(|| b.to_path_buf());
         match (volume_root(a), volume_root(&target_check)) {
-            (Some(ra), Some(rb)) => ra.to_string_lossy().to_lowercase() == rb.to_string_lossy().to_lowercase(),
+            (Some(ra), Some(rb)) => {
+                ra.to_string_lossy().to_lowercase() == rb.to_string_lossy().to_lowercase()
+            }
             _ => false,
         }
     }

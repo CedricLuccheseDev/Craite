@@ -25,16 +25,15 @@ const mainNavItems = computed(() => [
   { id: 'export' as Section, label: t('nav.export'), icon: 'i-lucide-link' },
 ]);
 
-const settingsItem = computed(() => (
-  { id: 'settings' as Section, label: t('nav.settings'), icon: 'i-lucide-settings' }
-));
+const settingsItem = computed(() => ({
+  id: 'settings' as Section,
+  label: t('nav.settings'),
+  icon: 'i-lucide-settings',
+}));
 </script>
 
 <template>
-  <aside
-    class="sidebar"
-    :class="{ collapsed }"
-  >
+  <aside class="sidebar" :class="{ collapsed }">
     <div class="flex items-center h-8" :class="collapsed ? 'justify-center' : 'justify-between px-4'">
       <span v-if="!collapsed" class="font-display text-[22px] font-bold tracking-tight">CrAIte</span>
       <UTooltip :text="collapsed ? t('nav.expand') : t('nav.collapse')">
@@ -52,10 +51,7 @@ const settingsItem = computed(() => (
       <UTooltip v-for="item in mainNavItems" :key="item.id" :text="item.label" :disabled="!collapsed">
         <button
           class="nav-item"
-          :class="[
-            { active: activeSection === item.id },
-            collapsed ? 'collapsed-item' : '',
-          ]"
+          :class="[{ active: activeSection === item.id }, collapsed ? 'collapsed-item' : '']"
           @click="emit('update:activeSection', item.id)"
         >
           <UIcon :name="item.icon" class="text-[16px] shrink-0" />
@@ -68,10 +64,7 @@ const settingsItem = computed(() => (
       <UTooltip :text="settingsItem.label" :disabled="!collapsed">
         <button
           class="nav-item"
-          :class="[
-            { active: activeSection === 'settings' },
-            collapsed ? 'collapsed-item' : '',
-          ]"
+          :class="[{ active: activeSection === 'settings' }, collapsed ? 'collapsed-item' : '']"
           @click="emit('update:activeSection', 'settings')"
         >
           <UIcon :name="settingsItem.icon" class="text-[16px] shrink-0" />

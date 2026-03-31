@@ -50,10 +50,7 @@ pub async fn set_sample_hidden(id: i64, hidden: bool) -> Result<(), String> {
 
 #[tauri::command]
 pub async fn delete_source(path: String) -> Result<(), String> {
-    run_blocking(move || {
-        with_db(|conn| repository::delete_source(conn, &path).map(|_| ()))
-    })
-    .await
+    run_blocking(move || with_db(|conn| repository::delete_source(conn, &path).map(|_| ()))).await
 }
 
 #[tauri::command]
