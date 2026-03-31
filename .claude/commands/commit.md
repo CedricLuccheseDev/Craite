@@ -2,12 +2,35 @@
 
 Analyze the current git changes and create a commit with a conventional commit message.
 
+## Arguments
+
+$ARGUMENTS — Optional version bump: `patch` (default), `minor`, or `major`. If empty or omitted, defaults to `patch`.
+
 ## Instructions
+
+### 1. Version bump
+
+Bump the version in ALL of these files (semver):
+- `package.json` (root)
+- `apps/desktop/package.json`
+- `apps/landing/package.json`
+- `apps/desktop/src-tauri/tauri.conf.json`
+- `apps/desktop/src-tauri/Cargo.toml`
+
+Use the bump type from $ARGUMENTS (default: `patch`):
+- `patch`: 0.4.0 → 0.4.1
+- `minor`: 0.4.0 → 0.5.0
+- `major`: 0.4.0 → 1.0.0
+
+### 2. Analyze changes
 
 1. Run `git status` to see staged and unstaged changes
 2. Run `git diff --cached` to see staged changes (if any), or `git diff` for unstaged changes
 3. Analyze the changes and determine the correct commit type
-4. Stage all relevant changes and create the commit
+
+### 3. Commit
+
+Stage all relevant changes (including the version bump files) and create the commit.
 
 ## Commit Message Format
 

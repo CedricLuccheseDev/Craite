@@ -1,5 +1,4 @@
-// @ts-expect-error — useToast is auto-imported in .vue but needs explicit import in .ts
-import { useToast } from '@nuxt/ui/dist/runtime/composables/useToast';
+import { useToast } from '@nuxt/ui/composables/useToast';
 import { useI18n } from 'vue-i18n';
 
 export function useNotify() {
