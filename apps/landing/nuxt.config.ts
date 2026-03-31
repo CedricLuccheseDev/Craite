@@ -3,7 +3,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     githubToken: process.env.GITHUB_TOKEN,
-    releaseUrl: process.env.RELEASE_URL || 'https://s3.craite.clhub.fr/craite-releases',
+    releaseUrl: process.env.RELEASE_URL || 'https://dl.craite.clhub.fr',
   },
 
   css: ['~/assets/css/main.css'],
