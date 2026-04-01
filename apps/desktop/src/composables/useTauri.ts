@@ -70,6 +70,10 @@ export function useTauri() {
     return await invoke<void>('set_sample_hidden', { id, hidden });
   }
 
+  async function updateSampleCategory(id: number, category: string): Promise<void> {
+    return await invoke<void>('update_sample_category', { id, category });
+  }
+
   async function openFolder(path: string): Promise<void> {
     return await invoke<void>('open_folder', { path });
   }
@@ -109,6 +113,7 @@ export function useTauri() {
     detectInstalledDaws,
     createDawLibraryFolder,
     setSampleHidden,
+    updateSampleCategory,
     openFolder,
     resetApp,
     setBackgroundScanEnabled,

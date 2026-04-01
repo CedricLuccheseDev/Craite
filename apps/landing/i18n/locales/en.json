@@ -1,0 +1,76 @@
+{
+  "header": {
+    "howItWorks": "How it works",
+    "faq": "FAQ",
+    "download": "Download"
+  },
+  "hero": {
+    "badge": "Open source. Free. 100% local.",
+    "title": "Stop digging through 40 folders{br}for your samples.",
+    "subtitle": "CrAIte organizes your samples by sound type and makes them accessible directly in your DAW.",
+    "cta": "Download for free",
+    "ctaSecondary": "See how it works",
+    "beforeAfterLabel": "From this\u2026 to this, in seconds",
+    "before": "Before",
+    "after": "After",
+    "beforePlaceholder": "Messy folders screenshot",
+    "afterPlaceholder": "Organized library screenshot",
+    "compatibleWith": "Compatible with"
+  },
+  "howItWorks": {
+    "sectionLabel": "How it works",
+    "title": "3 steps. Your samples are finally organized.",
+    "subtitle": "No setup. No account. No cloud.",
+    "step1Title": "Install CrAIte",
+    "step1Desc": "The app auto-detects your sample folders and projects. Nothing to configure.",
+    "step2Title": "Run the scan",
+    "step2Desc": "CrAIte identifies your samples by filename and metadata. Hundreds classified in seconds.",
+    "step3Title": "Open your DAW",
+    "step3Desc": "Add \"CrAIte Library\" to your search paths. Kicks, snares, pads, vocals — everything is there, organized."
+  },
+  "trust": {
+    "sectionLabel": "Built with confidence",
+    "title": "Designed so you have nothing to worry about.",
+    "subtitle": "CrAIte doesn't move, modify, or collect anything.",
+    "card1Title": "Directly in your DAW",
+    "card1Desc": "CrAIte creates a real folder structure on your disk, visible in your DAW's file browser. No plugin, no app to run alongside.",
+    "card2Title": "Your files stay put",
+    "card2Desc": "CrAIte creates smart links (hardlinks) to your original samples. Zero extra disk space, your files stay where they are.",
+    "card3Title": "Open source, no subscription",
+    "card3Desc": "Source code available (AGPL v3), no subscription, no account required. 100% local, no data leaves your PC."
+  },
+  "faq": {
+    "sectionLabel": "FAQ",
+    "title": "Frequently asked questions",
+    "q1": "Is it really free?",
+    "a1": "Yes, completely free. No hidden paid version, no subscription, no account required.",
+    "q2": "Are my samples moved?",
+    "a2": "No. CrAIte creates links (hardlinks) to the original files. Nothing is copied or moved.",
+    "q3": "Will it break my projects?",
+    "a3": "No. CrAIte never modifies original files. Your projects keep pointing to the same samples at the same locations.",
+    "q4": "What operating systems does CrAIte support?",
+    "a4": "CrAIte is available on Windows, macOS, and Linux. The app works the same way on all systems."
+  },
+  "download": {
+    "title": "You have hundreds of samples{br}you never use.",
+    "subtitle": "Not because they're bad. Because you can't find them.",
+    "cta": "CrAIte organizes them all. In seconds. Directly in your DAW.",
+    "comingSoon": "Coming soon",
+    "version": "Version {version}",
+    "badgeFree": "Free",
+    "badgePlatform": "Multi-platform",
+    "badgeLocal": "100% local",
+    "trackingCopied": "Tracking ID copied — paste it in CrAIte settings to link your experience."
+  },
+  "footer": {
+    "tagline": "Organizes your samples by sound type, directly in your DAW.",
+    "product": "Product",
+    "resources": "Resources",
+    "reportBug": "Report a bug",
+    "changelog": "Changelog",
+    "privacy": "Privacy",
+    "compatibility": "Compatible with",
+    "otherDaws": "+ 6 other DAWs",
+    "copyright": "© {year} CrAIte. Open source (AGPL v3). Free. 100% local."
+  }
+}

@@ -1,225 +1,104 @@
 # CrAIte
 
-AI-powered sample organizer for producers. Scans your sample folders, classifies sounds by type (kick, snare, pad...), and creates a mirror folder structure via hardlinks/symlinks for use in browser.
+**Stop digging through 40 folders for your samples.**
 
-## Prerequisites
+CrAIte scans your sample folders, classifies sounds by type (kick, snare, pad, vocal...), and creates an organized mirror library via hardlinks — directly accessible in your DAW's file browser.
 
-Install the following tools before anything else.
+- **Free and open source** (AGPL v3)
+- **100% local** — no cloud, no account, no data leaves your PC
+- **Works with any DAW** — FL Studio, Ableton, Logic, Bitwig, Cubase, REAPER, and more
+- **Zero extra disk space** — uses hardlinks, your originals stay untouched
+- **Windows, macOS, Linux**
 
-**Node.js >= 18**
+## How it works
+
+1. **Install CrAIte** — auto-detects your sample folders
+2. **Run the scan** — classifies samples by filename + audio analysis (WAV, MP3, FLAC, OGG, AIFF)
+3. **Open your DAW** — add the CrAIte Library folder to your search paths. Done.
+
+## Download
+
+**[Download CrAIte](https://craite.clhub.fr)** — Free, no account required.
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Desktop | Tauri v2 |
+| Frontend | Vue 3 + TypeScript + Vite + Pinia |
+| Backend | Rust |
+| Database | SQLite (rusqlite) |
+| Audio | rodio + symphonia |
+| Classifier | AhoCorasick pattern matching + audio feature analysis |
+| Landing | Nuxt 3 + @nuxt/ui |
+
+---
+
+## Development
+
+### Prerequisites
+
+- **Node.js >= 18** — `nvm install 18`
+- **pnpm >= 8** — `npm install -g pnpm`
+- **Rust >= 1.70** — [rustup.rs](https://rustup.rs)
+
+**Linux only:**
 ```bash
-# via nvm (recommended)
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
-nvm install 18
+sudo apt-get install -y pkg-config build-essential libwebkit2gtk-4.1-dev \
+  libssl-dev libayatana-appindicator3-dev librsvg2-dev libasound2-dev
 ```
 
-**pnpm >= 8**
-```bash
-npm install -g pnpm
-```
+**macOS only:** `xcode-select --install`
 
-**Rust >= 1.70**
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
+**Windows only:** [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) with C++ workload + [WebView2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/)
 
-**System dependencies (Linux only)**
-```bash
-sudo apt-get install -y \
-  pkg-config \
-  build-essential \
-  libwebkit2gtk-4.1-dev \
-  libssl-dev \
-  libayatana-appindicator3-dev \
-  librsvg2-dev \
-  libasound2-dev
-```
-
-**System dependencies (macOS only)**
-```bash
-xcode-select --install
-```
-
-**System dependencies (Windows only)**
-
-Install [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) with C++ workload and [WebView2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/).
-
-## Setup
+### Setup
 
 ```bash
 git clone git@github.com:CedricLuccheseDev/Craite.git
 cd Craite
+cp .env.example .env  # add your PostHog key if needed
 pnpm install
 ```
 
-## Development
-
-**Desktop app (Tauri + Vue)**
-```bash
-pnpm dev
-```
-Ouvre la fenêtre Tauri avec hot reload. Vite tourne sur `localhost:1420`.
-
-**Landing page**
-
-Créer `apps/landing/.env` :
-```
-GITHUB_TOKEN=<ton fine-grained token — voir section Deploy>
-```
+### Commands
 
 ```bash
-pnpm dev:landing
-```
-Accessible sur `http://localhost:3000`.
-
-## Build
-
-```bash
-# Desktop — distributable dans apps/desktop/src-tauri/target/release/bundle/
-pnpm build
-
-# Landing
-pnpm build:landing
-```
-
-## Other commands
-
-```bash
-pnpm lint           # ESLint on all apps
-pnpm lint:fix       # ESLint with auto-fix
-pnpm format         # Prettier on all files
-pnpm format:check   # Check formatting without writing
-pnpm test           # Run Vitest tests
-pnpm test:coverage  # Run tests with coverage report
+pnpm dev            # Tauri dev mode (frontend + Rust backend)
+pnpm dev:landing    # Nuxt dev server (landing page)
+pnpm build          # Build desktop distributable
+pnpm build:landing  # Build landing for production
+pnpm lint           # ESLint
+pnpm format         # Prettier
+pnpm test           # Vitest
 pnpm typecheck      # Type-check desktop + landing
 ```
 
-## Project Structure
+### Project Structure
 
 ```
 apps/
-  desktop/                # Tauri v2 desktop app
-    src/                  # Vue 3 / TypeScript frontend
-      components/         # UI components (onboarding, library, common)
-      composables/        # Vue composables (useTauri, useOnboarding)
-      stores/             # Pinia stores (scan, library)
-      views/              # Route views (Onboarding, Library)
-      types/              # TypeScript interfaces
-    src-tauri/src/        # Rust backend
-      commands/           # Tauri IPC commands
-      scanner/            # Filesystem scanning + Splice DB reader
-      classifier/         # Filename-based classification
-      linker/             # Hardlink / symlink / copy strategies
-      watcher/            # File system watcher (notify)
-      audio/              # Audio preview (rodio)
-      db/                 # SQLite database (rusqlite)
+  desktop/              # Tauri v2 desktop app
+    src/                # Vue 3 / TypeScript frontend
+    src-tauri/src/      # Rust backend
+      commands/         # Tauri IPC commands
+      scanner/          # Filesystem scanning
+      classifier/       # Filename + audio classification
+      linker/           # Hardlink / copy strategies
+      watcher/          # File system watcher
+      audio/            # Audio preview (rodio)
+      db/               # SQLite database
 
-  landing/                # Nuxt 3 landing page
-    pages/                # Nuxt pages
-    composables/          # useGithubRelease
-    server/api/           # Proxy routes (release, download)
-    app.vue               # Root app component
+  landing/              # Nuxt 3 landing page
 ```
 
-## Tech Stack
+### Release
 
-| Layer    | Technology                        |
-|----------|-----------------------------------|
-| Desktop  | Tauri v2                          |
-| Frontend | Vue 3 + TypeScript + Vite + Pinia |
-| Backend  | Rust                              |
-| Database | SQLite (rusqlite)                 |
-| Audio    | rodio                             |
-| Watcher  | notify                            |
-| Landing  | Nuxt 3 + @nuxt/ui                 |
+1. Bump version in `apps/desktop/src-tauri/tauri.conf.json` and `Cargo.toml`
+2. Commit and merge to `main` via PR
+3. Push tag: `git tag v0.x.x && git push origin v0.x.x`
+4. CI builds for all platforms, uploads to S3, auto-update is live
 
-## Release (desktop)
+## License
 
-La release est **manuelle** : tu bumpes la version, tu pousses un tag, le CI fait le reste.
-
-### Étapes dans l'ordre
-
-**1. Bumper la version** (ex: `0.4.0` → `0.5.0`)
-
-Fichiers critiques — l'app et l'auto-updater ne fonctionneront pas correctement sans :
-
-| Fichier | Clé |
-|---------|-----|
-| `apps/desktop/src-tauri/tauri.conf.json` | `"version"` |
-| `apps/desktop/src-tauri/Cargo.toml` | `version = "..."` |
-
-Fichiers optionnels — cohérence uniquement, aucun impact fonctionnel :
-
-| Fichier | Clé |
-|---------|-----|
-| `package.json` | `"version"` |
-| `apps/desktop/package.json` | `"version"` |
-| `apps/landing/package.json` | `"version"` |
-
-**2. Committer et merger dans `main`**
-
-```bash
-git add -p
-git commit -m "chore: release v0.5.0"
-# ouvrir une PR dev → main et la merger
-```
-
-**3. Créer et pousser le tag depuis `main`**
-
-```bash
-git checkout main && git pull
-git tag v0.5.0
-git push origin v0.5.0
-```
-
-**→ Le CI se déclenche automatiquement**, build pour Windows / macOS / Linux, crée la GitHub Release avec les assets signés et le `latest.json` → l'auto-update est actif.
-
-> Ne jamais pousser un tag depuis `dev` ou une branche feature.
-
-## Deploy
-
-### Créer le token GitHub (fine-grained)
-
-1. Aller sur [github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new)
-2. **Token name** : `craite-landing`
-3. **Resource owner** : `CedricLuccheseDev`
-4. **Repository access** : Only selected repositories → `CedricLuccheseDev/Craite`
-5. **Permissions** → Repository permissions → **Contents** : `Read-only`
-6. Générer et copier le token
-
-### Déployer la landing
-
-Ajouter la variable d'environnement suivante sur l'hébergeur :
-```
-GITHUB_TOKEN=<token généré ci-dessus>
-```
-
-**Via Docker :**
-```bash
-docker build -t craite-landing .
-docker run -p 3000:3000 -e GITHUB_TOKEN=<token> craite-landing
-```
-
-## Auto-update
-
-Au démarrage, l'app vérifie `https://craite.app/api/update`. Si une nouvelle version est disponible, une popup s'affiche.
-
-**Ce qui est déjà en place :**
-- Rust : `commands/updater.rs` — commandes `check_for_update` et `download_and_install_update`
-- Vue : `composables/useUpdater.ts` + `components/UpdateNotification.vue`
-- Nuxt : `server/api/update.ts` + `server/api/download/[id].ts` (proxy GitHub avec token)
-- Clés de signature configurées dans `tauri.conf.json`
-
-**Seul prérequis CI — secret GitHub Actions :**
-
-GitHub → `CedricLuccheseDev/Craite` → Settings → Secrets and variables → Actions → New repository secret :
-- Name : `TAURI_SIGNING_PRIVATE_KEY`
-- Value : la clé privée Tauri (demander à @CedricLuccheseDev)
-
-Le workflow passe ensuite ce secret à `tauri-action` :
-```yaml
-env:
-  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-```
-
-Cela génère un `.sig` pour chaque asset de release, requis pour valider la mise à jour.
+[AGPL-3.0-only](LICENSE)

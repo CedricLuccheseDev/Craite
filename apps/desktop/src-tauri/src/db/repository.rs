@@ -98,6 +98,13 @@ pub fn set_sample_hidden(conn: &Connection, id: i64, hidden: bool) -> Result<usi
     )
 }
 
+pub fn update_sample_category(conn: &Connection, id: i64, category: &str) -> Result<usize> {
+    conn.execute(
+        "UPDATE samples SET category = ?1, confidence = 1.0 WHERE id = ?2",
+        params![category, id],
+    )
+}
+
 #[cfg(test)]
 pub fn clear_samples_by_source(conn: &Connection, source: &str) -> Result<usize> {
     conn.execute("DELETE FROM samples WHERE source = ?1", params![source])

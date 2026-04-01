@@ -73,6 +73,12 @@
     "selectNone": "Rien",
     "lastGenerated": "Dernière génération : {date} — {count} fichiers liés"
   },
+  "dawGuide": {
+    "title": "Ajoute CrAIte à ton DAW",
+    "description": "Ajoute le dossier de sortie dans les chemins de recherche de ton DAW pour que les samples organisés apparaissent dans son browser :",
+    "addPath": "Ajoute le dossier CrAIte dans les chemins de recherche de ton DAW",
+    "removeTip": "Astuce : Retire tes dossiers sources originaux du browser de ton DAW pour éviter les doublons."
+  },
   "settings": {
     "title": "Paramètres",
     "description": "Configurer le démarrage et le comportement en arrière-plan",
@@ -99,7 +105,11 @@
     "clearCache": "Supprimer toutes les données",
     "clearCacheDescription": "Supprimer la base de données, les paramètres et la bibliothèque générée",
     "clear": "Supprimer",
-    "footer": "CrAIte se minimise dans la barre système à la fermeture et continue l'analyse en arrière-plan."
+    "footer": "CrAIte se minimise dans la barre système à la fermeture et continue l'analyse en arrière-plan.",
+    "trackingId": "ID de suivi",
+    "trackingIdDescription": "Colle l'ID de la page de téléchargement pour lier tes analytics",
+    "trackingIdPlaceholder": "Coller l'ID de suivi",
+    "trackingLink": "Lier"
   },
   "languages": {
     "en": "English",
@@ -121,7 +131,8 @@
     "backgroundScanComplete": "Scan auto terminé — {count} samples",
     "backgroundScanAdded": "Scan auto : +{added} samples ({total} au total)",
     "backgroundScanRemoved": "Scan auto : -{removed} samples ({total} au total)",
-    "sourceAdded": "Dossier source ajouté"
+    "sourceAdded": "Dossier source ajouté",
+    "categoryChangeFailed": "Impossible de modifier la catégorie."
   },
   "onboarding": {
     "welcome": {

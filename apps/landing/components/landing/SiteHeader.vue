@@ -1,5 +1,14 @@
 <script setup lang="ts">
+const { t, locale, locales } = useI18n();
+const switchLocalePath = useSwitchLocalePath();
+const localePath = useLocalePath();
+const router = useRouter();
 const isScrolled = ref(false);
+
+const otherLocale = computed(() => {
+  const available = locales.value as Array<{ code: string; name: string }>;
+  return available.find(l => l.code !== locale.value);
+});
 
 onMounted(() => {
   const handleScroll = () => {
@@ -10,7 +19,12 @@ onMounted(() => {
 });
 
 function scrollTo(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' });
+  } else {
+    router.push(localePath('/') + '#' + id);
+  }
 }
 </script>
 
@@ -23,27 +37,42 @@ function scrollTo(id: string) {
         : 'bg-transparent border-transparent',
     ]"
   >
-    <nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-      <NuxtLink to="/" class="text-xl font-bold tracking-tight"> Cr<span class="text-[#ff6b35]">AI</span>te </NuxtLink>
-
-      <div class="hidden sm:flex items-center gap-8">
-        <button class="text-sm text-zinc-400 hover:text-white transition-colors" @click="scrollTo('how-it-works')">
-          Comment ça marche
-        </button>
-        <button class="text-sm text-zinc-400 hover:text-white transition-colors" @click="scrollTo('faq')">FAQ</button>
-        <button class="text-sm text-zinc-400 hover:text-white transition-colors" @click="scrollTo('download')">
-          Télécharger
-        </button>
+    <nav class="max-w-6xl mx-auto px-6 h-16 grid grid-cols-3 items-center">
+      <!-- Left: logo -->
+      <div class="flex items-center">
+        <NuxtLink :to="localePath('/')" class="text-xl font-bold tracking-tight">
+          Cr<span class="text-[#ff6b35]">AI</span>te
+        </NuxtLink>
       </div>
 
-      <UButton
-        color="neutral"
-        variant="outline"
-        label="Télécharger"
-        icon="i-lucide-download"
-        class="px-5 py-2.5 rounded-full text-sm font-medium sm:hidden"
-        @click="scrollTo('download')"
-      />
+      <!-- Center: nav links -->
+      <div class="hidden sm:flex items-center justify-center gap-8">
+        <button class="text-sm text-zinc-400 hover:text-white transition-colors" @click="scrollTo('how-it-works')">
+          {{ t('header.howItWorks') }}
+        </button>
+        <button class="text-sm text-zinc-400 hover:text-white transition-colors" @click="scrollTo('faq')">
+          {{ t('header.faq') }}
+        </button>
+      </div>
+      <div class="sm:hidden" />
+
+      <!-- Right: lang switch + download -->
+      <div class="flex items-center justify-end gap-3">
+        <NuxtLink
+          v-if="otherLocale"
+          :to="switchLocalePath(otherLocale.code)"
+          class="text-xs text-zinc-500 hover:text-white transition-colors uppercase tracking-wide font-medium border border-white/10 rounded-full px-2.5 py-1"
+        >
+          {{ otherLocale.code }}
+        </NuxtLink>
+        <UButton
+          color="primary"
+          :label="t('header.download')"
+          icon="i-lucide-download"
+          class="px-5 py-2.5 rounded-full text-sm font-semibold"
+          @click="scrollTo('download')"
+        />
+      </div>
     </nav>
   </header>
 </template>

@@ -49,6 +49,14 @@ pub async fn set_sample_hidden(id: i64, hidden: bool) -> Result<(), String> {
 }
 
 #[tauri::command]
+pub async fn update_sample_category(id: i64, category: String) -> Result<(), String> {
+    run_blocking(move || {
+        with_db(|conn| repository::update_sample_category(conn, id, &category).map(|_| ()))
+    })
+    .await
+}
+
+#[tauri::command]
 pub async fn delete_source(path: String) -> Result<(), String> {
     run_blocking(move || with_db(|conn| repository::delete_source(conn, &path).map(|_| ()))).await
 }

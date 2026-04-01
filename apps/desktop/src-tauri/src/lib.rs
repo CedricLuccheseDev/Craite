@@ -6,6 +6,7 @@ mod db;
 mod error;
 mod linker;
 mod scanner;
+mod security;
 mod tray;
 mod watcher;
 
@@ -27,7 +28,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(
             tauri_plugin_log::Builder::new()
-                .level(log::LevelFilter::Info)
+                .level(log::LevelFilter::Warn)
                 .build(),
         )
         .plugin(tauri_plugin_autostart::init(
@@ -104,6 +105,7 @@ pub fn run() {
             persistence::update_source_enabled,
             persistence::delete_source,
             persistence::set_sample_hidden,
+            persistence::update_sample_category,
             persistence::save_setting,
             persistence::load_all_settings,
             persistence::reset_app,

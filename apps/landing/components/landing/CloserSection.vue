@@ -1,14 +1,13 @@
 <template>
   <section id="download" class="section-dark px-6 py-32 text-center">
     <div class="max-w-3xl mx-auto">
-      <h2 class="text-4xl sm:text-5xl font-bold mb-8 leading-tight">
-        Tu as des centaines de samples<br />que tu n'utilises jamais.
-      </h2>
+      <!-- eslint-disable-next-line vue/no-v-html -- safe: content from i18n translation files only -->
+      <h2 class="text-4xl sm:text-5xl font-bold mb-8 leading-tight" v-html="t('download.title', { br: '<br />' })" />
       <p class="text-zinc-400 text-lg leading-relaxed mb-6">
-        Pas parce qu'ils sont mauvais. Parce que tu ne les retrouves pas.
+        {{ t('download.subtitle') }}
       </p>
       <p class="text-zinc-300 text-lg leading-relaxed mb-12">
-        <strong class="text-white">CrAIte les organise tous. En quelques secondes. Directement dans ton DAW.</strong>
+        <strong class="text-white">{{ t('download.cta') }}</strong>
       </p>
 
       <ClientOnly>
@@ -23,16 +22,20 @@
                 ? 'border-white/10 bg-white/3 hover:border-[#ff6b35]/40 hover:bg-[#ff6b35]/5 cursor-pointer'
                 : 'border-white/5 bg-white/2 opacity-40 cursor-not-allowed'
             "
-            @click="item.available && triggerDownload(item.key)"
+            @click="item.available && handleDownload(item.key)"
           >
             <UIcon :name="item.icon" class="text-2xl" :class="item.available ? 'text-[#ff6b35]' : 'text-zinc-600'" />
             <span class="font-semibold">{{ item.label }}</span>
             <span v-if="item.available && item.size" class="text-xs text-zinc-500">{{ formatSize(item.size) }}</span>
-            <span v-else-if="!item.available" class="text-xs text-zinc-600">Bientôt disponible</span>
+            <span v-else-if="!item.available" class="text-xs text-zinc-600">{{ t('download.comingSoon') }}</span>
           </button>
         </div>
 
-        <p v-if="version" class="mt-6 text-sm text-zinc-500">Version {{ version }}</p>
+        <p v-if="version" class="mt-6 text-sm text-zinc-500">{{ t('download.version', { version }) }}</p>
+
+        <p v-if="trackingCopied" class="mt-4 text-xs text-[#ff6b35] transition-opacity duration-300">
+          {{ t('download.trackingCopied') }}
+        </p>
       </ClientOnly>
 
       <div class="mt-8 flex flex-wrap gap-3 justify-center">
@@ -49,8 +52,11 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n();
 const { version, platforms, triggerDownload } = useRelease();
-const badges = ['Gratuit', 'Multi-plateforme', '100% local'];
+const trackingCopied = ref(false);
+
+const badges = computed(() => [t('download.badgeFree'), t('download.badgePlatform'), t('download.badgeLocal')]);
 
 const downloadItems = computed(() => [
   {
@@ -75,6 +81,24 @@ const downloadItems = computed(() => [
     size: platforms.value.linux?.size,
   },
 ]);
+
+async function handleDownload(key: string) {
+  const { $posthog } = useNuxtApp();
+  $posthog?.capture('download_clicked', { platform: key });
+
+  const distinctId = $posthog?.get_distinct_id?.();
+  if (distinctId) {
+    try {
+      await navigator.clipboard.writeText(distinctId);
+      trackingCopied.value = true;
+      setTimeout(() => (trackingCopied.value = false), 5000);
+    } catch {
+      // Clipboard not available — ignore silently
+    }
+  }
+
+  triggerDownload(key);
+}
 
 function formatSize(bytes: number): string {
   const mb = bytes / (1024 * 1024);

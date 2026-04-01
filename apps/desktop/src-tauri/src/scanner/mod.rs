@@ -11,6 +11,7 @@ use rayon::prelude::*;
 use tauri::{AppHandle, Emitter};
 
 use crate::classifier::audio::classify_by_audio;
+use crate::classifier::context::apply_directory_context;
 use crate::classifier::path::classify_by_path;
 use crate::classifier::rules::RULES;
 use crate::db::models::{Category, Sample, ScanResult};
@@ -45,6 +46,9 @@ pub fn execute_scan(
             classify_incremental(&conn, source_path, &files, &last_emit, &file_counter, app)?;
         all_samples.extend(source_samples);
     }
+
+    // Post-classification: use sibling context to resolve remaining unknowns
+    apply_directory_context(&mut all_samples);
 
     let categories = build_categories(&all_samples);
     let classified_count = all_samples

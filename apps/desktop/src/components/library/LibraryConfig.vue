@@ -9,6 +9,7 @@ import { useNotify } from '@/composables/useNotify';
 import { useNavigation } from '@/composables/useNavigation';
 import { getCategoryIcon } from '@/utils/categoryIcons';
 import { GROUPS } from '@/utils/categoryGroups';
+import DawGuide from '@/components/library/DawGuide.vue';
 import type { Category } from '@/types/sample';
 
 const { t } = useI18n();
@@ -243,6 +244,9 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
+
+      <!-- DAW guide -->
+      <DawGuide />
 
       <!-- Footer status -->
       <div

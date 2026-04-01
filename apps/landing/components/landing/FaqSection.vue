@@ -1,8 +1,10 @@
 <template>
   <section id="faq" class="section-light px-6 py-24">
     <div class="max-w-3xl mx-auto">
-      <p class="text-center text-sm uppercase tracking-widest text-zinc-400 mb-4 font-medium">FAQ</p>
-      <h2 class="text-3xl sm:text-4xl font-bold text-center mb-16 text-zinc-900">Questions fréquentes</h2>
+      <p class="text-center text-sm uppercase tracking-widest text-zinc-400 mb-4 font-medium">
+        {{ t('faq.sectionLabel') }}
+      </p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-center mb-16 text-zinc-900">{{ t('faq.title') }}</h2>
 
       <div class="flex flex-col gap-4">
         <details
@@ -27,24 +29,12 @@
 </template>
 
 <script setup lang="ts">
-const faq = [
-  {
-    label: "C'est vraiment gratuit ?",
-    content: "Oui, complètement gratuit. Pas de version payante cachée, pas d'abonnement, pas de compte requis.",
-  },
-  {
-    label: 'Mes samples sont-ils déplacés ?',
-    content: "Non. CrAIte crée des liens (hardlinks) vers les fichiers originaux. Rien n'est copié ni déplacé.",
-  },
-  {
-    label: 'Ça va casser mes projets ?',
-    content:
-      'Non. CrAIte ne modifie jamais les fichiers originaux. Tes projets continuent de pointer vers les mêmes samples aux mêmes emplacements.',
-  },
-  {
-    label: "Sur quels systèmes d'exploitation CrAIte fonctionne ?",
-    content:
-      "CrAIte est disponible sur Windows, macOS et Linux. L'app fonctionne de la même façon sur tous les systèmes.",
-  },
-];
+const { t } = useI18n();
+
+const faq = computed(() => [
+  { label: t('faq.q1'), content: t('faq.a1') },
+  { label: t('faq.q2'), content: t('faq.a2') },
+  { label: t('faq.q3'), content: t('faq.a3') },
+  { label: t('faq.q4'), content: t('faq.a4') },
+]);
 </script>

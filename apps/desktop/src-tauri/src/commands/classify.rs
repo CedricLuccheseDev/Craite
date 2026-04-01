@@ -5,6 +5,7 @@ use rayon::prelude::*;
 use crate::db::connection::open_connection;
 use crate::error::{run_blocking, ResultExt};
 use crate::linker::strategy::{create_link, determine_strategy};
+use crate::security::path_validator::sanitize_path;
 
 /// Maps a leaf category to its parent group folder name.
 fn category_group(category: &str) -> &'static str {
@@ -137,6 +138,7 @@ pub async fn create_links(
     output_dir: String,
     excluded_categories: Vec<String>,
 ) -> Result<usize, String> {
+    sanitize_path(&output_dir)?;
     run_blocking(move || regenerate_links(&output_dir, &excluded_categories)).await
 }
 
@@ -154,7 +156,15 @@ fn wsl_to_windows_path(path: &str) -> Option<String> {
 
 #[tauri::command]
 pub fn open_folder(path: String) -> Result<(), String> {
-    let resolved = wsl_to_windows_path(&path).unwrap_or_else(|| path.clone());
+    // Validate the path before passing to OS commands
+    let validated = sanitize_path(&path)?;
+    let validated_str = validated.to_string_lossy().to_string();
+    let resolved = wsl_to_windows_path(&validated_str).unwrap_or_else(|| validated_str.clone());
+
+    // Verify the path points to an existing directory
+    if !validated.is_dir() {
+        return Err(format!("Not a directory: {}", validated.display()));
+    }
 
     #[cfg(target_os = "windows")]
     std::process::Command::new("explorer")
@@ -164,7 +174,7 @@ pub fn open_folder(path: String) -> Result<(), String> {
 
     #[cfg(target_os = "macos")]
     std::process::Command::new("open")
-        .arg(&path)
+        .arg(validated.as_os_str())
         .spawn()
         .map_err(|e| e.to_string())?;
 
@@ -177,7 +187,7 @@ pub fn open_folder(path: String) -> Result<(), String> {
             .is_err()
         {
             std::process::Command::new("xdg-open")
-                .arg(&path)
+                .arg(validated.as_os_str())
                 .spawn()
                 .map_err(|e| e.to_string())?;
         }

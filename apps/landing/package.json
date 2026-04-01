@@ -2,6 +2,7 @@
   "name": "@app/landing",
   "private": true,
   "version": "0.4.6",
+  "license": "AGPL-3.0-only",
   "type": "module",
   "scripts": {
     "dev": "nuxt dev",
@@ -10,14 +11,18 @@
   },
   "dependencies": {
     "@nuxt/ui": "^3.1.0",
+    "@nuxtjs/i18n": "^10.2.4",
     "nuxt": "^3.17.0",
+    "posthog-js": "^1.364.4",
     "three": "0.124.0",
     "vanta": "^0.5.24",
-    "vue": "^3.5.28"
+    "vue": "^3.5.28",
+    "vue-i18n": "^11"
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.92",
     "@types/node": "^25.5.0",
+    "dotenv": "^17.3.1",
     "typescript": "^5.9.3",
     "vue-tsc": "^3.2.4"
   }

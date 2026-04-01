@@ -73,6 +73,12 @@
     "selectNone": "None",
     "lastGenerated": "Last generated: {date} — {count} files linked"
   },
+  "dawGuide": {
+    "title": "Add CrAIte to your DAW",
+    "description": "Add the output folder path to your DAW's search paths so organized samples appear in its browser:",
+    "addPath": "Add the CrAIte output folder to your DAW's file browser search paths",
+    "removeTip": "Tip: Remove your original sample folders from your DAW browser to avoid duplicates."
+  },
   "settings": {
     "title": "Settings",
     "description": "Configure startup and background behavior",
@@ -99,7 +105,11 @@
     "clearCache": "Clear all data",
     "clearCacheDescription": "Delete database, settings, and generated library",
     "clear": "Clear",
-    "footer": "CrAIte minimizes to the system tray when closed and continues scanning in the background."
+    "footer": "CrAIte minimizes to the system tray when closed and continues scanning in the background.",
+    "trackingId": "Tracking ID",
+    "trackingIdDescription": "Paste the ID from the download page to link your analytics",
+    "trackingIdPlaceholder": "Paste tracking ID",
+    "trackingLink": "Link"
   },
   "languages": {
     "en": "English",
@@ -121,7 +131,8 @@
     "backgroundScanComplete": "Auto-scan complete — {count} samples",
     "backgroundScanAdded": "Auto-scan: +{added} samples ({total} total)",
     "backgroundScanRemoved": "Auto-scan: -{removed} samples ({total} total)",
-    "sourceAdded": "Source folder added"
+    "sourceAdded": "Source folder added",
+    "categoryChangeFailed": "Failed to update category."
   },
   "onboarding": {
     "welcome": {

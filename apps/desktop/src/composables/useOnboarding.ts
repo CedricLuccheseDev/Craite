@@ -40,6 +40,9 @@ export function isOnboardingCompleted(): boolean {
 
 export function completeOnboarding(): void {
   localStorage.setItem(STORAGE_KEY, 'true');
+  import('@/composables/usePosthog').then(({ usePosthog }) => {
+    usePosthog().track('onboarding_completed');
+  });
 }
 
 export function resetOnboarding(): void {

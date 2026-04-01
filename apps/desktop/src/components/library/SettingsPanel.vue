@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useSettingsStore } from '@/stores/settings';
@@ -8,6 +8,7 @@ import { useBackgroundScan } from '@/composables/useBackgroundScan';
 import { resetOnboarding } from '@/composables/useOnboarding';
 import { useTauri } from '@/composables/useTauri';
 import { useNotify } from '@/composables/useNotify';
+import { usePosthog } from '@/composables/usePosthog';
 import { useScanStore } from '@/stores/scan';
 import { useLibraryStore } from '@/stores/library';
 import type { SupportedLocale } from '@/plugins/i18n';
@@ -17,7 +18,14 @@ const router = useRouter();
 const settingsStore = useSettingsStore();
 const tauri = useTauri();
 const notify = useNotify();
+const ph = usePosthog();
 const scanStore = useScanStore();
+
+const currentTrackingId = ref('');
+
+onMounted(async () => {
+  currentTrackingId.value = await ph.loadTrackingId();
+});
 const libraryStore = useLibraryStore();
 const { autostartEnabled, loading: autostartLoading, toggle: toggleAutostart } = useAutostart();
 const { enabled: bgEnabled, intervalMinutes, isScanning, toggleEnabled, updateInterval } = useBackgroundScan();
@@ -241,6 +249,16 @@ async function clearCache() {
           >
             {{ t('settings.clear') }}
           </UButton>
+        </div>
+        <div
+          v-if="currentTrackingId"
+          class="flex items-center justify-between gap-6 py-4 px-6 bg-zinc-950 rounded-[10px] border border-orange-500/20"
+        >
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[13px] font-semibold">Tracking ID</span>
+            <span class="text-xs text-muted font-mono">{{ currentTrackingId }}</span>
+          </div>
+          <UIcon name="i-lucide-link" class="text-emerald-500" />
         </div>
       </div>
     </template>

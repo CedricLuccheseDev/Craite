@@ -6,6 +6,7 @@ import { resolve } from 'path';
 const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig({
+  envDir: resolve(__dirname, '../..'),
   plugins: [
     vue(),
     ui({

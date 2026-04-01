@@ -1,0 +1,76 @@
+{
+  "header": {
+    "howItWorks": "Comment ça marche",
+    "faq": "FAQ",
+    "download": "Télécharger"
+  },
+  "hero": {
+    "badge": "Open source. Gratuit. 100% local.",
+    "title": "Arrête de chercher tes samples{br}dans 40\u00a0dossiers.",
+    "subtitle": "CrAIte organise tes samples par type de son et les rend accessibles directement dans ton DAW.",
+    "cta": "Télécharger gratuitement",
+    "ctaSecondary": "Voir comment ça marche",
+    "beforeAfterLabel": "De ceci \u2026 à ceci, en quelques secondes",
+    "before": "Avant",
+    "after": "Après",
+    "beforePlaceholder": "Screenshot dossiers en vrac",
+    "afterPlaceholder": "Screenshot library organisée",
+    "compatibleWith": "Compatible avec"
+  },
+  "howItWorks": {
+    "sectionLabel": "Comment ça marche",
+    "title": "3 étapes. Tes samples sont enfin organisés.",
+    "subtitle": "Pas de configuration. Pas de compte. Pas de cloud.",
+    "step1Title": "Installe CrAIte",
+    "step1Desc": "L'app détecte automatiquement tes dossiers de samples et de projets. Rien à configurer.",
+    "step2Title": "Lance le scan",
+    "step2Desc": "CrAIte identifie tes samples par nom de fichier et par les métadonnées. Des centaines classés en quelques secondes.",
+    "step3Title": "Ouvre ton DAW",
+    "step3Desc": "Ajoute \"CrAIte Library\" à tes search paths. Kicks, snares, pads, vocals — tout est là, organisé."
+  },
+  "trust": {
+    "sectionLabel": "En toute confiance",
+    "title": "Conçu pour que tu n'aies rien à craindre.",
+    "subtitle": "CrAIte ne déplace rien, ne modifie rien, ne collecte rien.",
+    "card1Title": "Directement dans ton DAW",
+    "card1Desc": "CrAIte crée une vraie arborescence sur ton disque, visible dans le file browser de ton DAW. Pas de plugin, pas d'app à ouvrir en parallèle.",
+    "card2Title": "Tes fichiers ne bougent pas",
+    "card2Desc": "CrAIte crée des liens intelligents (hardlinks) vers tes samples originaux. Zéro espace disque supplémentaire, tes fichiers restent où ils sont.",
+    "card3Title": "Open source, sans abonnement",
+    "card3Desc": "Code source ouvert (AGPL v3), pas d'abonnement, pas de compte requis. 100% local, aucune donnée ne sort de ton PC."
+  },
+  "faq": {
+    "sectionLabel": "FAQ",
+    "title": "Questions fréquentes",
+    "q1": "C'est vraiment gratuit ?",
+    "a1": "Oui, complètement gratuit. Pas de version payante cachée, pas d'abonnement, pas de compte requis.",
+    "q2": "Mes samples sont-ils déplacés ?",
+    "a2": "Non. CrAIte crée des liens (hardlinks) vers les fichiers originaux. Rien n'est copié ni déplacé.",
+    "q3": "Ça va casser mes projets ?",
+    "a3": "Non. CrAIte ne modifie jamais les fichiers originaux. Tes projets continuent de pointer vers les mêmes samples aux mêmes emplacements.",
+    "q4": "Sur quels systèmes d'exploitation CrAIte fonctionne ?",
+    "a4": "CrAIte est disponible sur Windows, macOS et Linux. L'app fonctionne de la même façon sur tous les systèmes."
+  },
+  "download": {
+    "title": "Tu as des centaines de samples{br}que tu n'utilises jamais.",
+    "subtitle": "Pas parce qu'ils sont mauvais. Parce que tu ne les retrouves pas.",
+    "cta": "CrAIte les organise tous. En quelques secondes. Directement dans ton DAW.",
+    "comingSoon": "Bientôt disponible",
+    "version": "Version {version}",
+    "badgeFree": "Gratuit",
+    "badgePlatform": "Multi-plateforme",
+    "badgeLocal": "100% local",
+    "trackingCopied": "ID de suivi copié — colle-le dans les paramètres CrAIte pour lier ton expérience."
+  },
+  "footer": {
+    "tagline": "Organise tes samples par type de son, directement dans ton DAW.",
+    "product": "Produit",
+    "resources": "Ressources",
+    "reportBug": "Signaler un bug",
+    "changelog": "Changelog",
+    "privacy": "Confidentialité",
+    "compatibility": "Compatible avec",
+    "otherDaws": "+ 6 autres DAWs",
+    "copyright": "© {year} CrAIte. Open source (AGPL v3). Gratuit. 100% local."
+  }
+}

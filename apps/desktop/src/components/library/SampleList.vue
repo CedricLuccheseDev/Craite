@@ -5,20 +5,28 @@ import type { Sample } from '@/types/sample';
 import AudioPlayer from '@/components/common/AudioPlayer.vue';
 import { useTauri } from '@/composables/useTauri';
 import { useNotify } from '@/composables/useNotify';
+import { usePosthog } from '@/composables/usePosthog';
 import { getCategoryIcon } from '@/utils/categoryIcons';
 import { getCategoryColor } from '@/utils/categoryColors';
+import { CATEGORY_COLORS_HEX } from '@/utils/categoryColors';
 
 const PAGE_SIZE = 80;
+
+const ALL_CATEGORIES = Object.keys(CATEGORY_COLORS_HEX);
 
 interface Props {
   samples: Sample[];
 }
 
 const props = defineProps<Props>();
+const emit = defineEmits<{ categoryChanged: [sample: Sample] }>();
 const { t } = useI18n();
 const tauri = useTauri();
 const notify = useNotify();
+const ph = usePosthog();
 const playerRefs = new Map<number, InstanceType<typeof AudioPlayer>>();
+
+const editingSampleId = ref<number | null>(null);
 
 function setPlayerRef(id: number, el: InstanceType<typeof AudioPlayer> | null) {
   if (el) playerRefs.set(id, el);
@@ -52,6 +60,28 @@ async function toggleHidden(sample: Sample) {
   }
 }
 
+function startEditing(sampleId: number) {
+  editingSampleId.value = editingSampleId.value === sampleId ? null : sampleId;
+}
+
+async function changeCategory(sample: Sample, newCategory: string) {
+  const oldCategory = sample.category;
+  if (newCategory === oldCategory) {
+    editingSampleId.value = null;
+    return;
+  }
+  try {
+    await tauri.updateSampleCategory(sample.id, newCategory);
+    sample.category = newCategory;
+    sample.confidence = 1.0;
+    editingSampleId.value = null;
+    ph.track('category_corrected', { from: oldCategory, to: newCategory });
+    emit('categoryChanged', sample);
+  } catch {
+    notify.error('notify.categoryChangeFailed');
+  }
+}
+
 const displayCount = ref(PAGE_SIZE);
 const scrollContainer = ref<HTMLElement | null>(null);
 
@@ -59,7 +89,6 @@ const visibleSamples = computed(() => props.samples.slice(0, displayCount.value)
 
 const hasMore = computed(() => displayCount.value < props.samples.length);
 
-// Reset pagination when samples change (filter, search, category)
 watch(
   () => props.samples.length,
   () => {
@@ -106,7 +135,34 @@ onUnmounted(() => {
         :sample-name="sample.name"
         class="flex-1 min-w-0"
       />
-      <div class="flex items-center gap-2 shrink-0" @click.stop>
+      <div class="flex items-center gap-1 shrink-0" @click.stop>
+        <!-- Category correction -->
+        <div class="relative">
+          <UButton
+            icon="i-lucide-tag"
+            color="neutral"
+            variant="ghost"
+            size="xs"
+            :class="editingSampleId === sample.id ? 'text-[#ff6b35]' : 'text-white/40'"
+            @click="startEditing(sample.id)"
+          />
+          <div
+            v-if="editingSampleId === sample.id"
+            class="absolute right-0 top-full mt-1 z-50 bg-zinc-900 border border-zinc-700 rounded-lg p-1 shadow-xl max-h-48 overflow-y-auto w-32"
+          >
+            <button
+              v-for="cat in ALL_CATEGORIES"
+              :key="cat"
+              class="flex items-center gap-2 w-full px-2 py-1.5 rounded text-xs hover:bg-zinc-800 transition-colors"
+              :class="cat === sample.category ? 'text-white font-semibold' : 'text-zinc-400'"
+              @click="changeCategory(sample, cat)"
+            >
+              <UIcon :name="getCategoryIcon(cat)" class="text-[11px]" :style="{ color: getCategoryColor(cat) }" />
+              {{ cat }}
+            </button>
+          </div>
+        </div>
+
         <UButton
           :icon="sample.hidden ? 'i-lucide-eye-off' : 'i-lucide-eye'"
           color="neutral"

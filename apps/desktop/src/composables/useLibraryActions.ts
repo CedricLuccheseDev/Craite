@@ -2,6 +2,7 @@ import { nextTick } from 'vue';
 import { open } from '@tauri-apps/plugin-dialog';
 import { useTauri } from '@/composables/useTauri';
 import { useNotify } from '@/composables/useNotify';
+import { usePosthog } from '@/composables/usePosthog';
 import { useScanStore } from '@/stores/scan';
 import { useLibraryStore } from '@/stores/library';
 import { useLibraryConfigStore } from '@/stores/libraryConfig';
@@ -13,6 +14,7 @@ export function useLibraryActions() {
   const scanStore = useScanStore();
   const libraryStore = useLibraryStore();
   const configStore = useLibraryConfigStore();
+  const ph = usePosthog();
 
   async function rescan() {
     if (scanStore.isScanning) return;
@@ -37,6 +39,7 @@ export function useLibraryActions() {
       libraryStore.setCategories(result.categories);
 
       notify.success('notify.scanComplete', { count: result.totalFiles, categories: result.categories.length });
+      ph.track('scan_completed', { samples: result.totalFiles, categories: result.categories.length });
       await generateLibrary();
     } catch (error) {
       scanStore.setScanError(String(error));
@@ -62,6 +65,7 @@ export function useLibraryActions() {
     try {
       const count = await tauri.createLinks(configStore.outputDir, [...configStore.excludedCategories]);
       configStore.setGenerationResult(count);
+      ph.track('library_generated', { linked: count });
     } catch (error) {
       configStore.isGenerating = false;
       console.error('Failed to generate library:', error);

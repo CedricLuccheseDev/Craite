@@ -1,10 +1,12 @@
 <template>
   <section class="section-dark px-6 py-24">
     <div class="max-w-5xl mx-auto">
-      <p class="text-center text-sm uppercase tracking-widest text-zinc-500 mb-4 font-medium">En toute confiance</p>
-      <h2 class="text-3xl sm:text-4xl font-bold text-center mb-6">Conçu pour que tu n'aies rien à craindre.</h2>
+      <p class="text-center text-sm uppercase tracking-widest text-zinc-500 mb-4 font-medium">
+        {{ t('trust.sectionLabel') }}
+      </p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-center mb-6">{{ t('trust.title') }}</h2>
       <p class="text-center text-zinc-400 mb-20 max-w-xl mx-auto">
-        CrAIte ne déplace rien, ne modifie rien, ne collecte rien.
+        {{ t('trust.subtitle') }}
       </p>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
@@ -29,24 +31,23 @@
 </template>
 
 <script setup lang="ts">
-const points = [
+const { t } = useI18n();
+
+const points = computed(() => [
   {
     icon: 'i-lucide-music-2',
-    title: 'Directement dans ton DAW',
-    description:
-      "CrAIte crée une vraie arborescence sur ton disque, visible dans le file browser de ton DAW. Pas de plugin, pas d'app à ouvrir en parallèle.",
+    title: t('trust.card1Title'),
+    description: t('trust.card1Desc'),
   },
   {
     icon: 'i-lucide-shield-check',
-    title: 'Tes fichiers ne bougent pas',
-    description:
-      'CrAIte crée des liens intelligents (hardlinks) vers tes samples originaux. Zéro espace disque supplémentaire, tes fichiers restent où ils sont.',
+    title: t('trust.card2Title'),
+    description: t('trust.card2Desc'),
   },
   {
     icon: 'i-lucide-lock',
-    title: 'Gratuit, sans abonnement',
-    description:
-      "Pas de version payante cachée, pas d'abonnement, pas de compte requis. 100% local, aucune donnée ne sort de ton PC.",
+    title: t('trust.card3Title'),
+    description: t('trust.card3Desc'),
   },
-];
+]);
 </script>

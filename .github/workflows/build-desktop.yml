@@ -86,7 +86,7 @@ jobs:
           projectPath: apps/desktop
           tagName: ${{ inputs.tag_name }}
           releaseName: 'CrAIte v${{ inputs.version }}'
-          releaseDraft: false
+          releaseDraft: true
           prerelease: false
           includeUpdaterJson: true
           args: ${{ matrix.args }}

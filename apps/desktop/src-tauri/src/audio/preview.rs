@@ -8,8 +8,7 @@ use std::sync::{Arc, Mutex};
 
 pub struct AudioPreview {
     sink: Arc<Mutex<Option<Sink>>>,
-    _stream: Option<OutputStream>,
-    /// Incremented on each play() call so stale monitor threads can self-terminate
+    stream: Option<OutputStream>,
     generation: Arc<AtomicU64>,
 }
 
@@ -17,20 +16,32 @@ impl AudioPreview {
     pub fn new() -> Self {
         AudioPreview {
             sink: Arc::new(Mutex::new(None)),
-            _stream: None,
+            stream: None,
             generation: Arc::new(AtomicU64::new(0)),
         }
     }
 
+    fn ensure_stream(&mut self) -> Result<&OutputStream, CraiteError> {
+        if self.stream.is_none() {
+            let stream = OutputStreamBuilder::open_default_stream()
+                .map_err(|e: rodio::StreamError| CraiteError::Audio(e.to_string()))?;
+            self.stream = Some(stream);
+        }
+        Ok(self.stream.as_ref().unwrap())
+    }
+
     /// Play an audio file for preview. Returns the generation ID for monitoring.
     pub fn play(&mut self, path: &Path) -> Result<u64, CraiteError> {
-        self.stop();
+        // Stop current playback without destroying the stream
+        if let Ok(mut guard) = self.sink.lock() {
+            if let Some(sink) = guard.take() {
+                sink.stop();
+            }
+        }
 
         let gen = self.generation.fetch_add(1, Ordering::SeqCst) + 1;
 
-        let stream = OutputStreamBuilder::open_default_stream()
-            .map_err(|e: rodio::StreamError| CraiteError::Audio(e.to_string()))?;
-
+        let stream = self.ensure_stream()?;
         let sink = Sink::connect_new(stream.mixer());
 
         let file = File::open(path)?;
@@ -43,7 +54,6 @@ impl AudioPreview {
             .sink
             .lock()
             .map_err(|e| CraiteError::Audio(format!("Mutex lock failed: {}", e)))? = Some(sink);
-        self._stream = Some(stream);
 
         Ok(gen)
     }
@@ -55,15 +65,12 @@ impl AudioPreview {
                 sink.stop();
             }
         }
-        self._stream = None;
     }
 
-    /// Get a clone of the sink Arc for monitoring playback state
     pub fn sink_ref(&self) -> Arc<Mutex<Option<Sink>>> {
         Arc::clone(&self.sink)
     }
 
-    /// Get a clone of the generation counter for monitoring
     pub fn generation_ref(&self) -> Arc<AtomicU64> {
         Arc::clone(&self.generation)
     }

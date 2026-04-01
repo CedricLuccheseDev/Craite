@@ -3,6 +3,8 @@ defineProps<{
   delay?: number;
 }>();
 
+const emit = defineEmits<{ visible: [] }>();
+
 const el = ref<HTMLElement>();
 const isVisible = ref(false);
 
@@ -11,6 +13,7 @@ onMounted(() => {
     ([entry]) => {
       if (entry.isIntersecting) {
         isVisible.value = true;
+        emit('visible');
         observer.disconnect();
       }
     },

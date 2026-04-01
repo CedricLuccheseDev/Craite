@@ -5,15 +5,39 @@ import { relaunch } from '@tauri-apps/plugin-process';
 import { useUpdater } from '@/composables/useUpdater';
 import { useAppInit } from '@/composables/useAppInit';
 import { useBackgroundScan } from '@/composables/useBackgroundScan';
+import { usePosthog } from '@/composables/usePosthog';
 import UpdateNotification from '@/components/UpdateNotification.vue';
 
 const { phase, updateInfo, downloadPercent, errorMessage, setupListeners, checkForUpdate, installUpdate, dismiss } =
   useUpdater();
 const { initialize } = useAppInit();
 const { loadStatus: loadBgStatus, setupListeners: setupBackgroundListeners } = useBackgroundScan();
+const ph = usePosthog();
+
+async function tryClipboardTracking(): Promise<string> {
+  try {
+    const text = await navigator.clipboard.readText();
+    const trimmed = text.trim();
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(trimmed)) {
+      await ph.identify(trimmed);
+      await navigator.clipboard.writeText('');
+      return trimmed;
+    }
+  } catch {
+    // Clipboard not available or permission denied
+  }
+  return '';
+}
 
 onMounted(async () => {
   await initialize();
+  ph.init();
+  let trackingId = await ph.loadTrackingId();
+  if (!trackingId) {
+    trackingId = await tryClipboardTracking();
+  }
+  if (trackingId) ph.identify(trackingId);
+  ph.track('app_opened');
   await setupListeners();
   try {
     await setupBackgroundListeners();

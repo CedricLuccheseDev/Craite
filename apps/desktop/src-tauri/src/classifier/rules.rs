@@ -14,7 +14,6 @@ pub const RULES: &[ClassificationRule] = &[
     // --- Drums (#ff6b35) ---
     ClassificationRule {
         category: "kick",
-        // "bd" and "kck"/"kik" removed — too short, replaced by normalized variants
         keywords: &[
             "kick",
             " kck ",
@@ -22,18 +21,17 @@ pub const RULES: &[ClassificationRule] = &[
             "bass drum",
             "bassdrum",
             "kickdrum",
+            " bd ",
         ],
         color: "#ff6b35",
     },
     ClassificationRule {
         category: "snare",
-        // "sd" and "rim" removed — too generic; rimshot kept (specific enough)
-        keywords: &["snare", " snr ", "rimshot", "snappy"],
+        keywords: &["snare", " snr ", "rimshot", "snappy", " sd "],
         color: "#ff6b35",
     },
     ClassificationRule {
         category: "hihat",
-        // "hh" replaced with " hh " (word-boundary); "hat" kept (domain-specific enough)
         keywords: &[
             "hihat",
             "hi hat",
@@ -48,13 +46,11 @@ pub const RULES: &[ClassificationRule] = &[
     },
     ClassificationRule {
         category: "clap",
-        // "clp" wrapped with spaces for word-boundary
-        keywords: &["clap", " clp ", "handclap", "snap clap"],
+        keywords: &["clap", " clp ", "handclap", "snap clap", " snap "],
         color: "#ff6b35",
     },
     ClassificationRule {
         category: "tom",
-        // "tom" wrapped — "tomorrow"/"tomato" would not match " tom " after normalization
         keywords: &[
             " tom ",
             "tom tom",
@@ -68,7 +64,6 @@ pub const RULES: &[ClassificationRule] = &[
     },
     ClassificationRule {
         category: "cymbal",
-        // "crash"/"ride" alone are specific enough in audio sample naming context
         keywords: &["cymbal", "crash", "ride cymbal", "splash", "china cymbal"],
         color: "#ff6b35",
     },
@@ -88,17 +83,62 @@ pub const RULES: &[ClassificationRule] = &[
             "maraca",
             "agogo",
             "cabasa",
+            "triangle",
+            "clave",
+            "rim shot",
+            "rimclick",
+            " rim ",
+            "timbale",
+            "djembe",
+            "guiro",
+            "vibraslap",
+            "bell tree",
+            "wind chime",
         ],
         color: "#ff6b35",
     },
     // --- Bass (#ef4444) ---
     ClassificationRule {
         category: "bass",
-        // "sub" and "low" removed (too generic); "sub bass"/"subbass" kept (specific)
-        keywords: &["bass", "808", "sub bass", "subbass", "bassline", "reese"],
+        keywords: &[
+            "bass",
+            "808",
+            "sub bass",
+            "subbass",
+            "bassline",
+            "reese",
+            " bas ",
+            "deep bass",
+        ],
         color: "#ef4444",
     },
     // --- Melodic (#4ade80) ---
+    ClassificationRule {
+        category: "keys",
+        keywords: &[
+            "piano",
+            "keys",
+            "keyboard",
+            "rhodes",
+            "wurlitzer",
+            "electric piano",
+            "epiano",
+            " ep ",
+            "clavinet",
+            "organ",
+            "harpsichord",
+            "celesta",
+            "marimba",
+            "vibraphone",
+            "xylophone",
+            "glockenspiel",
+            "kalimba",
+            "music box",
+            "musicbox",
+            "melodica",
+        ],
+        color: "#4ade80",
+    },
     ClassificationRule {
         category: "pad",
         keywords: &[
@@ -109,40 +149,100 @@ pub const RULES: &[ClassificationRule] = &[
             "texture",
             "drone",
             "sustain pad",
+            "evolving",
+            "cinematic",
         ],
         color: "#4ade80",
     },
     ClassificationRule {
         category: "lead",
-        // "ld" removed; "pluck" added (common lead type); "synth" alone is too broad → "synth lead"
-        keywords: &["lead", "synth lead", "pluck", "mono lead"],
+        keywords: &[
+            "lead",
+            "synth lead",
+            "pluck",
+            "mono lead",
+            " synth ",
+            "saw lead",
+            "square lead",
+        ],
         color: "#4ade80",
     },
     ClassificationRule {
         category: "arp",
-        // " arp " with spaces to avoid matching "sharp", "harper", etc.
-        keywords: &[" arp ", "arpeggio", "arpeggiated"],
+        keywords: &[" arp ", "arpeggio", "arpeggiated", "sequence"],
         color: "#4ade80",
     },
     ClassificationRule {
         category: "chord",
-        keywords: &["chord", "stab", " chrd "],
+        keywords: &["chord", "stab", " chrd ", "chords"],
+        color: "#4ade80",
+    },
+    ClassificationRule {
+        category: "guitar",
+        keywords: &[
+            "guitar",
+            "gtr",
+            "acoustic guitar",
+            "electric guitar",
+            "nylon",
+            "strum",
+            "fingerpick",
+        ],
+        color: "#4ade80",
+    },
+    ClassificationRule {
+        category: "strings",
+        keywords: &[
+            "strings",
+            "violin",
+            "viola",
+            "cello",
+            "contrabass",
+            "orchestral",
+            "ensemble",
+            "pizzicato",
+            "spiccato",
+        ],
+        color: "#4ade80",
+    },
+    ClassificationRule {
+        category: "brass",
+        keywords: &[
+            "brass",
+            "trumpet",
+            "trombone",
+            "horn",
+            "tuba",
+            "french horn",
+            "flugelhorn",
+            "saxophone",
+            " sax ",
+        ],
         color: "#4ade80",
     },
     // --- Vocal (#f472b6) ---
     ClassificationRule {
         category: "vocal",
-        // "vox" wrapped with spaces to avoid matching "voxel" etc.
         keywords: &[
-            "vocal", " vox ", "voice", "acapella", "adlib", "choir", "hook", "chant",
+            "vocal",
+            " vox ",
+            "voice",
+            "acapella",
+            "adlib",
+            "choir",
+            "chant",
+            "sing",
+            "spoken",
+            "whisper",
+            "a capella",
+            "harmony vocal",
+            "backing vocal",
         ],
         color: "#f472b6",
     },
     // --- FX (#06b6d4) ---
     ClassificationRule {
         category: "fx",
-        // "noise" removed (too generic); " fx " and " sfx " wrapped for word boundary
-        // "effect" kept (6 chars, specific enough)
         keywords: &[
             " fx ",
             " sfx ",
@@ -155,14 +255,36 @@ pub const RULES: &[ClassificationRule] = &[
             "whoosh",
             "reverse",
             "transition",
+            "swell",
+            "buildup",
+            "build up",
+            "drop",
+            "downer",
+            "foley",
+            "glitch",
+            "stutter",
+            "noise",
+            "white noise",
+            "tape stop",
         ],
         color: "#06b6d4",
     },
     // --- Loops (#818cf8) ---
     ClassificationRule {
         category: "loop",
-        // "lp" removed (too short/generic); "loop" alone is specific enough
-        keywords: &["loop", "drum loop", "melody loop", "bass loop", "full loop"],
+        keywords: &[
+            "loop",
+            "drum loop",
+            "melody loop",
+            "bass loop",
+            "full loop",
+            "top loop",
+            "groove",
+            "break",
+            "breakbeat",
+            "pattern",
+            "beat",
+        ],
         color: "#818cf8",
     },
 ];

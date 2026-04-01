@@ -12,21 +12,20 @@
           class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-zinc-300"
         >
           <UIcon name="i-lucide-sparkles" class="text-[#ff6b35]" />
-          Gratuit, open source, 100% local
+          {{ t('hero.badge') }}
         </span>
       </div>
 
       <!-- Headline -->
+      <!-- eslint-disable-next-line vue/no-v-html -->
       <h1
         class="text-4xl sm:text-6xl font-bold tracking-tight text-center leading-tight fade-in-up"
         style="animation-delay: 80ms"
-      >
-        Arrête de chercher tes samples<br />
-        dans 40&nbsp;dossiers.
-      </h1>
+        v-html="t('hero.title', { br: '<br />' })"
+      />
 
       <p class="mt-6 text-center text-lg text-zinc-400 max-w-2xl mx-auto fade-in-up" style="animation-delay: 160ms">
-        CrAIte organise tes samples par type de son et les rend accessibles directement dans ton DAW.
+        {{ t('hero.subtitle') }}
       </p>
 
       <!-- CTA buttons -->
@@ -36,18 +35,18 @@
       >
         <UButton
           color="primary"
-          label="Télécharger gratuitement"
+          :label="t('hero.cta')"
           icon="i-lucide-download"
           class="px-8 py-4 rounded-full text-base font-semibold"
           @click="scrollTo('download')"
         />
         <UButton
           color="neutral"
-          variant="ghost"
-          label="Voir comment ça marche"
+          variant="outline"
+          :label="t('hero.ctaSecondary')"
           icon="i-lucide-arrow-down"
           trailing
-          class="px-8 py-4 rounded-full text-base"
+          class="px-8 py-4 rounded-full text-base border-zinc-600! text-zinc-300! hover:bg-white/10! hover:text-white!"
           @click="scrollTo('how-it-works')"
         />
       </div>
@@ -55,7 +54,7 @@
       <!-- Before / After -->
       <div class="mt-20 fade-in-up" style="animation-delay: 400ms">
         <p class="text-center text-sm text-zinc-500 uppercase tracking-widest mb-8 font-medium">
-          De ceci &hellip; à ceci, en quelques secondes
+          {{ t('hero.beforeAfterLabel') }}
         </p>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -63,12 +62,12 @@
           <div class="rounded-2xl border border-white/10 bg-white/3 p-6 backdrop-blur-sm">
             <div class="flex items-center gap-2 mb-4">
               <span class="w-3 h-3 rounded-full bg-red-500/80" />
-              <span class="text-sm text-zinc-400 font-medium">Avant</span>
+              <span class="text-sm text-zinc-400 font-medium">{{ t('hero.before') }}</span>
             </div>
             <div class="rounded-xl bg-zinc-900 aspect-video flex items-center justify-center">
               <div class="text-center px-6">
                 <UIcon name="i-lucide-folder-tree" class="text-4xl text-zinc-600 mb-3" />
-                <p class="text-zinc-500 text-sm">Screenshot dossiers en vrac</p>
+                <p class="text-zinc-500 text-sm">{{ t('hero.beforePlaceholder') }}</p>
               </div>
             </div>
           </div>
@@ -77,12 +76,12 @@
           <div class="rounded-2xl border border-[#ff6b35]/20 bg-[#ff6b35]/3 p-6 backdrop-blur-sm">
             <div class="flex items-center gap-2 mb-4">
               <span class="w-3 h-3 rounded-full bg-emerald-500/80" />
-              <span class="text-sm text-zinc-400 font-medium">Après</span>
+              <span class="text-sm text-zinc-400 font-medium">{{ t('hero.after') }}</span>
             </div>
             <div class="rounded-xl bg-zinc-900 aspect-video flex items-center justify-center">
               <div class="text-center px-6">
                 <UIcon name="i-lucide-music-2" class="text-4xl text-[#ff6b35]/60 mb-3" />
-                <p class="text-zinc-500 text-sm">Screenshot library organisée</p>
+                <p class="text-zinc-500 text-sm">{{ t('hero.afterPlaceholder') }}</p>
               </div>
             </div>
           </div>
@@ -91,7 +90,7 @@
 
       <!-- DAW compatibility -->
       <div class="mt-14 fade-in-up" style="animation-delay: 500ms">
-        <p class="text-center text-xs text-zinc-500 uppercase tracking-widest mb-6">Compatible avec</p>
+        <p class="text-center text-xs text-zinc-500 uppercase tracking-widest mb-6">{{ t('hero.compatibleWith') }}</p>
         <div class="flex flex-wrap items-center justify-center gap-8 opacity-50">
           <span v-for="daw in daws" :key="daw.name" class="relative group">
             <img :src="daw.logo" :alt="daw.name" class="h-6 w-auto transition-opacity duration-200 hover:opacity-100" />
@@ -108,6 +107,8 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n();
+
 const daws = [
   { name: 'FL Studio', logo: '/daws/flstudio.svg' },
   { name: 'Ableton Live', logo: '/daws/ableton.svg' },

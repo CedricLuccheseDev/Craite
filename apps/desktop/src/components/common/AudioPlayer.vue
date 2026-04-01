@@ -72,6 +72,7 @@ async function togglePlay() {
     }
 
     const audio = new Audio(blobUrl);
+    audio.volume = 0.75;
 
     audio.onended = () => {
       if (activePath.value === props.samplePath) {
