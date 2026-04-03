@@ -1,7 +1,7 @@
 {
   "name": "craite",
   "private": true,
-  "version": "0.4.6",
+  "version": "0.4.7",
   "license": "AGPL-3.0-only",
   "type": "module",
   "scripts": {
@@ -16,7 +16,7 @@
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "typecheck": "pnpm --filter @app/desktop exec vue-tsc --noEmit && pnpm --filter @app/landing exec nuxi typecheck",
-    "check-all": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test --run && cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml && cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml -- -D warnings && cargo fmt --check --manifest-path apps/desktop/src-tauri/Cargo.toml && cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml",
+    "check-all": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test -- --run && cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml && cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml -- -D warnings && cargo fmt --check --manifest-path apps/desktop/src-tauri/Cargo.toml && cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml",
     "release": "git tag v$(node -p \"require('./package.json').version\") && git push origin v$(node -p \"require('./package.json').version\")",
     "prepare": "simple-git-hooks"
   },

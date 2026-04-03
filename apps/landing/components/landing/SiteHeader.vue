@@ -60,7 +60,7 @@ function scrollTo(id: string) {
       <div class="flex items-center justify-end gap-3">
         <NuxtLink
           v-if="otherLocale"
-          :to="switchLocalePath(otherLocale.code)"
+          :to="switchLocalePath(otherLocale.code as 'en' | 'fr')"
           class="text-xs text-zinc-500 hover:text-white transition-colors uppercase tracking-wide font-medium border border-white/10 rounded-full px-2.5 py-1"
         >
           {{ otherLocale.code }}

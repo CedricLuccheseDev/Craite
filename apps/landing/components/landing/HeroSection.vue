@@ -17,12 +17,16 @@
       </div>
 
       <!-- Headline -->
-      <!-- eslint-disable-next-line vue/no-v-html -->
-      <h1
+      <i18n-t
+        keypath="hero.title"
+        tag="h1"
         class="text-4xl sm:text-6xl font-bold tracking-tight text-center leading-tight fade-in-up"
         style="animation-delay: 80ms"
-        v-html="t('hero.title', { br: '<br />' })"
-      />
+      >
+        <template #br>
+          <br />
+        </template>
+      </i18n-t>
 
       <p class="mt-6 text-center text-lg text-zinc-400 max-w-2xl mx-auto fade-in-up" style="animation-delay: 160ms">
         {{ t('hero.subtitle') }}
