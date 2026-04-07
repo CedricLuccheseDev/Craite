@@ -14,6 +14,7 @@ declare module 'vue' {
     AmbientBackground: typeof import('./src/components/common/AmbientBackground.vue')['default']
     AmbientOrb: typeof import('./src/components/onboarding/AmbientOrb.vue')['default']
     AudioPlayer: typeof import('./src/components/common/AudioPlayer.vue')['default']
+    BackgroundScanStatus: typeof import('./src/components/library/BackgroundScanStatus.vue')['default']
     CategoryTree: typeof import('./src/components/library/CategoryTree.vue')['default']
     DawGuide: typeof import('./src/components/library/DawGuide.vue')['default']
     DawStep: typeof import('./src/components/onboarding/DawStep.vue')['default']

@@ -13,15 +13,14 @@ const gradientStyle = computed(() => ({
 </script>
 
 <template>
-  <div class="ambient-orb" :style="gradientStyle" />
+  <div
+    class="ambient-orb fixed top-1/2 left-1/2 size-150 rounded-full pointer-events-none z-0"
+    :style="gradientStyle"
+  />
 </template>
 
-<style scoped>
-@reference "../../assets/styles/variables.css";
-
+<style>
 .ambient-orb {
-  @apply fixed top-1/2 left-1/2 size-150 rounded-full
-    pointer-events-none z-0;
   transform: translate(-50%, -50%);
   animation: pulse-glow 4s ease-in-out infinite;
   transition: background 1s cubic-bezier(0.16, 1, 0.3, 1);

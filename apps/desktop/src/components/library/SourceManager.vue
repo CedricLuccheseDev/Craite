@@ -8,14 +8,13 @@ import { useLibraryStore } from '@/stores/library';
 import { useLibraryActions } from '@/composables/useLibraryActions';
 import { useNotify } from '@/composables/useNotify';
 import { useBackgroundScan } from '@/composables/useBackgroundScan';
-import { buildCategoriesFromSamples } from '@/utils/categoryBuilder';
 
 const { t } = useI18n();
 const tauri = useTauri();
 const notify = useNotify();
 const scanStore = useScanStore();
 const libraryStore = useLibraryStore();
-const { rescan, generateLibrary, addSourceFolder } = useLibraryActions();
+const { reloadLibrary, rescan, generateLibrary, addSourceFolder } = useLibraryActions();
 const {
   enabled: bgScanEnabled,
   isScanning: bgIsScanning,
@@ -57,11 +56,7 @@ onMounted(async () => {
     countdown.value = getIntervalSecs();
     const previousCount = libraryStore.samples.length;
     try {
-      const samples = await tauri.loadSamples();
-      libraryStore.setSamples(samples);
-      libraryStore.setCategories(buildCategoriesFromSamples(samples));
-      scanStore.updateSourceCounts(samples);
-
+      const samples = await reloadLibrary();
       const diff = samples.length - previousCount;
       if (diff > 0) {
         notify.success('notify.backgroundScanAdded', { added: diff, total: samples.length });
@@ -135,7 +130,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section class="h-full flex flex-col gap-8 bg-surface rounded-2xl p-9 overflow-hidden">
+  <section class="h-full flex flex-col gap-8 rounded-2xl p-9 overflow-hidden relative z-1">
     <!-- Header — fixed -->
     <div class="flex items-start justify-between shrink-0">
       <div>
@@ -147,14 +142,14 @@ onUnmounted(() => {
         </p>
       </div>
       <UButton
-        icon="i-lucide-refresh-cw"
+        :icon="scanStore.sources.length === 0 ? 'i-lucide-scan' : 'i-lucide-refresh-cw'"
         color="primary"
         variant="solid"
         size="sm"
         :loading="scanStore.isScanning"
         @click="rescan"
       >
-        {{ t('sources.rescan') }}
+        {{ scanStore.sources.length === 0 ? t('sources.autoDetect') : t('sources.rescan') }}
       </UButton>
     </div>
 
@@ -193,8 +188,8 @@ onUnmounted(() => {
       <div
         v-for="source in scanStore.sources"
         :key="source.path"
-        class="source-card cursor-pointer"
-        :class="{ disabled: !source.enabled }"
+        class="flex items-center justify-between gap-4 py-4 px-5 rounded-xl border border-zinc-800 bg-zinc-950 transition-all duration-150 hover:border-zinc-700 cursor-pointer"
+        :class="{ 'opacity-40': !source.enabled }"
         @click="openInExplorer(source.path)"
       >
         <div class="flex items-center gap-4 flex-1 min-w-0">
@@ -231,7 +226,7 @@ onUnmounted(() => {
       <!-- Add source dropzone -->
       <button
         v-if="!scanStore.isScanning && scanStore.sources.length > 0"
-        class="add-source-zone"
+        class="flex items-center justify-center gap-2 py-4 px-5 rounded-xl border-2 border-dashed border-zinc-800 transition-all duration-150 hover:border-zinc-600 hover:bg-white/2"
         @click="addSourceFolder"
       >
         <UIcon name="i-lucide-plus" class="text-[16px] text-muted" />
@@ -239,7 +234,10 @@ onUnmounted(() => {
       </button>
 
       <!-- Empty state -->
-      <div v-if="!scanStore.isScanning && scanStore.sources.length === 0" class="empty-state">
+      <div
+        v-if="!scanStore.isScanning && scanStore.sources.length === 0"
+        class="flex flex-col items-center gap-2.5 py-12 px-6 rounded-xl border-2 border-dashed border-zinc-700 text-center"
+      >
         <div class="flex items-center justify-center size-12 rounded-2xl bg-zinc-800">
           <UIcon name="i-lucide-folder-plus" class="text-[22px] text-muted" />
         </div>
@@ -257,38 +255,3 @@ onUnmounted(() => {
     </div>
   </section>
 </template>
-
-<style scoped>
-@reference "../../assets/styles/variables.css";
-
-.source-card {
-  @apply flex items-center justify-between gap-4 py-4 px-5
-    rounded-xl border border-zinc-800 bg-zinc-950
-    transition-all duration-150;
-}
-
-.source-card:hover {
-  @apply border-zinc-700;
-}
-
-.source-card.disabled {
-  @apply opacity-40;
-}
-
-.add-source-zone {
-  @apply flex items-center justify-center gap-2 py-4 px-5
-    rounded-xl border-2 border-dashed border-zinc-800
-    transition-all duration-150;
-  border-radius: 12px !important;
-}
-
-.add-source-zone:hover {
-  @apply border-zinc-600 bg-white/2;
-}
-
-.empty-state {
-  @apply flex flex-col items-center gap-2.5 py-12 px-6
-    rounded-xl border-2 border-dashed border-zinc-700
-    text-center;
-}
-</style>

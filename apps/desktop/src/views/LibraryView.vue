@@ -34,14 +34,17 @@ useWatcher();
 
     <!-- Scan overlay -->
     <Transition name="overlay">
-      <div v-if="scanStore.isScanning" class="scan-overlay">
+      <div
+        v-if="scanStore.isScanning"
+        class="absolute inset-0 z-50 flex items-center justify-center bg-[#0a0a0a]/80 backdrop-blur-md"
+      >
         <ScanProgress />
       </div>
     </Transition>
   </div>
 </template>
 
-<style scoped>
+<style>
 .page-enter-active {
   transition:
     opacity 0.15s ease,
@@ -59,17 +62,6 @@ useWatcher();
 
 .page-leave-to {
   opacity: 0;
-}
-
-.scan-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(10, 10, 10, 0.8);
-  backdrop-filter: blur(12px);
 }
 
 .overlay-enter-active {

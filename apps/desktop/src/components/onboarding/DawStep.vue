@@ -68,7 +68,12 @@ function onConfirm() {
         </div>
 
         <div v-else class="w-full max-w-xl grid grid-cols-4 gap-2">
-          <label v-for="daw in daws" :key="daw.id" class="daw-card" :class="{ selected: selectedId === daw.id }">
+          <label
+            v-for="daw in daws"
+            :key="daw.id"
+            class="flex flex-col items-center justify-center gap-2 h-22 px-3 border border-zinc-800/60 rounded-xl cursor-pointer transition-all duration-150 bg-zinc-900/30 hover:border-zinc-600 hover:bg-zinc-800/40"
+            :class="{ 'border-orange-500! bg-orange-500/8!': selectedId === daw.id }"
+          >
             <input v-model="selectedId" type="radio" name="daw" :value="daw.id" class="sr-only" />
             <img v-if="getDawIconPath(daw.id)" :src="getDawIconPath(daw.id)!" :alt="daw.name" class="shrink-0 size-6" />
             <!-- eslint-disable vue/no-v-html -- SVG from internal static data, no XSS risk -->
@@ -81,7 +86,10 @@ function onConfirm() {
             <span class="text-[12px] font-medium truncate">{{ daw.name }}</span>
           </label>
 
-          <label class="daw-card" :class="{ selected: selectedId === 'custom' }">
+          <label
+            class="flex flex-col items-center justify-center gap-2 h-22 px-3 border border-zinc-800/60 rounded-xl cursor-pointer transition-all duration-150 bg-zinc-900/30 hover:border-zinc-600 hover:bg-zinc-800/40"
+            :class="{ 'border-orange-500! bg-orange-500/8!': selectedId === 'custom' }"
+          >
             <input v-model="selectedId" type="radio" name="daw" value="custom" class="sr-only" />
             <!-- eslint-disable vue/no-v-html -- SVG from internal static data, no XSS risk -->
             <span
@@ -128,22 +136,3 @@ function onConfirm() {
     </div>
   </div>
 </template>
-
-<style scoped>
-@reference "../../assets/styles/variables.css";
-
-.daw-card {
-  @apply flex flex-col items-center justify-center gap-2 h-22 px-3 border border-zinc-800/60
-    rounded-xl cursor-pointer transition-all duration-150
-    bg-zinc-900/30;
-}
-
-.daw-card:hover {
-  @apply border-zinc-600 bg-zinc-800/40;
-}
-
-.daw-card.selected {
-  border-color: var(--color-orange-500);
-  background: color-mix(in srgb, var(--color-orange-500) 8%, transparent);
-}
-</style>

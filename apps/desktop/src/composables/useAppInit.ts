@@ -1,44 +1,22 @@
 import { useTauri } from '@/composables/useTauri';
-import { useLibraryStore } from '@/stores/library';
-import { useScanStore } from '@/stores/scan';
 import { useLibraryConfigStore } from '@/stores/libraryConfig';
 import { useSettingsStore } from '@/stores/settings';
-import { buildCategoriesFromSamples } from '@/utils/categoryBuilder';
+import { useLibraryActions } from '@/composables/useLibraryActions';
 import type { LinkStructure } from '@/types/sample';
 import type { SupportedLocale } from '@/plugins/i18n';
 
 export function useAppInit() {
   const tauri = useTauri();
-  const libraryStore = useLibraryStore();
-  const scanStore = useScanStore();
   const configStore = useLibraryConfigStore();
   const settingsStore = useSettingsStore();
+  const { reloadLibrary } = useLibraryActions();
 
   async function initialize(): Promise<void> {
-    await Promise.all([loadSources(), loadSamples(), loadSettings()]);
-  }
-
-  async function loadSources(): Promise<void> {
+    await loadSettings();
     try {
-      const sources = await tauri.loadSources();
-      if (sources.length > 0) {
-        scanStore.setDetectedSources(sources, false);
-      }
+      await reloadLibrary({ withSources: true });
     } catch (error) {
-      console.error('Failed to load sources:', error);
-    }
-  }
-
-  async function loadSamples(): Promise<void> {
-    try {
-      const samples = await tauri.loadSamples();
-      if (samples.length > 0) {
-        libraryStore.setSamples(samples);
-        libraryStore.setCategories(buildCategoriesFromSamples(samples));
-        scanStore.updateSourceCounts(samples);
-      }
-    } catch (error) {
-      console.error('Failed to load samples:', error);
+      console.error('Failed to load library:', error);
     }
   }
 

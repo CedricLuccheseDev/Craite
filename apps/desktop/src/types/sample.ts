@@ -9,6 +9,7 @@ export interface Sample {
   duration: number;
   sampleRate: number;
   linkedPath: string | null;
+  mtime: number;
   hidden: boolean;
 }
 

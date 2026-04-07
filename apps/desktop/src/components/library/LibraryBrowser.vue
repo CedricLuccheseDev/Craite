@@ -12,7 +12,7 @@ const { navigateTo } = useNavigation();
 </script>
 
 <template>
-  <section class="h-full flex flex-col gap-6 bg-surface rounded-2xl p-9">
+  <section class="h-full flex flex-col gap-6 rounded-2xl p-9 relative z-1">
     <div class="flex flex-col gap-4 shrink-0">
       <div class="flex items-start justify-between">
         <div>

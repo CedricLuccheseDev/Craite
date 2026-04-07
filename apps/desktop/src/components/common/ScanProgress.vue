@@ -54,7 +54,7 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style scoped>
+<style>
 .scan-ring {
   width: 48px;
   height: 48px;
@@ -81,7 +81,7 @@ onUnmounted(() => {
   height: 8px;
   border-radius: 50%;
   background: #ff6b35;
-  animation: pulse 1.5s ease-in-out infinite;
+  animation: scan-pulse 1.5s ease-in-out infinite;
 }
 
 @keyframes spin {
@@ -90,7 +90,7 @@ onUnmounted(() => {
   }
 }
 
-@keyframes pulse {
+@keyframes scan-pulse {
   0%,
   100% {
     opacity: 0.4;

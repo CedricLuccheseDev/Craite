@@ -35,7 +35,11 @@ const emit = defineEmits<{ finish: [] }>();
         <!-- Category grid — grouped by family, no labels -->
         <div class="w-full max-w-2xl flex flex-wrap justify-center gap-2">
           <template v-for="group in groupCategories(categories)" :key="group.key">
-            <div v-for="cat in group.categories" :key="cat.name" class="cat-card">
+            <div
+              v-for="cat in group.categories"
+              :key="cat.name"
+              class="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg bg-zinc-900/50 border border-zinc-800/40 transition-colors duration-150"
+            >
               <UIcon
                 :name="getCategoryIcon(cat.name)"
                 class="text-[14px]"
@@ -59,13 +63,3 @@ const emit = defineEmits<{ finish: [] }>();
     </div>
   </div>
 </template>
-
-<style scoped>
-@reference "../../assets/styles/variables.css";
-
-.cat-card {
-  @apply flex items-center gap-1.5 py-1.5 px-2.5
-    rounded-lg bg-zinc-900/50 border border-zinc-800/40
-    transition-colors duration-150;
-}
-</style>

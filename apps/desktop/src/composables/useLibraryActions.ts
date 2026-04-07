@@ -6,7 +6,8 @@ import { usePosthog } from '@/composables/usePosthog';
 import { useScanStore } from '@/stores/scan';
 import { useLibraryStore } from '@/stores/library';
 import { useLibraryConfigStore } from '@/stores/libraryConfig';
-import type { Source } from '@/types/sample';
+import { buildCategoriesFromSamples } from '@/utils/categoryBuilder';
+import type { Sample, Source } from '@/types/sample';
 
 export function useLibraryActions() {
   const tauri = useTauri();
@@ -15,6 +16,21 @@ export function useLibraryActions() {
   const libraryStore = useLibraryStore();
   const configStore = useLibraryConfigStore();
   const ph = usePosthog();
+
+  /** Reload samples from DB and update all stores. Optionally reload sources too. */
+  async function reloadLibrary(options?: { withSources?: boolean }): Promise<Sample[]> {
+    const [samples, sources] = await Promise.all([
+      tauri.loadSamples(),
+      options?.withSources ? tauri.loadSources() : Promise.resolve(null),
+    ]);
+    if (sources && sources.length > 0) {
+      scanStore.setDetectedSources(sources, false);
+    }
+    libraryStore.setSamples(samples);
+    libraryStore.setCategories(buildCategoriesFromSamples(samples));
+    scanStore.updateSourceCounts(samples);
+    return samples;
+  }
 
   async function rescan() {
     if (scanStore.isScanning) return;
@@ -33,10 +49,10 @@ export function useLibraryActions() {
 
       const result = await tauri.scanDirectories(scanStore.sources);
       scanStore.setScanResult(result);
-      scanStore.updateSourceCounts(result.samples);
       scanStore.removeEmptySources();
       libraryStore.setSamples(result.samples);
       libraryStore.setCategories(result.categories);
+      scanStore.updateSourceCounts(result.samples);
 
       notify.success('notify.scanComplete', { count: result.totalFiles, categories: result.categories.length });
       ph.track('scan_completed', { samples: result.totalFiles, categories: result.categories.length });
@@ -91,9 +107,9 @@ export function useLibraryActions() {
         type: 'custom',
         sampleCount: 0,
       });
-      notify.info('notify.sourceAdded');
+      await rescan();
     }
   }
 
-  return { rescan, generateLibrary, pickOutputDir, addSourceFolder };
+  return { reloadLibrary, rescan, generateLibrary, pickOutputDir, addSourceFolder };
 }

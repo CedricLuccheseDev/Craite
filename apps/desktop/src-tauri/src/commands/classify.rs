@@ -11,9 +11,9 @@ use crate::security::path_validator::sanitize_path;
 fn category_group(category: &str) -> &'static str {
     match category {
         "kick" | "snare" | "hihat" | "clap" | "cymbal" | "tom" | "perc" => "drums",
-        "pad" | "lead" | "arp" | "chord" => "synths",
-        "bass" => "bass",
-        "vocal" => "vocals",
+        "bass" | "lead" | "pad" | "chord" | "arp" => "synths",
+        "keys" | "guitar" | "strings" | "brass" => "instruments",
+        "vocal" => "vocal",
         "fx" => "fx",
         "loop" => "loops",
         "unknown" => "unknown",
@@ -24,7 +24,7 @@ fn category_group(category: &str) -> &'static str {
 /// Single-category groups use a flat structure: output/group/filename.wav
 /// Multi-category groups nest: output/group/category/filename.wav
 fn is_flat_group(category: &str) -> bool {
-    matches!(category, "bass" | "vocal" | "fx" | "loop" | "unknown")
+    matches!(category, "vocal" | "fx" | "loop" | "unknown")
 }
 
 /// Reusable link generation logic, callable from commands and background tasks.

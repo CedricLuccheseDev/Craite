@@ -7,8 +7,8 @@ export interface CategoryGroup {
 
 export const GROUPS: { key: string; keys: string[] }[] = [
   { key: 'drums', keys: ['kick', 'snare', 'hihat', 'clap', 'cymbal', 'tom', 'perc'] },
-  { key: 'bass', keys: ['bass'] },
-  { key: 'synths', keys: ['pad', 'lead', 'arp', 'chord', 'keys', 'guitar', 'strings', 'brass'] },
+  { key: 'synths', keys: ['bass', 'lead', 'pad', 'chord', 'arp'] },
+  { key: 'instruments', keys: ['keys', 'guitar', 'strings', 'brass'] },
   { key: 'vocal', keys: ['vocal'] },
   { key: 'fx', keys: ['fx'] },
   { key: 'loops', keys: ['loop'] },

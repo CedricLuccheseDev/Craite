@@ -75,7 +75,7 @@ const title = computed(() => {
   </Transition>
 </template>
 
-<style scoped>
+<style>
 .slide-up-enter-active,
 .slide-up-leave-active {
   transition:

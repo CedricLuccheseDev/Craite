@@ -4,6 +4,7 @@ import { ref } from 'vue';
 // Shared across all AudioPlayer instances: only one sample plays at a time
 const activeAudio = ref<HTMLAudioElement | null>(null);
 const activePath = ref<string | null>(null);
+let playGeneration = 0;
 
 // Global blob URL cache — persists across component mounts
 const blobUrlCache = new Map<string, string>();
@@ -59,17 +60,24 @@ async function togglePlay() {
   // Stop any other playing instance
   stopCurrent();
 
+  // Generation guard: if another togglePlay runs during our await,
+  // we detect it and bail out to avoid orphaned Audio objects
+  const gen = ++playGeneration;
+
   try {
     // Get or create blob URL
     let blobUrl = blobUrlCache.get(props.samplePath);
     if (!blobUrl) {
       isLoading.value = true;
       const bytes = await readAudioFile(props.samplePath);
+      if (gen !== playGeneration) return;
       const blob = new Blob([new Uint8Array(bytes)], { type: getMimeType(props.samplePath) });
       blobUrl = URL.createObjectURL(blob);
       blobUrlCache.set(props.samplePath, blobUrl);
       isLoading.value = false;
     }
+
+    if (gen !== playGeneration) return;
 
     const audio = new Audio(blobUrl);
     audio.volume = 0.75;
@@ -90,6 +98,10 @@ async function togglePlay() {
     };
 
     await audio.play();
+    if (gen !== playGeneration) {
+      audio.pause();
+      return;
+    }
     activeAudio.value = audio;
     activePath.value = props.samplePath;
   } catch {

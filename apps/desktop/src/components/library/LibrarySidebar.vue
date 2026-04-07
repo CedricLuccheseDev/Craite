@@ -33,7 +33,10 @@ const settingsItem = computed(() => ({
 </script>
 
 <template>
-  <aside class="sidebar" :class="{ collapsed }">
+  <aside
+    class="flex flex-col gap-8 py-9 px-3 w-55 shrink-0 bg-black/10 transition-all duration-200 overflow-hidden"
+    :class="{ 'w-15! px-1.5!': collapsed }"
+  >
     <div class="flex items-center h-8" :class="collapsed ? 'justify-center' : 'justify-between px-4'">
       <span v-if="!collapsed" class="font-display text-[22px] font-bold tracking-tight">CrAIte</span>
       <UTooltip :text="collapsed ? t('nav.expand') : t('nav.collapse')">
@@ -47,11 +50,14 @@ const settingsItem = computed(() => ({
       </UTooltip>
     </div>
 
-    <nav class="flex flex-col gap-1" :class="collapsed ? 'items-center' : ''">
+    <nav class="flex flex-col gap-2" :class="collapsed ? 'items-center' : ''">
       <UTooltip v-for="item in mainNavItems" :key="item.id" :text="item.label" :disabled="!collapsed">
         <button
-          class="nav-item"
-          :class="[{ active: activeSection === item.id }, collapsed ? 'collapsed-item' : '']"
+          class="flex items-center gap-3 w-full py-3 px-4 rounded-full text-sm font-medium text-muted bg-transparent border-none cursor-pointer transition-colors duration-150 hover:bg-surface-hover hover:text-white"
+          :class="[
+            { 'bg-white/10! text-white!': activeSection === item.id },
+            collapsed ? 'px-0! size-10 justify-center' : '',
+          ]"
           @click="emit('update:activeSection', item.id)"
         >
           <UIcon :name="item.icon" class="text-[16px] shrink-0" />
@@ -63,8 +69,11 @@ const settingsItem = computed(() => ({
     <div class="mt-auto" :class="collapsed ? 'flex justify-center' : ''">
       <UTooltip :text="settingsItem.label" :disabled="!collapsed">
         <button
-          class="nav-item"
-          :class="[{ active: activeSection === 'settings' }, collapsed ? 'collapsed-item' : '']"
+          class="flex items-center gap-3 w-full py-3 px-4 rounded-full text-sm font-medium text-muted bg-transparent border-none cursor-pointer transition-colors duration-150 hover:bg-surface-hover hover:text-white"
+          :class="[
+            { 'bg-white/10! text-white!': activeSection === 'settings' },
+            collapsed ? 'px-0! size-10 justify-center' : '',
+          ]"
           @click="emit('update:activeSection', 'settings')"
         >
           <UIcon :name="settingsItem.icon" class="text-[16px] shrink-0" />
@@ -74,31 +83,3 @@ const settingsItem = computed(() => ({
     </div>
   </aside>
 </template>
-
-<style scoped>
-@reference "../../assets/styles/variables.css";
-
-.sidebar {
-  @apply flex flex-col gap-8 py-9 px-3 w-[220px] shrink-0 bg-black/10
-    transition-all duration-200 overflow-hidden;
-}
-
-.sidebar.collapsed {
-  @apply w-[60px] px-1.5;
-}
-
-.nav-item {
-  @apply flex items-center gap-3 w-full py-3 px-4 rounded-full
-    text-[14px] font-medium text-muted bg-transparent border-none
-    cursor-pointer transition-colors duration-150
-    hover:bg-surface-hover hover:text-white;
-}
-
-.nav-item.active {
-  @apply bg-white/10 text-white;
-}
-
-.nav-item.collapsed-item {
-  @apply px-0 size-10 justify-center rounded-full;
-}
-</style>

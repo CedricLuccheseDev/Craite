@@ -1,11 +1,9 @@
 import { ref } from 'vue';
 import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/core';
-import { useLibraryStore } from '@/stores/library';
 import { useLibraryConfigStore } from '@/stores/libraryConfig';
-import { useTauri } from '@/composables/useTauri';
+import { useLibraryActions } from '@/composables/useLibraryActions';
 import { useNotify } from '@/composables/useNotify';
-import { buildCategoriesFromSamples } from '@/utils/categoryBuilder';
 
 interface BackgroundScanResult {
   totalFiles: number;
@@ -96,9 +94,8 @@ export function useBackgroundScan() {
   }
 
   async function setupListeners(): Promise<UnlistenFn[]> {
-    const tauri = useTauri();
+    const { reloadLibrary } = useLibraryActions();
     const notify = useNotify();
-    const libraryStore = useLibraryStore();
     const configStore = useLibraryConfigStore();
 
     const unlisteners: UnlistenFn[] = [];
@@ -117,10 +114,7 @@ export function useBackgroundScan() {
         if (event.payload.skipped) return;
 
         try {
-          const samples = await tauri.loadSamples();
-          libraryStore.setSamples(samples);
-          libraryStore.setCategories(buildCategoriesFromSamples(samples));
-
+          await reloadLibrary();
           notify.success('notify.backgroundScanComplete', { count: event.payload.totalFiles });
           if (event.payload.linkedCount > 0) {
             configStore.setGenerationResult(event.payload.linkedCount);

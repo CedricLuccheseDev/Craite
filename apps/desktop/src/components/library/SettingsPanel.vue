@@ -77,8 +77,6 @@ function onUpdateInterval(value: number) {
 
 async function restartOnboarding() {
   isResetting.value = true;
-  resetOnboarding();
-  router.push('/');
   try {
     await tauri.resetApp();
   } catch (error) {
@@ -88,7 +86,9 @@ async function restartOnboarding() {
   scanStore.setDetectedSources([], false);
   libraryStore.setSamples([]);
   libraryStore.setCategories([]);
+  resetOnboarding();
   isResetting.value = false;
+  router.push('/');
 }
 
 async function clearCache() {
@@ -107,7 +107,7 @@ async function clearCache() {
 </script>
 
 <template>
-  <section class="h-full flex flex-col gap-8 bg-surface rounded-2xl p-9 overflow-y-auto">
+  <section class="h-full flex flex-col gap-8 rounded-2xl p-9 overflow-y-auto relative z-1">
     <div class="shrink-0">
       <h2 class="text-[22px] font-bold tracking-tight">
         {{ t('settings.title') }}

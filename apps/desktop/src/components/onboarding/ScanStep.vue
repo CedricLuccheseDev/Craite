@@ -46,7 +46,7 @@ watch(
           <div class="flex flex-col items-center gap-6">
             <!-- Logo glow -->
             <div class="relative">
-              <div class="absolute inset-0 bg-orange-500/20 rounded-full blur-[40px]" />
+              <div class="absolute inset-0 bg-orange-500/20 rounded-full blur-2xl" />
               <div
                 class="relative flex items-center justify-center size-20 rounded-3xl bg-linear-to-b from-orange-500 to-orange-600 shadow-lg shadow-orange-500/20"
               >
@@ -67,15 +67,21 @@ watch(
 
             <!-- Feature pills -->
             <div class="flex flex-wrap justify-center gap-2">
-              <span class="pill">
+              <span
+                class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full bg-orange-500/6 border border-orange-500/12 text-[11px] font-medium text-white/70 whitespace-nowrap"
+              >
                 <UIcon name="i-lucide-scan" class="text-orange-500 text-[12px]" />
                 {{ t('onboarding.welcome.featureScan') }}
               </span>
-              <span class="pill">
+              <span
+                class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full bg-orange-500/6 border border-orange-500/12 text-[11px] font-medium text-white/70 whitespace-nowrap"
+              >
                 <UIcon name="i-lucide-tags" class="text-orange-500 text-[12px]" />
                 {{ t('onboarding.welcome.featureClassify') }}
               </span>
-              <span class="pill">
+              <span
+                class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full bg-orange-500/6 border border-orange-500/12 text-[11px] font-medium text-white/70 whitespace-nowrap"
+              >
                 <UIcon name="i-lucide-link" class="text-orange-500 text-[12px]" />
                 {{ t('onboarding.welcome.featureExport') }}
               </span>
@@ -141,30 +147,3 @@ watch(
     </div>
   </div>
 </template>
-
-<style scoped>
-.pill {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(255, 107, 53, 0.06);
-  border: 1px solid rgba(255, 107, 53, 0.12);
-  font-size: 11px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.7);
-  white-space: nowrap;
-}
-
-.cat-card {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border-radius: 8px;
-  background: rgba(24, 24, 27, 0.5);
-  border: 1px solid rgba(39, 39, 42, 0.4);
-  transition: all 0.15s;
-}
-</style>

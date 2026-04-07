@@ -5,10 +5,9 @@ import { open } from '@tauri-apps/plugin-dialog';
 import { useOnboarding, completeOnboarding } from '@/composables/useOnboarding';
 import { useTauri } from '@/composables/useTauri';
 import { useNotify } from '@/composables/useNotify';
+import { useLibraryActions } from '@/composables/useLibraryActions';
 import { useScanStore } from '@/stores/scan';
-import { useLibraryStore } from '@/stores/library';
 import { useLibraryConfigStore } from '@/stores/libraryConfig';
-import { buildCategoriesFromSamples } from '@/utils/categoryBuilder';
 import { useSettingsStore } from '@/stores/settings';
 import type { DawInfo } from '@/types/sample';
 import type { SupportedLocale } from '@/plugins/i18n';
@@ -19,10 +18,10 @@ import ReadyStep from '@/components/onboarding/ReadyStep.vue';
 
 const router = useRouter();
 const scanStore = useScanStore();
-const libraryStore = useLibraryStore();
 const configStore = useLibraryConfigStore();
 const tauri = useTauri();
 const notify = useNotify();
+const { reloadLibrary } = useLibraryActions();
 const settingsStore = useSettingsStore();
 const scanStarted = ref(false);
 
@@ -57,7 +56,7 @@ async function runScan() {
   try {
     if (scanStore.sources.length === 0) {
       const detected = await tauri.detectSources();
-      scanStore.setDetectedSources(detected, false);
+      scanStore.setDetectedSources(detected);
     }
 
     const result = await tauri.scanDirectories(scanStore.enabledSources);
@@ -119,22 +118,24 @@ async function onFinish() {
 
 async function loadSamplesIntoLibrary() {
   try {
-    const samples = await tauri.loadSamples();
-    if (samples.length > 0) {
-      libraryStore.setSamples(samples);
-      libraryStore.setCategories(buildCategoriesFromSamples(samples));
-    }
+    await reloadLibrary({ withSources: true });
   } catch (error) {
-    console.error('Failed to load samples after onboarding:', error);
+    console.error('Failed to load library after onboarding:', error);
   }
 }
 </script>
 
 <template>
-  <div class="onboarding">
+  <div class="flex flex-col w-full h-full bg-[#0a0a0a] relative overflow-hidden">
     <!-- Ambient gradients -->
-    <div class="glow glow-top" />
-    <div class="glow glow-bottom" />
+    <div
+      class="absolute rounded-full pointer-events-none blur-[100px] w-[500px] h-[350px] -top-30 left-1/2 -translate-x-1/2 animate-[glow-pulse_8s_ease-in-out_infinite]"
+      style="background: radial-gradient(circle, rgba(255, 107, 53, 0.08) 0%, transparent 70%)"
+    />
+    <div
+      class="absolute rounded-full pointer-events-none blur-[100px] w-[400px] h-[250px] -bottom-20 -right-12.5 animate-[glow-pulse_10s_ease-in-out_infinite_reverse]"
+      style="background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%)"
+    />
 
     <!-- Top bar: progress + language -->
     <div class="absolute top-6 inset-x-0 z-20 flex items-center justify-center px-6">
@@ -186,44 +187,7 @@ async function loadSamplesIntoLibrary() {
   </div>
 </template>
 
-<style scoped>
-.onboarding {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  background: #0a0a0a;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Subtle ambient glows */
-.glow {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  filter: blur(100px);
-}
-
-.glow-top {
-  width: 500px;
-  height: 350px;
-  top: -120px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: radial-gradient(circle, rgba(255, 107, 53, 0.08) 0%, transparent 70%);
-  animation: glow-pulse 8s ease-in-out infinite;
-}
-
-.glow-bottom {
-  width: 400px;
-  height: 250px;
-  bottom: -80px;
-  right: -50px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
-  animation: glow-pulse 10s ease-in-out infinite reverse;
-}
-
+<style>
 @keyframes glow-pulse {
   0%,
   100% {
@@ -234,7 +198,6 @@ async function loadSamplesIntoLibrary() {
   }
 }
 
-/* Step transitions */
 .step-enter-active {
   transition:
     opacity 0.2s ease,

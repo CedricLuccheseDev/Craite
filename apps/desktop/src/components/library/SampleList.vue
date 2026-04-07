@@ -120,8 +120,8 @@ onUnmounted(() => {
     <div
       v-for="sample in visibleSamples"
       :key="sample.id"
-      class="sample-row"
-      :class="{ hidden: sample.hidden }"
+      class="flex items-center justify-between py-3 px-1 transition-colors duration-150 hover:bg-surface-hover"
+      :class="{ 'opacity-40': sample.hidden }"
       @click="playSample(sample.id)"
     >
       <UIcon
@@ -134,6 +134,7 @@ onUnmounted(() => {
         :sample-path="sample.path"
         :sample-name="sample.name"
         class="flex-1 min-w-0"
+        @click.stop
       />
       <div class="flex items-center gap-1 shrink-0" @click.stop>
         <!-- Category correction -->
@@ -186,20 +187,3 @@ onUnmounted(() => {
     </p>
   </div>
 </template>
-
-<style scoped>
-@reference "../../assets/styles/variables.css";
-
-.sample-row {
-  @apply flex items-center justify-between py-3 px-1 bg-surface
-    transition-colors duration-150;
-}
-
-.sample-row:hover {
-  @apply bg-surface-hover;
-}
-
-.sample-row.hidden {
-  @apply opacity-40;
-}
-</style>

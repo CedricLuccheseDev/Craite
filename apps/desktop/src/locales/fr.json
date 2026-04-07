@@ -22,8 +22,8 @@
     "goToExport": "Configurer l'export",
     "group": {
       "drums": "Drums",
-      "bass": "Bass",
       "synths": "Synths",
+      "instruments": "Instruments",
       "vocal": "Vocal",
       "fx": "FX",
       "loops": "Loops",
