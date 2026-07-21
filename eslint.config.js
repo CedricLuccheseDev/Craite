@@ -25,34 +25,22 @@ export default [
     },
   },
   {
-    files: ['apps/landing/**/*.vue', 'apps/landing/**/*.ts'],
-    languageOptions: {
-      globals: {
-        useHead: 'readonly',
-        useRoute: 'readonly',
-        useRouter: 'readonly',
-        useRuntimeConfig: 'readonly',
-        useAsyncData: 'readonly',
-        useFetch: 'readonly',
-        ref: 'readonly',
-        computed: 'readonly',
-        reactive: 'readonly',
-        onMounted: 'readonly',
-        onUnmounted: 'readonly',
-        watch: 'readonly',
-        definePageMeta: 'readonly',
-        navigateTo: 'readonly',
-        useRelease: 'readonly',
-      },
-    },
-  },
-  {
     rules: {
       'vue/multi-word-component-names': 'off',
     },
   },
   {
-    ignores: ['**/src-tauri/', '**/dist/', '**/node_modules/', '**/.nuxt/', '**/.output/'],
+    // apps/landing is React + TanStack Start and carries its own flat config
+    // (apps/landing/eslint.config.mjs); linting it here with the Vue rules
+    // would only produce noise.
+    ignores: [
+      'apps/landing/',
+      '**/src-tauri/',
+      '**/dist/',
+      '**/node_modules/',
+      '**/.nuxt/',
+      '**/.output/',
+    ],
   },
   eslintConfigPrettier,
 ];

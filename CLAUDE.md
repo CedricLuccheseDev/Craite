@@ -3,16 +3,20 @@
 ## Architecture
 - **pnpm monorepo** with 2 apps:
   - `@app/desktop` — Tauri v2 desktop app (Rust backend + Vue 3/TS frontend)
-  - `@app/landing` — Nuxt 3 landing page with @nuxt/ui
+  - `@app/landing` — TanStack Start landing page (React 19)
 - Package manager: **pnpm** (workspaces)
 - Desktop frontend: Vite + Vue 3 + TypeScript + Pinia
 - Desktop backend: Rust with modular structure in `apps/desktop/src-tauri/src/`
-- Landing: Nuxt 3 + @nuxt/ui
+- Landing: TanStack Start + Tailwind v4, on the shared identity in `~/Perso/CLAUDE.md`
 
 ## File Structure
 - Max **200 lines per file** - split into modules
 - Rust modules follow `mod.rs` pattern
-- Vue components use `<script setup lang="ts">`
+- Vue components (desktop) use `<script setup lang="ts">`
+- Landing: file-based routes in `apps/landing/src/routes/`, copy in
+  `src/i18n/` (fr is the source dictionary, en translates it), structural data
+  in `src/content/`. `/api/release` proxies the S3 manifest that feeds the
+  download buttons.
 
 ## Naming
 - Rust: snake_case for files, functions, variables
@@ -21,7 +25,7 @@
 
 ## Commands
 - `pnpm dev` — Start Tauri dev mode (frontend + Rust backend)
-- `pnpm dev:landing` — Start Nuxt dev server (landing page)
+- `pnpm dev:landing` — Start the landing dev server (vite)
 - `pnpm build` — Build Tauri distributable
 - `pnpm build:landing` — Build landing for production
 - `pnpm lint` — Run ESLint on all apps
@@ -57,7 +61,14 @@
 - Version must be bumped in all 5 files: `package.json` (root, desktop, landing), `tauri.conf.json`, `Cargo.toml`
 
 ## Styling
-- Dark theme only (background: #0a0a0a)
+
+The two apps no longer share a theme, on purpose.
+
+**Desktop** — dark only (background: #0a0a0a), accent orange #ff6b35.
 - CSS custom properties in `apps/desktop/src/assets/styles/variables.css`
 - Animations in `apps/desktop/src/assets/styles/animations.css`
-- Accent color: orange (#ff6b35)
+
+**Landing** — the shared identity from `~/Perso/CLAUDE.md`: paper ground, print
+ink, hairline rules, square corners, light only. Accent is #b03c12, a darkened
+#ff6b35: the original only reaches 2.57:1 on paper and is unreadable as text.
+Tokens in `apps/landing/src/styles/app.css`.

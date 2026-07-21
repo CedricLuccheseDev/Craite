@@ -2,23 +2,33 @@
   "name": "@app/landing",
   "private": true,
   "version": "0.4.6",
+  "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "nuxt dev",
-    "build": "nuxt build",
-    "lint": "eslint ."
+    "dev": "vite dev",
+    "build": "vite build && tsc --noEmit",
+    "start": "srvx serve --prod --dir . --entry dist/server/server.js --static dist/client",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
-    "@nuxt/ui": "^3.1.0",
-    "nuxt": "^3.17.0",
-    "three": "0.124.0",
-    "vanta": "^0.5.24",
-    "vue": "^3.5.28"
+    "@tanstack/react-router": "^1.168.22",
+    "@tanstack/react-start": "^1.167.41",
+    "lucide-react": "^0.575.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "srvx": "^0.11.22"
   },
   "devDependencies": {
-    "@iconify-json/lucide": "^1.2.92",
+    "@tailwindcss/vite": "^4.2.2",
+    "@tanstack/eslint-config": "^0.4.0",
     "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "tailwindcss": "^4.2.2",
     "typescript": "^5.9.3",
-    "vue-tsc": "^3.2.4"
+    "vite": "^8.0.9",
+    "vite-tsconfig-paths": "^6.1.1"
   }
 }
